@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <title>Software Design for Data Scientists</title>
+    <link rel="stylesheet" href="../mccole.css">
+    <link rel="stylesheet" href="../tango.css">
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      })
+    </script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="column">
+        <h2><a href="../">Software Design for Data Scientists</a></h2>
+        <p>
+          A minimal introduction using Python
+        </p>
+	<ol class="toc-chapter">
+  
+  <li>
+    <a href="../introduction/">
+      Introduction
+    </a>
+  </li>
+  
+  <li>
+    <a href="../functional/">
+      A Minimal Functional Programming Toolkit
+    </a>
+  </li>
+  
+  <li>
+    <a href="../dataframe/">
+      A Minimal Dataframe
+    </a>
+  </li>
+  
+  <li>
+    <a href="../pipeline/">
+      A Minimal Pipeline Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../configuration/">
+      A Minimal Configuration Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../interpreter/">
+      <strong>A Minimal Interpreter</strong>
+    </a>
+  </li>
+  
+  <li>
+    <a href="../unittest/">
+      A Minimal Unit Testing Framework
+    </a>
+  </li>
+  
+  <li>
+    <a href="../build/">
+      A Minimal Build Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../reader/">
+      A Minimal CSV File Reader
+    </a>
+  </li>
+  
+  <li>
+    <a href="../versioning/">
+      A Minimal Version Control System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../packaging/">
+      A Minimal Package Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../binary/">
+      A Minimal Binary Storage System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../regexp/">
+      A Minimal Regular Expression Engine
+    </a>
+  </li>
+  
+  <li>
+    <a href="../templating/">
+      A Minimal Page Templating System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../linter/">
+      A Minimal Code Checker
+    </a>
+  </li>
+  
+  <li>
+    <a href="../server/">
+      A Minimal Web Server
+    </a>
+  </li>
+  
+  <li>
+    <a href="../compiler/">
+      A Minimal Compiler
+    </a>
+  </li>
+  
+  <li>
+    <a href="../conclusion/">
+      Conclusion
+    </a>
+  </li>
+  
+</ol>
+<ol class="toc-appendix">
+  
+  <li>
+    <a href="../license/">
+      License
+    </a>
+  </li>
+  
+  <li>
+    <a href="../conduct/">
+      Code of Conduct
+    </a>
+  </li>
+  
+  <li>
+    <a href="../bibliography/">
+      Bibliography
+    </a>
+  </li>
+  
+  <li>
+    <a href="../glossary/">
+      Glossary
+    </a>
+  </li>
+  
+  <li>
+    <a href="../links/">
+      Links
+    </a>
+  </li>
+  
+  <li>
+    <a href="../credits/">
+      Credits
+    </a>
+  </li>
+  
+  <li>
+    <a href="../contents/">
+      Index
+    </a>
+  </li>
+  
+</ol>
+
+      </div>
+      <div class="column bordered">
+	<main>
+          <h1>A Minimal Interpreter</h1>
+          <p>Programming languages aren't magical:
+one piece of software translates text into instructions,
+while another does what those instructions tell it to.
+To explore how this works,
+this chapter implements a small but completely functional language.</p>
+<h2 id="interpreter-expressions">Section 6.1: Expressions</h2>
+<p>FIXME</p>
+<h2 id="interpreter-statements">Section 6.2: Statements</h2>
+<p><code>tll.py</code> reads a JSON file from standard input and executes the program it represents.
+Each command is stored as a list
+that starts with the name of an instruction
+and may contain Booleans, numbers, strings, or other lists (representing other instructions).
+For example,
+this program that starts with the number 1 and doubles it four times:</p>
+<div class="highlight"><span class="filename">doubling.tll</span><pre><span></span><code>[
+    &quot;seq&quot;,
+    [&quot;comment&quot;, &quot;Double a number repeatedly&quot;],
+    [&quot;set&quot;, &quot;a&quot;, 1],
+    [&quot;print&quot;, &quot;initial&quot;, [&quot;get&quot;, &quot;a&quot;]],
+    [
+        &quot;repeat&quot;,
+        4,
+        [
+            &quot;seq&quot;,
+            [&quot;set&quot;, &quot;a&quot;, [&quot;add&quot;, [&quot;get&quot;, &quot;a&quot;], [&quot;get&quot;, &quot;a&quot;]]],
+        [&quot;if&quot;,
+        [&quot;leq&quot;, [&quot;get&quot;, &quot;a&quot;], 10],
+        [&quot;print&quot;, &quot;small&quot;, [&quot;get&quot;, &quot;a&quot;]],
+        [&quot;print&quot;, &quot;large&quot;, [&quot;get&quot;, &quot;a&quot;]]
+        ]
+        ]
+    ]
+]
+</code></pre></div>
+<ul>
+<li>
+<p><em>Why JSON?</em>
+    So we can parse the program with a single call to <code>json.load</code>.</p>
+</li>
+<li>
+<p><em>Why lists?</em>
+    Because that's all a program is: a list of instructions,
+    some of which are other lists of instructions.</p>
+</li>
+<li>
+<p><em>Why put the name of the instruction first?</em>
+    To make it easy to find.
+    Expressions like <code>2 + 3 * 5</code> take several dozen lines of code to parse
+    because elements appear in mixed order
+    and because we can't be sure what to do with one thing (like <code>+</code>)
+    until we've seen a later thing (like <code>*</code>).</p>
+</li>
+</ul>
+<p>So how does TLL execute instructions?
+First,
+it defines one function for each instruction.
+All of these functions take exactly the same parameters:
+an <em>environment</em> (which is a dictionary containing all the program's variables)
+and the instructions' arguments.
+When given a list representing an instruction,
+the function <code>do</code> uses the list's first element to figure out what other function to call
+and calls it;
+when given anything else, like a number or string,
+<code>do</code> just returns that value immediately.</p>
+<p>And that's pretty much it.
+A function like <code>do_add</code> calls <code>do</code> to evaluate its arguments and then returns their sum;
+a function like <code>do_seq</code> calls <code>do</code> once for each of its arguments in order
+and returns the value of the last one;
+<code>do_get</code> and <code>do_set</code> look up a variable's value and store new values respectively,
+and <code>do_if</code> uses the result of evaluating its first argument
+to decide whether to evaluate its second or third.
+It's really that simple.</p>
+<h2 id="interpreter-reflection">Section 6.3: Reflection</h2>
+<p>FIXME: Explain how the table <code>OPERATIONS</code> is constructed.</p>
+<h2 id="interpreter-functions">Section 6.4: Functions</h2>
+<p>TLL can do a lot:
+in fact,
+since it has variables, loops, and conditionals,
+it can do everything that <em>any</em> programming language can do.
+However,
+writing TLL programs will be painful
+because there's no way for users to define new operations within the language itself.
+Doing this in <code>tllfunc.py</code> makes TLL less than 60 lines longer:</p>
+<ol>
+<li>
+<p>Instead of using a single dictionary to store an environment
+    we use a list of dictionaries.
+    The first dictionary is the global environment;
+    the others store variables belonging to active function calls.</p>
+</li>
+<li>
+<p>When we get or set a variable,
+    we check the most recent environment first
+    (i.e., the one that's last in the list);
+    if the variable isn't there we look in the global environment.
+    We <em>don't</em> look at the environments in between.</p>
+</li>
+<li>
+<p>A function definition looks like:</p>
+<pre><code>["def", "same", ["num"], ["get", "num"]]
+</code></pre>
+<p>It has a name, a (possibly empty) list of parameter names,
+and a single instruction as a body
+(which will usually be a <code>"seq"</code> instruction).</p>
+</li>
+<li>
+<p>Functions are stored in the environment like any other value.
+    The value stored for the function defined above would be:</p>
+<pre><code>["func", ["num"], ["get", "num"]]
+</code></pre>
+<p>We don't need to store the name: that's recorded by the environment,
+just like it is for any other variable.</p>
+</li>
+<li>
+<p>A function call looks like:</p>
+<pre><code>["call", "same", 3]
+</code></pre>
+<p>The values passed to the functions are normally expressions rather than constants,
+and are <em>not</em> put in a sub-list.
+The implementation:
+1.  Evaluates all of these expressions.
+2.  Looks up the function.
+3.  Creates a new environment whose keys are the parameters' names
+    and whose values are the expressions' values.
+4.  Calls <code>do</code> to run the function's action and captures the result.
+5.  Discards environment created two steps previously.
+6.  Returns the function's result.</p>
+</li>
+</ol>
+<h2 id="interpreter-exercises">Section 6.5: Exercises</h2>
+<h3>Arrays</h3>
+<p>Implement fixed-size one-dimensional arrays:
+<code>["array", "new", 10]</code> creates an array of 10 elements,
+while other instructions get and set particular array elements by index.</p>
+<h3>While Loops</h3>
+<p>Add a <code>while</code> loop to TLL.</p>
+<h3>Loop Variables</h3>
+<p>The <code>"repeat"</code> instruction runs some other instruction(s) several times,
+but there is no way to access the loop counter inside those instructions.
+Modify <code>"repeat"</code> so that programs can do this.
+(Hint: allow people to create a new variable to hold the loop counter's current value.)</p>
+<h3>Error handling</h3>
+<p>Several of the instruction functions started with <code>assert</code> statements,
+which means that users get a stack trace of TLL itself
+when there's a bug in their program.</p>
+<ol>
+<li>
+<p>Define a new exception class called <code>TLLException</code>.</p>
+</li>
+<li>
+<p>Write a utility function called <code>check</code>
+    that raises a <code>TLLException</code> with a useful error message
+    when there's a problem.</p>
+</li>
+<li>
+<p>Add a <code>catch</code> statement to handle these errors.</p>
+</li>
+</ol>
+<h3>Documentation</h3>
+<p>The docstring in each action function explain what it does.
+Rewrite those for <code>do_repeat</code> and <code>do_seq</code> to be clearer and more consistent.</p>
+<h3>Tracing</h3>
+<p>Add a <code>--debug</code> command-line flag to <code>tllfunc.py</code>.
+When enabled, it makes TLL print a messages showing each function call and its result.</p>
+<h3>Returning Early</h3>
+<p>Add a <code>"return"</code> instruction to TLL that ends a function call immediately
+and returns a single value.
+(Hint: try throwing an exception.)</p>
+<h3>Variable Arguments</h3>
+<p>Add variable-length parameter lists to TLL
+so that a user-defined function can be called with any number of arguments.
+(This exercise depends on having implemented arrays earlier.)</p>
+<h3>Closures</h3>
+<p><code>tllfunc.py</code> allows users to define functions inside functions.
+What variables can the inner function access when you do this?
+What variables <em>should</em> it be able to access?
+What would you have to do to enable this?</p>
+	</main>
+      </div>
+    </div>
+  </body>
+</html>

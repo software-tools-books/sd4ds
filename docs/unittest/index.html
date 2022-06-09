@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <title>Software Design for Data Scientists</title>
+    <link rel="stylesheet" href="../mccole.css">
+    <link rel="stylesheet" href="../tango.css">
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      })
+    </script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="column">
+        <h2><a href="../">Software Design for Data Scientists</a></h2>
+        <p>
+          A minimal introduction using Python
+        </p>
+	<ol class="toc-chapter">
+  
+  <li>
+    <a href="../introduction/">
+      Introduction
+    </a>
+  </li>
+  
+  <li>
+    <a href="../functional/">
+      A Minimal Functional Programming Toolkit
+    </a>
+  </li>
+  
+  <li>
+    <a href="../dataframe/">
+      A Minimal Dataframe
+    </a>
+  </li>
+  
+  <li>
+    <a href="../pipeline/">
+      A Minimal Pipeline Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../configuration/">
+      A Minimal Configuration Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../interpreter/">
+      A Minimal Interpreter
+    </a>
+  </li>
+  
+  <li>
+    <a href="../unittest/">
+      <strong>A Minimal Unit Testing Framework</strong>
+    </a>
+  </li>
+  
+  <li>
+    <a href="../build/">
+      A Minimal Build Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../reader/">
+      A Minimal CSV File Reader
+    </a>
+  </li>
+  
+  <li>
+    <a href="../versioning/">
+      A Minimal Version Control System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../packaging/">
+      A Minimal Package Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../binary/">
+      A Minimal Binary Storage System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../regexp/">
+      A Minimal Regular Expression Engine
+    </a>
+  </li>
+  
+  <li>
+    <a href="../templating/">
+      A Minimal Page Templating System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../linter/">
+      A Minimal Code Checker
+    </a>
+  </li>
+  
+  <li>
+    <a href="../server/">
+      A Minimal Web Server
+    </a>
+  </li>
+  
+  <li>
+    <a href="../compiler/">
+      A Minimal Compiler
+    </a>
+  </li>
+  
+  <li>
+    <a href="../conclusion/">
+      Conclusion
+    </a>
+  </li>
+  
+</ol>
+<ol class="toc-appendix">
+  
+  <li>
+    <a href="../license/">
+      License
+    </a>
+  </li>
+  
+  <li>
+    <a href="../conduct/">
+      Code of Conduct
+    </a>
+  </li>
+  
+  <li>
+    <a href="../bibliography/">
+      Bibliography
+    </a>
+  </li>
+  
+  <li>
+    <a href="../glossary/">
+      Glossary
+    </a>
+  </li>
+  
+  <li>
+    <a href="../links/">
+      Links
+    </a>
+  </li>
+  
+  <li>
+    <a href="../credits/">
+      Credits
+    </a>
+  </li>
+  
+  <li>
+    <a href="../contents/">
+      Index
+    </a>
+  </li>
+  
+</ol>
+
+      </div>
+      <div class="column bordered">
+	<main>
+          <h1>A Minimal Unit Testing Framework</h1>
+          <p>We have written many small programs in the previous chapters,
+but haven't really tested any of them.
+That's OK for exploratory programming,
+but if our software is going to be used instead of just read,
+we should try to make sure it works.</p>
+<p>A tool for writing and running <a class="gl-ref" href="../gloss/#unit_test" markdown="1">unit tests</a> is a good first step.
+Such a tool should:</p>
+<ul>
+<li>find files containing tests;</li>
+<li>find the tests in those files;</li>
+<li>run the tests;</li>
+<li>capture their results; and</li>
+<li>report each test's result and a summary of those results.</li>
+</ul>
+<p>Our design is inspired by <a href="https://docs.pytest.org/">Pytest</a>,
+which was in turn inspired by many tools built for other languages
+from the 1980s onward [<a href="../bib/#Meszaros2007">Meszaros2007</a>].</p>
+<h2 id="unittest-structure">Section 7.1: Structuring Tests</h2>
+<p>As in other unit testing frameworks,
+each test will be a function of zero arguments
+so that the framework can run them all in the same way.
+Each test will create a <a class="gl-ref" href="../gloss/#fixture" markdown="1">fixture</a> to be tested
+and use <a class="gl-ref" href="../gloss/#assertion" markdown="1">assertions</a>
+to compare the <a class="gl-ref" href="../gloss/#actual_result" markdown="1">actual result</a>
+against the <a class="gl-ref" href="../gloss/#expected_result" markdown="1">expected result</a>.
+The outcome can be exactly one of:</p>
+<ul>
+<li>
+<p><a class="gl-ref" href="../gloss/#pass_test" markdown="1">Pass</a>:
+    the <a class="gl-ref" href="../gloss/#test_subject" markdown="1">test subject</a> works as expected.</p>
+</li>
+<li>
+<p><a class="gl-ref" href="../gloss/#fail_test" markdown="1">Fail</a>:
+    something is wrong with the test subject.</p>
+</li>
+<li>
+<p><a class="gl-ref" href="../gloss/#error_test" markdown="1">Error</a>:
+    something wrong in the test itself,
+    which means we don't know whether the test subject is working properly or not.</p>
+</li>
+</ul>
+<p>To make this work,
+we need some way to distinguish failing tests from broken ones.
+Our solution relies on the fact that exceptions are objects
+and that a program can use <a class="gl-ref" href="../gloss/#introspection" markdown="1">introspection</a>
+to determine the class of an object.
+If a test <a class="gl-ref" href="../gloss/#throw_exception" markdown="1">throws an exception</a> whose class is <code>assert.AssertionError</code>,
+then we will assume the exception came from
+one of the assertions we put in the test as a check.
+Any other kind of assertion indicates that the test itself contains an error.</p>
+<p>To start,
+let's record tests and what they mean.
+We don't run tests immediately
+because we want to wrap each one in our own <a class="gl-ref" href="../gloss/#exception_handler" markdown="1">exception handler</a>.
+Instead,
+the function <code>hope_that</code> saves a descriptive message and a function that implements a test
+in an array:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Tests to run.</span>
+<span class="n">HOPE_TESTS</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Record a single test for running later.</span>
+<span class="k">def</span> <span class="nf">hope_that</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+    <span class="n">HOPE_TESTS</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">message</span><span class="p">,</span> <span class="n">func</span><span class="p">])</span>
+</code></pre></div>
+<blockquote>
+<h3>Independence</h3>
+<p>Because we're appending tests to an array,
+they will be run in the order in which they are registered,
+but we shouldn't rely on that.
+Every unit test should work independently of every other
+so that an error or failure in an early test
+doesn't affect the result of a later one.</p>
+</blockquote>
+<p>The function <code>main</code> runs all registered tests:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Run all of the tests that have been asked for and report summary.</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;pass&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;fail&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">[</span><span class="n">message</span><span class="p">,</span> <span class="n">test</span><span class="p">]</span> <span class="ow">in</span> <span class="n">HOPE_TESTS</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">test</span><span class="p">()</span>
+            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;pass&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;fail&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pass </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;pass&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fail </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;fail&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;error </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p class="continue">If a test completes without an exception, it passes.
+If any of the <code>assert</code> calls inside the test raises an <code>AssertionError</code>,
+the test fails,
+and if it raises any other exception,
+it's an error.
+After all tests are run,
+<code>main</code> reports the number of results of each kind.</p>
+<p>Let's try it out:</p>
+<p><div class="highlight"><pre><span></span><code><span class="c1"># Something to test (doesn&#39;t handle zero properly).</span>
+<span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+<span class="c1"># These two should pass.</span>
+<span class="k">def</span> <span class="nf">test_sign_negative</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">test_sign_positive</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+<span class="c1"># This one should fail.</span>
+<span class="k">def</span> <span class="nf">test_sign_zero</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+<span class="c1"># This one is an error (misspelled function).</span>
+<span class="k">def</span> <span class="nf">test_sign_error</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sgn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+<span class="c1"># Register functions and Call the main driver.</span>
+<span class="n">hope_that</span><span class="p">(</span><span class="s2">&quot;Sign of negative is -1&quot;</span><span class="p">,</span> <span class="n">test_sign_negative</span><span class="p">)</span>
+<span class="n">hope_that</span><span class="p">(</span><span class="s2">&quot;Sign of positive is 1&quot;</span><span class="p">,</span> <span class="n">test_sign_positive</span><span class="p">)</span>
+<span class="n">hope_that</span><span class="p">(</span><span class="s2">&quot;Sign of zero is 0&quot;</span><span class="p">,</span> <span class="n">test_sign_zero</span><span class="p">)</span>
+<span class="n">hope_that</span><span class="p">(</span><span class="s2">&quot;Sign misspelled is error&quot;</span><span class="p">,</span> <span class="n">test_sign_error</span><span class="p">)</span>
+<span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>pass 2
+fail 1
+error 1
+</code></pre></div></p>
+<h2 id="unittest-discovery">Section 7.2: Discovery</h2>
+<p>This simple approach does what it's supposed to, but:</p>
+<ol>
+<li>
+<p>It doesn't tell us which tests have passed or failed.</p>
+</li>
+<li>
+<p>The description of the test is separate from the test code.
+    Some people argue that tests shouldn't need descriptions---that
+    we should instead give them long names that describe what they're doing---but
+    we should support string-style explanations for those who want them.</p>
+</li>
+<li>
+<p>It doesn't discover tests on its own:
+    we have to remember to register the test using <code>hope_that</code>,
+    which means that sooner or later (probably sooner)
+    some of our tests won't be run.</p>
+</li>
+<li>
+<p>We don't have a way to test things that are supposed to raise <code>AssertionError</code>.
+    Putting assertions into code to check that it is behaving correctly
+    is called <a class="gl-ref" href="../gloss/#defensive_programming" markdown="1">defensive programming</a>;
+    it's a good practice,
+    but we should make sure those assertions are failing when they're supposed to,
+    just as we should test our smoke detectors every once in a while.</p>
+</li>
+</ol>
+<p>We can solve several of these problems at once by looking up test functions dynamically.
+When we create a function or variable,
+Python stores it in a dictionary,
+just like the environment used in <a class="x-ref" href="../interpreter/">Chapter 6</a>.
+We can get that dictionary by calling the function <code>globals</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>{&#39;__name__&#39;: &#39;__main__&#39;, &#39;__doc__&#39;: None, &#39;__package__&#39;: None, &#39;__loader__&#39;: &lt;_frozen_importlib_external.SourceFileLoader object at 0x109a03ca0&gt;, &#39;__spec__&#39;: None, &#39;__annotations__&#39;: {}, &#39;__builtins__&#39;: &lt;module &#39;builtins&#39; (built-in)&gt;, &#39;__file__&#39;: &#39;/Users/gregwilson/sd4ds/src/unittest/show_globals.py&#39;, &#39;__cached__&#39;: None}
+</code></pre></div>
+<p>We can loop over the keys of this dictionary and find things with particular names:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">test_sign_negative</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">test_sign_positive</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">test_sign_zero</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">test_sign_error</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sgn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">show_tests</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Show all functions that start with &#39;test_&#39;.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;test_&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">show_tests</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>test_sign_negative
+test_sign_positive
+test_sign_zero
+test_sign_error
+</code></pre></div>
+<p class="continue">which means we can find all the tests in a module,
+call them,
+and keep track of their results:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Something to test (doesn&#39;t handle zero properly).</span>
+<span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+
+<span class="c1"># These two should pass.</span>
+<span class="k">def</span> <span class="nf">test_sign_negative</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+
+
+<span class="k">def</span> <span class="nf">test_sign_positive</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+
+<span class="c1"># This one should fail.</span>
+<span class="k">def</span> <span class="nf">test_sign_zero</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+
+<span class="c1"># This one is an error (misspelled function).</span>
+<span class="k">def</span> <span class="nf">test_sign_error</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sgn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+
+<span class="k">def</span> <span class="nf">run_tests</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run all the functions whose names start with the given prefix.&quot;&quot;&quot;</span>
+    <span class="n">prefixed_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">prefixed_names</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">func</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pass: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fail: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;error: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">run_tests</span><span class="p">(</span><span class="s2">&quot;test_&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>pass: test_sign_negative
+pass: test_sign_positive
+fail: test_sign_zero
+error: test_sign_error name &#39;sgn&#39; is not defined
+</code></pre></div>
+<p>This approach is less typing and less fragile than our first,
+but we can improve it by showing the test function's <a class="gl-ref" href="../gloss/#docstring" markdown="1">docstring</a>
+if it has one.
+As we said in <a class="x-ref" href="../functional/">Chapter 2</a>,
+functions are just objects,
+which means they can have attributes.
+If we give a function a docstring:</p>
+<div class="highlight"><pre><span></span><code>def example():
+   &quot;This is documentation.&quot;&quot;&quot;
+   pass
+</code></pre></div>
+<p>then <code>example.__doc__</code> contains the string <code>"This is documentation."</code></p>
+<p>We can do more than just print these strings when reporting problems:
+we can embed instructions for the test framework in them.
+For example,
+we could decide that the string <code>"test:skip"</code> means "skip this test",
+while <code>"test:fail"</code> means "we expect this test to fail".
+Let's rewrite our tests to show this off:</p>
+<div class="highlight"><pre><span></span><code><span class="n">TEST_FAIL</span> <span class="o">=</span> <span class="s2">&quot;test:fail&quot;</span>
+<span class="n">TEST_SKIP</span> <span class="o">=</span> <span class="s2">&quot;test:skip&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">test_sign_negative</span><span class="p">():</span>
+    <span class="s2">&quot;test:skip&quot;</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+
+
+<span class="k">def</span> <span class="nf">test_sign_positive</span><span class="p">():</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+
+<span class="k">def</span> <span class="nf">test_sign_zero</span><span class="p">():</span>
+    <span class="s2">&quot;test:fail&quot;</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">test_sign_error</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Expect an error.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">sgn</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</code></pre></div>
+<p class="continue">and then modify <code>run_tests</code> to look for these strings and act accordingly:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">run_tests</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run all the functions whose names start with the given prefix.&quot;&quot;&quot;</span>
+    <span class="n">prefixed_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">prefixed_names</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">TEST_SKIP</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;skip: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">func</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pass: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">TEST_FAIL</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;pass (expected failure): </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fail: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;error: </span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">doc</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>The output is now:</p>
+<div class="highlight"><pre><span></span><code>skip: test_sign_negative
+error: test_sign_positive argument of type &#39;NoneType&#39; is not iterable
+pass (expected failure): test_sign_zero
+error: test_sign_error/Expect an error. name &#39;sgn&#39; is not defined
+</code></pre></div>
+<h2 id="unittest-exercises">Section 7.3: Exercises</h2>
+<h3 class="exercise">Literal strings</h3>
+<p>If we have defined a variable with the test-skipping marker,
+why can't we use that variable as the function's docstring like this:</p>
+<div class="highlight"><pre><span></span><code><span class="n">TEST_SKIP</span> <span class="o">=</span> <span class="s2">&quot;test:skip&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">test_sign_negative</span><span class="p">():</span>
+    <span class="n">TEST_SKIP</span>
+    <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+</code></pre></div>
+	</main>
+      </div>
+    </div>
+  </body>
+</html>

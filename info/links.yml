@@ -1,0 +1,150 @@
+- key: aosa
+  url: https://aosabook.org/
+  title: The Architecture of Open Source Applications
+- key: argparse
+  title: argparse
+  url: https://docs.python.org/3/library/argparse.html
+- key: black
+  title: Black
+  url: https://black.readthedocs.io/
+- key: carpentries
+  url: https://carpentries.org/
+  title: The Carpentries
+- key: circle_ci
+  title: Circle CI
+  url: https://circleci.com/
+- key: conda
+  title: Conda
+  url: https://docs.conda.io/
+- key: conventional_commits
+  title: Conventional Commits
+  url: https://www.conventionalcommits.org/
+- key: cookiecutter
+  title: Cookiecutter
+  url: https://cookiecutter.readthedocs.io/
+- key: coverage
+  title: Coverage
+  url: https://coverage.readthedocs.io/
+- key: deep_genomics
+  title: Deep Genomics Inc.
+  url: https://www.deepgenomics.com/
+- key: docker
+  title: Docker
+  url: https://www.docker.com/
+- key: dvc
+  title: DVC
+  url: https://dvc.org/
+- key: flake8
+  title: Flake8
+  url: https://flake8.pycqa.org/
+- key: gh_actions
+  title: GitHub Actions
+  url: https://docs.github.com/en/actions
+- key: gh_actions_predefined
+  title: Pre-defined GitHub Actions
+  url: https://github.com/actions
+- key: gh_coc
+  title: Adding a Code of Conduct on GitHub
+  url: https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-code-of-conduct-to-your-project
+- key: git
+  url: https://git-scm.com/
+  title: Git
+- key: git_lfs
+  title: Git Large File Storage
+  url: https://git-lfs.github.com/
+- key: git-man-page-generator
+  url: https://git-man-page-generator.lokaltog.net/
+  title: Git man page generator
+- key: invoke
+  title: Invoke
+  url: https://www.pyinvoke.org/
+- key: isort
+  title: Isort
+  url: https://pycqa.github.io/isort/
+- key: isort_config
+  title: Isort configuration
+  url: https://pycqa.github.io/isort/docs/configuration/multi_line_output_modes.html
+- key: ivy
+  title: Ivy
+  url: http://www.dmulholl.com/docs/ivy/main/
+- key: js4ds
+  url: https://js4ds.org/
+  title: JavaScript for Data Science
+- key: make
+  title: GNU Make
+  url: https://www.gnu.org/software/make/
+- key: jupyter
+  title: Jupyter
+  url: https://jupyter.org/
+- key: mamba
+  title: Mamba
+  url: https://mamba.readthedocs.io/
+- key: mit_license
+  title: MIT License
+  url: https://choosealicense.com/licenses/mit/
+- key: nobles_rules
+  title: Noble's Rules
+  url: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000424
+- key: occams_razor
+  title: "Occam's Razor"
+  url: https://en.wikipedia.org/wiki/Occam%27s_razor
+- key: pandas
+  title: Pandas
+  url: https://pandas.pydata.org/
+- key: pep8
+  title: PEP-8
+  url: https://pep8.org/
+- key: plotly
+  title: Plotly
+  url: https://plotly.com/python/plotly-express/
+- key: py_rse
+  title: Research Software Engineering with Python
+  url: https://merely-useful.tech/py-rse/
+- key: pydantic
+  title: Pydantic
+  url: https://pydantic-docs.helpmanual.io/
+- key: pyfakefs
+  title: PyFakeFS
+  url: http://jmcgeheeiv.github.io/pyfakefs/
+- key: pypi
+  title: PyPI
+  url: https://pypi.org/
+- key: pypi_simple
+  title: Simple PyPI Package Index
+  url: https://pypi.org/simple/
+- key: pytest
+  title: Pytest
+  url: https://docs.pytest.org/
+- key: r_markdown
+  title: "R Markdown"
+  url: https://rmarkdown.rstudio.com/
+- key: requests
+  title: Requests
+  url: https://docs.python-requests.org/
+- key: regular_expressions_html
+  url: "https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags/1732454#1732454"
+  title: Parsing HTML with regular expressions.
+- key: sd4ds_repo
+  title: GitHub repository
+  url: https://github.com/gvwilson/sd4ds/
+- key: sd4ds_site
+  title: Book website
+  url: https://gvwilson.github.io/sd4ds/
+- key: semver
+  title: Semantic Versioning
+  url: https://semver.org/
+- key: snakemake
+  title: Snakemake
+  url: https://snakemake.readthedocs.io/
+- key: t3
+  url: http://teachtogether.tech/
+  title: Teaching Tech Together
+- key: tdd
+  title: Test-Driven Development
+  url: https://en.wikipedia.org/wiki/Test-driven_development
+- key: tdd_nwit
+  title: Evidence about Test-Driven Development
+  url: https://neverworkintheory.org/category/#test-driven-development
+- key: wilson_greg
+  title: Greg Wilson
+  url: https://third-bit.com/

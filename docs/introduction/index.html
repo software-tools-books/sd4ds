@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <title>Software Design for Data Scientists</title>
+    <link rel="stylesheet" href="../mccole.css">
+    <link rel="stylesheet" href="../tango.css">
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      })
+    </script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="column">
+        <h2><a href="../">Software Design for Data Scientists</a></h2>
+        <p>
+          A minimal introduction using Python
+        </p>
+	<ol class="toc-chapter">
+  
+  <li>
+    <a href="../introduction/">
+      <strong>Introduction</strong>
+    </a>
+  </li>
+  
+  <li>
+    <a href="../functional/">
+      A Minimal Functional Programming Toolkit
+    </a>
+  </li>
+  
+  <li>
+    <a href="../dataframe/">
+      A Minimal Dataframe
+    </a>
+  </li>
+  
+  <li>
+    <a href="../pipeline/">
+      A Minimal Pipeline Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../configuration/">
+      A Minimal Configuration Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../interpreter/">
+      A Minimal Interpreter
+    </a>
+  </li>
+  
+  <li>
+    <a href="../unittest/">
+      A Minimal Unit Testing Framework
+    </a>
+  </li>
+  
+  <li>
+    <a href="../build/">
+      A Minimal Build Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../reader/">
+      A Minimal CSV File Reader
+    </a>
+  </li>
+  
+  <li>
+    <a href="../versioning/">
+      A Minimal Version Control System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../packaging/">
+      A Minimal Package Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../binary/">
+      A Minimal Binary Storage System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../regexp/">
+      A Minimal Regular Expression Engine
+    </a>
+  </li>
+  
+  <li>
+    <a href="../templating/">
+      A Minimal Page Templating System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../linter/">
+      A Minimal Code Checker
+    </a>
+  </li>
+  
+  <li>
+    <a href="../server/">
+      A Minimal Web Server
+    </a>
+  </li>
+  
+  <li>
+    <a href="../compiler/">
+      A Minimal Compiler
+    </a>
+  </li>
+  
+  <li>
+    <a href="../conclusion/">
+      Conclusion
+    </a>
+  </li>
+  
+</ol>
+<ol class="toc-appendix">
+  
+  <li>
+    <a href="../license/">
+      License
+    </a>
+  </li>
+  
+  <li>
+    <a href="../conduct/">
+      Code of Conduct
+    </a>
+  </li>
+  
+  <li>
+    <a href="../bibliography/">
+      Bibliography
+    </a>
+  </li>
+  
+  <li>
+    <a href="../glossary/">
+      Glossary
+    </a>
+  </li>
+  
+  <li>
+    <a href="../links/">
+      Links
+    </a>
+  </li>
+  
+  <li>
+    <a href="../credits/">
+      Credits
+    </a>
+  </li>
+  
+  <li>
+    <a href="../contents/">
+      Index
+    </a>
+  </li>
+  
+</ol>
+
+      </div>
+      <div class="column bordered">
+	<main>
+          <h1>Introduction</h1>
+          <p>Most data scientists are self-taught programmers,
+and feel overwhelmed when they transition from writing small scripts for their own use
+to building packages and applications that other people can use to tackle larger problems.
+How should you organize your functions and classes?
+How can you make them easier to test?
+And how can you make it possible for people to extend what you've created
+without rewriting it?</p>
+<p>The best way to learn design in any field is to study examples,
+and the best examples to study are working models of things you use every day.
+These lessons therefore show you how to build small but usable versions of
+dataframes, testing frameworks, version controls systems, web servers, data pipelines, and other tools,
+both to demystify them and to give you some insight into how experienced programmers think.</p>
+<p>All of the written material in this project can be freely reused
+under the terms of the Creative Commons - Attribution license,
+while all of the software is made available under the terms of the Hippocratic License:
+please see <a href="https://github.com/gvwilson/sd4ds/blob/main/LICENSE.md">the license</a> for details.
+Please also see our <a href="https://github.com/gvwilson/sd4ds/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
+if you would like to help improve or extend this work.</p>
+<h2 id="introduction-audience">Section 1.1: Audience</h2>
+<p>Every lesson should be written with specific learners in mind [<a href="../bib/#Wilson2019">Wilson2019</a>]..
+These two personas describe ours:</p>
+<ul>
+<li>
+<p><strong>Jess</strong> is doing a PhD in ecology.
+    Their one-and-only undergraduate programming course taught them
+    how to write hundred-line Python programs with lists, loops, and functions;
+    they now need to simulate changes in the ranges of several rodent species as a result of climate change
+    and validate the predictions against dozens of datasets collected by previous students in their supervisor's lab,
+    all of which need to be cleaned up and put in a consistent format.</p>
+</li>
+<li>
+<p>After a BSc in astronomy,
+    <strong>Rupinder</strong> became a data analyst at a health services startup,
+    where he inherited a bewildering mix of spreadsheets,
+    slide decks,
+    shell scripts,
+    <a href="https://rmarkdown.rstudio.com/">R Markdown</a> files,
+    <a href="https://jupyter.org/">Jupyter notebooks</a>,
+    and out-of-date README files.
+    He is comfortable creating classes in Python,
+    and has even built a small package for his own use;
+    he feels the company's code could and should be cleaner,
+    but he doesn't know exactly what that means or how to get there.</p>
+</li>
+</ul>
+<p>Like Jess and Rupinder, readers should be able to:</p>
+<ul>
+<li>
+<p>Write Python programs using dictionaries, functions, and classes.</p>
+</li>
+<li>
+<p>Install Python packages on their computer
+    and run programs with it from the command line.</p>
+</li>
+<li>
+<p>Use <a href="https://git-scm.com/">Git</a> to save and share files.
+    (It's OK not to know <a href="https://git-man-page-generator.lokaltog.net/">the more obscure commands</a>.)</p>
+</li>
+</ul>
+<p><a class="x-ref" href="../glossary/">Appendix D</a> defines the terms we introduce in these lessons,
+which in turn define their scope:</p>
+<h2 id="introduction-layout">Section 1.2: Layout</h2>
+<p>We display Python source code like this:</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">species</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</code></pre></div>
+<p class="continue">Note that we write functions as <code>functionName</code> rather than <code>functionName()</code>:
+the latter is more common,
+but people don't use <code>objectName{}</code> for objects or <code>arrayName[]</code> for arrays,
+and the empty parentheses makes it hard to tell
+whether we're talking about "the function itself" or "a call to the function with no parameters".</p>
+<p>We Unix shell commands like this:</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> filename <span class="k">in</span> *.dat
+<span class="k">do</span>
+    cut -d , -f <span class="m">10</span> <span class="nv">$filename</span>
+<span class="k">done</span>
+</code></pre></div>
+<p class="continue">and display data files and programs' output like this:</p>
+<div class="highlight"><pre><span></span><code>Package,Releases
+0,1
+0-0,0
+0-0-1,1
+00print-lol,2
+00smalinux,0
+01changer,0
+</code></pre></div>
+<p>We occasionally wrap lines in source code in unnatural ways to make listings fit the printed page,
+and sometimes use <code>...</code> to show where lines have been omitted.
+Where we need to break lines of output for the same reason,
+we end incomplete lines with a single backslash <code>\</code>.
+The full listings are all available in <a href="https://github.com/gvwilson/sd4ds/">our Git repository</a>
+and <a href="https://gvwilson.github.io/sd4ds/">on our website</a>.</p>
+	</main>
+      </div>
+    </div>
+  </body>
+</html>

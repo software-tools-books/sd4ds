@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <title>Software Design for Data Scientists</title>
+    <link rel="stylesheet" href="../mccole.css">
+    <link rel="stylesheet" href="../tango.css">
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      })
+    </script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="column">
+        <h2><a href="../">Software Design for Data Scientists</a></h2>
+        <p>
+          A minimal introduction using Python
+        </p>
+	<ol class="toc-chapter">
+  
+  <li>
+    <a href="../introduction/">
+      Introduction
+    </a>
+  </li>
+  
+  <li>
+    <a href="../functional/">
+      A Minimal Functional Programming Toolkit
+    </a>
+  </li>
+  
+  <li>
+    <a href="../dataframe/">
+      A Minimal Dataframe
+    </a>
+  </li>
+  
+  <li>
+    <a href="../pipeline/">
+      A Minimal Pipeline Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../configuration/">
+      <strong>A Minimal Configuration Manager</strong>
+    </a>
+  </li>
+  
+  <li>
+    <a href="../interpreter/">
+      A Minimal Interpreter
+    </a>
+  </li>
+  
+  <li>
+    <a href="../unittest/">
+      A Minimal Unit Testing Framework
+    </a>
+  </li>
+  
+  <li>
+    <a href="../build/">
+      A Minimal Build Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../reader/">
+      A Minimal CSV File Reader
+    </a>
+  </li>
+  
+  <li>
+    <a href="../versioning/">
+      A Minimal Version Control System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../packaging/">
+      A Minimal Package Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../binary/">
+      A Minimal Binary Storage System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../regexp/">
+      A Minimal Regular Expression Engine
+    </a>
+  </li>
+  
+  <li>
+    <a href="../templating/">
+      A Minimal Page Templating System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../linter/">
+      A Minimal Code Checker
+    </a>
+  </li>
+  
+  <li>
+    <a href="../server/">
+      A Minimal Web Server
+    </a>
+  </li>
+  
+  <li>
+    <a href="../compiler/">
+      A Minimal Compiler
+    </a>
+  </li>
+  
+  <li>
+    <a href="../conclusion/">
+      Conclusion
+    </a>
+  </li>
+  
+</ol>
+<ol class="toc-appendix">
+  
+  <li>
+    <a href="../license/">
+      License
+    </a>
+  </li>
+  
+  <li>
+    <a href="../conduct/">
+      Code of Conduct
+    </a>
+  </li>
+  
+  <li>
+    <a href="../bibliography/">
+      Bibliography
+    </a>
+  </li>
+  
+  <li>
+    <a href="../glossary/">
+      Glossary
+    </a>
+  </li>
+  
+  <li>
+    <a href="../links/">
+      Links
+    </a>
+  </li>
+  
+  <li>
+    <a href="../credits/">
+      Credits
+    </a>
+  </li>
+  
+  <li>
+    <a href="../contents/">
+      Index
+    </a>
+  </li>
+  
+</ol>
+
+      </div>
+      <div class="column bordered">
+	<main>
+          <h1>A Minimal Configuration Manager</h1>
+          <ul>
+<li>Current configuration syntax allows one "overall" section and one section per pipeline stage</li>
+<li>What if we want to share the overall configuration between multiple pipelines?</li>
+<li>Or share some settings for a particular stage across all uses of that stage?</li>
+<li>Use a layered configuration that takes configuration in this order:<ol>
+<li>A system-wide configuration file for general settings.</li>
+<li>A user-specific configuration file for personal preferences.</li>
+<li>Project-specific files.</li>
+<li>Analysis-specific files.</li>
+<li>Command-line arguments.</li>
+</ol>
+</li>
+<li>Each level adds to or overrides settings in the layer before it<ul>
+<li>Example: <code>.gitignore</code> files</li>
+</ul>
+</li>
+<li>First step: modify <code>pipeline</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">SYSTEM_CONFIG</span> <span class="o">=</span> <span class="s2">&quot;/etc/nitinat.yml&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">pipeline</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">available</span><span class="p">):</span>
+    <span class="s2">&quot;&quot;&quot;Construct and run a processing pipeline.&quot;&quot;</span>
+<span class="s2">    # Set up.</span>
+<span class="s2">    layered = read_layered_config(config_file)</span>
+<span class="s2">    raw_config = _read_config(config_file)</span>
+<span class="s2">    overall, stages = split_config(raw_config)</span>
+<span class="s2">    overall = layered | overall</span>
+
+<span class="s2">    # Run each stage in turn.</span>
+<span class="s2">    # ...as before...</span>
+
+<span class="s2">    # Return final result.</span>
+<span class="s2">    return provenance, data</span>
+</code></pre></div>
+<ul>
+<li>Write the function to read and overlay several configuration files<ul>
+<li>Yes, we've used the <code>:=</code> operator - we're sinners...</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">read_layered_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read layered configuration files in order.&quot;&quot;&quot;</span>
+    <span class="n">all_filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">SYSTEM_CONFIG</span><span class="p">,</span> <span class="n">_get_home_dir</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;.nitinat.yml&quot;</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">project_config</span> <span class="o">:=</span> <span class="n">_find_project_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">)):</span>
+        <span class="n">all_filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">project_config</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">all_filenames</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">config</span> <span class="o">|=</span> <span class="n">_read_config</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">config</span>
+</code></pre></div>
+<ul>
+<li>Now look for the project configuration file<ul>
+<li>Search up from the directory containing the file specified for the run</li>
+<li>Stop at the user's home directory</li>
+<li>Might be better to stop at the root of the Git repository?</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">_find_project_config</span><span class="p">(</span><span class="n">starting_point</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Look up from given file to find project configuration file.&quot;&quot;&quot;</span>
+    <span class="n">curdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">starting_point</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">home</span> <span class="o">=</span> <span class="n">_get_home_dir</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">curdir</span> <span class="o">&gt;</span> <span class="n">home</span><span class="p">:</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">curdir</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;.nitinat.yml&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">candidate</span>
+        <span class="n">curdir</span> <span class="o">=</span> <span class="n">curdir</span><span class="o">.</span><span class="n">parent</span>
+    <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div>
+<ul>
+<li>Relies on a helper function <code>_get_home_dir</code><ul>
+<li>Originally just used <code>Path.home()</code></li>
+<li>But discovered we need to patch this when testing</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">_get_home_dir</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
+    <span class="sd">&quot;&quot;&quot;Get current user&#39;s home directory.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span>
+</code></pre></div>
+<ul>
+<li>To test:<ul>
+<li>Patch <code>_read_config</code> with a sequence of return values (one per config file)</li>
+<li>Replace the entire file system</li>
+</ul>
+</li>
+<li>Install <a href="http://jmcgeheeiv.github.io/pyfakefs/">pyfakefs</a><ul>
+<li>Add it to <code>development.txt</code>, not <code>requirements.txt</code></li>
+</ul>
+</li>
+<li>Use the <code>fs</code> fixture it provides to manipulate an in-memory filesystem<ul>
+<li>Functions like <code>open</code> are patched behind the scenes to use it</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">nitinat.pipeline4</span> <span class="kn">import</span> <span class="n">SYSTEM_CONFIG</span><span class="p">,</span> <span class="n">read_layered_config</span>
+
+<span class="n">GET_HOME_DIR</span> <span class="o">=</span> <span class="s2">&quot;nitinat.pipeline4._get_home_dir&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">make_file</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">contents</span><span class="p">):</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">create_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">contents</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">contents</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">test_layered_config_read_system</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">cwd</span> <span class="o">=</span> <span class="s2">&quot;/home/person/project/analysis&quot;</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+    <span class="n">make_file</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">SYSTEM_CONFIG</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="n">GET_HOME_DIR</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/home/person&quot;</span><span class="p">)):</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">read_layered_config</span><span class="p">(</span><span class="s2">&quot;test.yml&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span>
+</code></pre></div>
+<ul>
+<li>Line by line, <code>test_layered_config_read_system</code>:<ol>
+<li>Is given the <code>fs</code> fixture created by <code>pyfakefs</code></li>
+<li>Specifies the pretended current working directory</li>
+<li>Creates the expected configuration as a dictionary</li>
+<li>Calls <code>make_file</code> to turn that dictionary into a file in the fake filesystem<ul>
+<li><code>make_file</code> uses <code>fs.create_file</code></li>
+<li>Pulling this out into a one-line function makes the tests easier to read</li>
+</ul>
+</li>
+<li>Patch the <code>_get_home_dir</code> helper function to return the right value</li>
+<li>Reads the layered configuration<ul>
+<li>Which should get just the system-wide configuration</li>
+</ul>
+</li>
+<li>Checks</li>
+</ol>
+</li>
+<li>Here's a test of multiple configuration files layering correctly:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">test_layered_config_combine_files</span><span class="p">(</span><span class="n">fs</span><span class="p">):</span>
+    <span class="n">fs</span><span class="o">.</span><span class="n">cwd</span> <span class="o">=</span> <span class="s2">&quot;/home/person/project/analysis&quot;</span>
+    <span class="n">make_file</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="n">SYSTEM_CONFIG</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+    <span class="n">make_file</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;/home/person/.nitinat.yml&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+    <span class="n">make_file</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;/home/person/project/.nitinat.yml&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;gamma&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="n">GET_HOME_DIR</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/home/person&quot;</span><span class="p">)):</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">read_layered_config</span><span class="p">(</span><span class="s2">&quot;temp/test.yml&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;gamma&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li>Everything else in the pipeline code stays the same</li>
+<li>So the provenance record for each stage has the complete configuration<ul>
+<li>We really should write at least a couple of tests for that...</li>
+</ul>
+</li>
+</ul>
+	</main>
+      </div>
+    </div>
+  </body>
+</html>

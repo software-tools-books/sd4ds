@@ -1,0 +1,4 @@
+- function: reader
+  filename: tests/three_colors.csv
+- function: head
+  num: 1

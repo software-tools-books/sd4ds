@@ -1,0 +1,90 @@
+:root {
+    --faintgray: #F8F8F8;
+    --lightgray: #E8E8E8;
+    --heavyborder: 2px;
+    --lightborder: 1px;
+    --smalltext: 90%;
+    --extra-vertical-space: 1ex;
+}
+
+body {
+    font-size: large;
+    line-height: 130%;
+    font-family: Garamond, serif;
+}
+
+pre {
+    padding-left: 0.25em;
+}
+
+span.filename {
+    display: none;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 25% 75%;
+}
+
+.column {
+    padding: 1rem;
+}
+
+.bordered {
+    border-left: solid var(--heavyborder) var(--lightgray);
+}
+
+.highlight {
+    border: solid var(--heavyborder) var(--lightgray);
+    background-color: var(--lightgray);
+}
+
+ul {
+    padding-left: 1rem;
+}
+
+ol {
+    padding-left: 2rem;
+}
+
+div.callout {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    padding-top: 0rem;
+    background-color: var(--lightgray);
+}
+
+div.html {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    background-color: var(--faintgray);
+    border: solid var(--heavyborder) var(--lightgray);
+    padding: 0.25rem;
+    padding-left: 0.5rem;
+    font-size: var(--smalltext);
+}
+
+table {
+    border-collapse: collapse;
+    font-size: 100%;
+}
+
+table.links-table {
+    font-size: var(--smalltext);
+}
+
+th, td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    vertical-align: top;
+    border: solid var(--lightborder) var(--lightgray);
+}
+
+dt:not(:first-child) {
+    padding-top: var(--extra-vertical-space);
+}
+
+figure {
+    text-align: center;
+}
