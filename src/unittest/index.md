@@ -113,9 +113,8 @@ This simple approach does what it's supposed to, but:
     just as we should test our smoke detectors every once in a while.
 
 We can solve several of these problems at once by looking up test functions dynamically.
-When we create a function or variable,
-Python stores it in a dictionary,
-just like the environment used in [% x interpreter %].
+As we said in [% x functional %],
+Python stores the variables and functions we define in a dictionary.
 We can get that dictionary by calling the function `globals`:
 
 [% excerpt pat="show_globals.*" fill="py out" %]
