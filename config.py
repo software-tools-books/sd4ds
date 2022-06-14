@@ -22,6 +22,7 @@ chapters = [
     "dataframe",
     "pipeline",
     "configuration",
+    "cache",
     "interpreter",
     "unittest",
     "build",

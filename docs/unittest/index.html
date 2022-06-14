@@ -54,6 +54,12 @@
   </li>
   
   <li>
+    <a href="../cache/">
+      A Minimal Cache
+    </a>
+  </li>
+  
+  <li>
     <a href="../interpreter/">
       A Minimal Interpreter
     </a>
@@ -199,7 +205,7 @@ Such a tool should:</p>
 <p>Our design is inspired by <a href="https://docs.pytest.org/">Pytest</a>,
 which was in turn inspired by many tools built for other languages
 from the 1980s onward [<a href="../bib/#Meszaros2007">Meszaros2007</a>].</p>
-<h2 id="unittest-structure">Section 7.1: Structuring Tests</h2>
+<h2 id="unittest-structure">Section 8.1: Structuring Tests</h2>
 <p>As in other unit testing frameworks,
 each test will be a function of zero arguments
 so that the framework can run them all in the same way.
@@ -316,7 +322,7 @@ After all tests are run,
 fail 1
 error 1
 </code></pre></div></p>
-<h2 id="unittest-discovery">Section 7.2: Discovery</h2>
+<h2 id="unittest-discovery">Section 8.2: Discovery</h2>
 <p>This simple approach does what it's supposed to, but:</p>
 <ol>
 <li>
@@ -497,7 +503,7 @@ error: test_sign_positive argument of type &#39;NoneType&#39; is not iterable
 pass (expected failure): test_sign_zero
 error: test_sign_error/Expect an error. name &#39;sgn&#39; is not defined
 </code></pre></div>
-<h2 id="unittest-exercises">Section 7.3: Exercises</h2>
+<h2 id="unittest-exercises">Section 8.3: Exercises</h2>
 <h3 class="exercise">Literal strings</h3>
 <p>If we have defined a variable with the test-skipping marker,
 why can't we use that variable as the function's docstring like this:</p>
