@@ -149,12 +149,12 @@ and then `label: number` to give a region a name and allocate some storage space
 
 ## Exercises {: #compiler-exercises}
 
-### Swapping Values
+### Swapping Values {: .exercise}
 
 Write an assembly language program that swaps the values in R1 and R2
 without affecting the values in other registers.
 
-### Reversing an Array
+### Reversing an Array {: .exercise}
 
 Write an assembly language program that starts with
 the base address of an array in one word,
@@ -162,7 +162,7 @@ the length of the array N in the next word,
 and N values immediately thereafter,
 and reverses the array in place.
 
-### String Length
+### String Length {: .exercise}
 
 C stores character strings as non-zero bytes terminated by a byte containing zero.
 Write a program that starts with the base address of a string in R1

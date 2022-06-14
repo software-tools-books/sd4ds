@@ -15,7 +15,7 @@ title: "A Minimal Configuration Manager"
     -   Example: `.gitignore` files
 -   First step: modify `pipeline`
 
-```python
+```{: .python}
 SYSTEM_CONFIG = "/etc/nitinat.yml"
 
 
@@ -37,7 +37,7 @@ def pipeline(config_file, available):
 -   Write the function to read and overlay several configuration files
     -   Yes, we've used the `:=` operator - we're sinners...
 
-```python
+```{: .python}
 def read_layered_config(config_file):
     """Read layered configuration files in order."""
     all_filenames = [SYSTEM_CONFIG, _get_home_dir().joinpath(".nitinat.yml")]
@@ -55,7 +55,7 @@ def read_layered_config(config_file):
     -   Stop at the user's home directory
     -   Might be better to stop at the root of the Git repository?
 
-```python
+```{: .python}
 def _find_project_config(starting_point):
     """Look up from given file to find project configuration file."""
     curdir = Path(starting_point).resolve().parent
@@ -72,7 +72,7 @@ def _find_project_config(starting_point):
     -   Originally just used `Path.home()`
     -   But discovered we need to patch this when testing
 
-```python
+```{: .python}
 def _get_home_dir():  # pragma: no cover
     """Get current user's home directory."""
     return Path.home()
@@ -86,7 +86,7 @@ def _get_home_dir():  # pragma: no cover
 -   Use the `fs` fixture it provides to manipulate an in-memory filesystem
     -   Functions like `open` are patched behind the scenes to use it
 
-```python
+```{: .python}
 from nitinat.pipeline4 import SYSTEM_CONFIG, read_layered_config
 
 GET_HOME_DIR = "nitinat.pipeline4._get_home_dir"
@@ -118,7 +118,7 @@ def test_layered_config_read_system(fs):
     7.  Checks
 -   Here's a test of multiple configuration files layering correctly:
 
-```python
+```{: .python}
 def test_layered_config_combine_files(fs):
     fs.cwd = "/home/person/project/analysis"
     make_file(fs, SYSTEM_CONFIG, {"alpha": 1})

@@ -163,7 +163,7 @@ but it exposes a lot of plumbing that most people never want to care about.
 The [Requests](https://pypi.python.org/pypi/requests) library is an easier-to-use alternative to `urllib2`.
 Here's an example that uses it to download a page from the AOSA book site:
 
-```python
+```{: .python}
 import requests
 response = requests.get('http://aosabook.org/en/500L/web-server/testpage.html')
 print 'status code:', response.status_code
@@ -206,7 +206,7 @@ that does those for us.
 We just have to take care of steps 3-5,
 which we do in the little program below:
 
-```python
+```{: .python}
 import BaseHTTPServer
 
 class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
@@ -301,7 +301,7 @@ so we might as well get some practice.)
 To keep our code clean,
 we'll separate creating the page from sending it:
 
-```python
+```{: .python}
 class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     # ...page template...
@@ -319,7 +319,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 `send_page` is pretty much what we had before:
 
-```python
+```{: .python}
     def send_page(self, page):
         self.send_response(200)
         self.send_header("Content-type", "text/html")
@@ -332,7 +332,7 @@ The template for the page we want to display is
 just a string containing an HTML table
 with some formatting placeholders:
 
-```python
+```{: .python}
     Page = '''\
 <html>
 <body>
@@ -351,7 +351,7 @@ with some formatting placeholders:
 
 \noindent and the method that fills this in is:
 
-```python
+```{: .python}
     def create_page(self):
         values = {
             'date_time'   : self.date_time_string(),
@@ -395,7 +395,7 @@ The obvious next step is to start serving pages from the disk
 instead of generating them on the fly.
 We'll start by rewriting `do_GET`:
 
-```python
+```{: .python}
     def do_GET(self):
         try:
 
@@ -437,7 +437,7 @@ to read and return the contents.
 This method just reads the file
 and uses our existing `send_content` to send it back to the client:
 
-```python 
+```{: .python} 
     def handle_file(self, full_path):
         try:
             with open(full_path, 'rb') as reader:
@@ -458,7 +458,7 @@ To finish off this class,
 we need to write the error handling method
 and the template for the error reporting page:
 
-```python 
+```{: .python} 
     Error_Page = """\
         <html>
         <body>
@@ -484,7 +484,7 @@ it doesn't know that the request actually failed.
 In order to make that clear,
 we need to modify `handle_error` and `send_content` as follows:
 
-```python 
+```{: .python} 
     # Handle unknown objects.
     def handle_error(self, msg):
         content = self.Error_Page.format(path=self.path, msg=msg)
@@ -528,7 +528,7 @@ The right solution is to step back and solve the general problem,
 which is figuring out what to do with a URL.
 Here's a rewrite of the `do_GET` method:
 
-```python
+```{: .python}
     def do_GET(self):
         try:
 
@@ -565,7 +565,7 @@ and break out of the loop.
 
 These three case classes reproduce the behavior of our previous server:
 
-```python
+```{: .python}
 class case_no_file(object):
     '''File or directory does not exist.'''
 
@@ -599,7 +599,7 @@ class case_always_fail(object):
 \noindent and here's how we construct the list of case handlers
 at the top of the `RequestHandler` class:
 
-```python 
+```{: .python} 
 class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     '''
     If the requested path maps to a file, that file is served.
@@ -625,7 +625,7 @@ the `index.html` page for a directory if there is one,
 and a listing of the directory if there isn't.
 The handler for the former is:
 
-```python
+```{: .python}
 class case_directory_index_file(object):
     '''Serve index.html page for a directory.'''
 
@@ -648,7 +648,7 @@ and `act` asks the main request handler to serve that page.
 
 The only change needed to `RequestHandler` is to add a `case_directory_index_file` object to our `Cases` list:
 
-```python 
+```{: .python} 
     Cases = [case_no_file(),
              case_existing_file(),
              case_directory_index_file(),
@@ -661,7 +661,7 @@ with a `not` strategically inserted,
 but what about the `act` method?
 What should it do?
 
-```python
+```{: .python}
 class case_directory_no_index_file(object):
     '''Serve listing for a directory without an index.html page.'''
 
@@ -686,7 +686,7 @@ For now,
 let's add a method to `RequestHandler` to generate a directory listing,
 and call that from the case handler's `act`:
 
-```python 
+```{: .python} 
 class case_directory_no_index_file(object):
     '''Serve listing for a directory without an index.html page.'''
 

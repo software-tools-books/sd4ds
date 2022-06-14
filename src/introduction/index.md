@@ -46,7 +46,7 @@ which in turn define their scope:
 
 We display Python source code like this:
 
-```python
+```{: .python}
 for s in species:
     print(s)
 ```
@@ -60,7 +60,7 @@ whether we're talking about "the function itself" or "a call to the function wit
 
 We Unix shell commands like this:
 
-```sh
+```{: .sh}
 for filename in *.dat
 do
     cut -d , -f 10 $filename
@@ -70,7 +70,7 @@ done
 and display data files and programs' output like this:
 {: .continue}
 
-```txt
+```{: .txt}
 Package,Releases
 0,1
 0-0,0

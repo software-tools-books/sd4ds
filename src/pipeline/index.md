@@ -6,7 +6,7 @@ title: "A Minimal Pipeline Manager"
     -   Several moving parts, so do it in steps
 -   We could write this:
 
-```python
+```{: .python}
 start = pd.read_csv("input.csv")
 result = third(second(first(start)))
 result.to_csv("output.csv")
@@ -14,7 +14,7 @@ result.to_csv("output.csv")
 
 -   But if we have parameters it becomes:
 
-```python
+```{: .python}
 start = pd.read_csv("input.csv")
 result = third(second(first(start, alpha), beta, gamma), delta, epsilon)
 result.to_csv("output.csv")
@@ -27,7 +27,7 @@ result.to_csv("output.csv")
 
 -   Break it down to more readable steps:
 
-```python
+```{: .python}
 data = pd.read_csv("input.csv")
 data = first(data, alpha)
 data = second(data, beta, gamma)
@@ -38,7 +38,7 @@ data.to_csv("output.csv")
 -   But a function is just another kind of object, so we can put it in a list...
 -   ...and we can spread keyword arguments in a call using `*`
 
-```python
+```{: .python}
 pipeline = [
     [first, alpha],
     [second, beta, gamma],
@@ -55,7 +55,7 @@ data.to_csv("output.csv")
 
 -   Every function remembers the name it was given when it was defined
 
-```python
+```{: .python}
 def proof(x, y):
     pass
 print(proof.__name__)
@@ -64,7 +64,7 @@ print(proof.__name__)
 
 -   So we can convert a list of functions into a lookup table
 
-```python
+```{: .python}
 def make_table(*functions):
     return {f.__name__: f for f in functions}
 
@@ -87,7 +87,7 @@ print(table)
 
 -   Here's the code:
 
-```python
+```{: .python}
 def pipeline(config_file, data, *functions):
     """Construct and run a processing pipeline."""
     # Set up.
@@ -119,7 +119,7 @@ def _read_config(filename):
 
 -   Here are three functions we can use to test this:
 
-```python
+```{: .python}
 def first(df):
     return df.iloc[[0]]
 
@@ -133,7 +133,7 @@ def tail(df, num):
 -   Yes, they're trivial, but we *want* trivial for testing
 -   Let's create a simple dataframe for testing:
 
-```python
+```{: .python}
 @fixture
 def simple_df():
     return pd.DataFrame({
@@ -145,7 +145,7 @@ def simple_df():
 
 -   An empty pipeline should just return the original data
 
-```python
+```{: .python}
 READ_CONFIG = "nitinat.pipeline._read_config"
 
 def test_pipeline_empty_returns_original_data(simple_df):
@@ -157,7 +157,7 @@ def test_pipeline_empty_returns_original_data(simple_df):
 
 -   Here's a more complex pipeline:
 
-```python
+```{: .python}
 def test_pipeline_multiple_functions(simple_df):
     config = [
         {"function": "head", "num": 2},
@@ -174,7 +174,7 @@ def test_pipeline_multiple_functions(simple_df):
 -   Add a reader function
     -   Must be the first in the pipeline, so incoming dataframe must be `None`
 
-```python
+```{: .python}
 def reader(df, filename):
     """To demonstrative pipeline operation."""
     assert df is None
@@ -202,7 +202,7 @@ red,green,blue
 
 -   Write the test
 
-```python
+```{: .python}
 def test_pipeline_with_real_files():
     filename = Path(__file__).parent.joinpath("simple-pipeline.yml")
     result = pipeline(filename, None, reader, head)
@@ -252,7 +252,7 @@ FileNotFoundError: [Errno 2] No such file or directory: 'three-colors.csv'
     -   But working backwards from a test you have can be a good way to *explain* a design
 -   Eventually wrote this:
 
-```python
+```{: .python}
 def test_pipeline2_two_stage_with_yaml_text(available):
     config = dedent("""\
     - overall:
@@ -274,7 +274,7 @@ def test_pipeline2_two_stage_with_yaml_text(available):
         -   That's probably too far the other way
     -   The global `debug` flag overrides the `num` setting in `head`:
 
-```python
+```{: .python}
 def head(df, num, debug=False):
     """To demonstrate pipeline operation."""
     return df.head(1) if debug else df.head(num)
@@ -283,7 +283,7 @@ def head(df, num, debug=False):
 -   `debug` has a default value so we don't have to provide it every time
 -   The revised `pipeline` function is:
 
-```python
+```{: .python}
 def pipeline(config_file, available):
     """Construct and run a processing pipeline."""
     # Set up.
@@ -311,7 +311,7 @@ def pipeline(config_file, available):
     -   Call the function with data if we have any or with nothing if we don't
 -   Splitting the configuration is straightforward:
 
-```python
+```{: .python}
 def split_config(raw):
     """Split configuration into overall and per-stage."""
     for (i, entry) in enumerate(raw):
@@ -325,7 +325,7 @@ def split_config(raw):
     -   The overall configuration is a dictionary with one key ("overall")
 -   Getting the function is straightforward:
 
-```python
+```{: .python}
 def get_function(available, name):
     """Look up a function by name."""
     assert name in available
@@ -338,7 +338,7 @@ def get_function(available, name):
     -   Experience (i.e., past difficulties) tell us when to plan and design ahead
 -   Lots here to test, but one key feature is that we can debug individual stages:
 
-```python
+```{: .python}
 READER_SHORTENED_LEN = 3
 
 def reader(debug=False):
@@ -362,7 +362,7 @@ def test_pipeline2_single_stage_with_debugging(available):
     -   Could add a test that reads from an actual file...
     -   ...or add a directive in a specially-formatted comment telling coverage not to worry about it
 
-```python
+```{: .python}
 def _read_config(filename):  # pragma: no cover
     """Read YAML configuration file."""
     with open(filename, "r") as reader:
@@ -378,7 +378,7 @@ def _read_config(filename):  # pragma: no cover
     -   Would also like to introduce a little error handling
 -   Rewrite `pipeline` to capture functions' parameters:
 
-```python
+```{: .python}
 def pipeline(config_file, available):
     """Construct and run a processing pipeline."""
     # Set up.
@@ -406,7 +406,7 @@ def pipeline(config_file, available):
     -   Only return data if the pipeline ran to the end
 -   Getting the function name and parameters is just dictionary juggling:
 
-```python
+```{: .python}
 def pre_stage(overall, stage):
     """Get function, parameters, and provenance record."""
     func_name = stage["function"]
@@ -417,7 +417,7 @@ def pre_stage(overall, stage):
 
 -   Running the stage:
 
-```python
+```{: .python}
 def run_stage(available, func_name, params, data):
     """Run a single stage, recording provenance."""
     func = get_function(available, func_name)
@@ -441,7 +441,7 @@ def run_stage(available, func_name, params, data):
     -   *Always* record the end time and the function name
 -   Updating the tests
 
-```python
+```{: .python}
 def test_pipeline3_two_stages_with_parameters_no_overall(available):
     config = [{"function": "reader"}, {"function": "head", "num": 2}]
     with (
@@ -459,7 +459,7 @@ def test_pipeline3_two_stages_with_parameters_no_overall(available):
 
 -   Need a helper function `times` to generate predictable times
 
-```python
+```{: .python}
 NOW = "nitinat.pipeline3._now"
 
 def times(num_stages):
@@ -468,7 +468,7 @@ def times(num_stages):
 
 -   Always test error handling
 
-```python
+```{: .python}
 def test_pipeline3_two_stages_with_failure(available):
     config = [{"function": "reader"}, {"function": "failure"}]
     with (

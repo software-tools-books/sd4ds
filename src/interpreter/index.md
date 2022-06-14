@@ -21,7 +21,7 @@ and may contain Booleans, numbers, strings, or other lists (representing other i
 For example,
 this program that starts with the number 1 and doubles it four times:
 
-``` {: title="doubling.tll"}
+```{: title="doubling.tll"}
 [
     "seq",
     ["comment", "Double a number repeatedly"],
@@ -137,24 +137,24 @@ Doing this in `tllfunc.py` makes TLL less than 60 lines longer:
 
 ## Exercises {: #interpreter-exercises}
 
-### Arrays
+### Arrays {: .exercise}
 
 Implement fixed-size one-dimensional arrays:
 `["array", "new", 10]` creates an array of 10 elements,
 while other instructions get and set particular array elements by index.
 
-### While Loops
+### While Loops {: .exercise}
 
 Add a `while` loop to TLL.
 
-### Loop Variables
+### Loop Variables {: .exercise}
 
 The `"repeat"` instruction runs some other instruction(s) several times,
 but there is no way to access the loop counter inside those instructions.
 Modify `"repeat"` so that programs can do this.
 (Hint: allow people to create a new variable to hold the loop counter's current value.)
 
-### Error handling
+### Error handling {: .exercise}
 
 Several of the instruction functions started with `assert` statements,
 which means that users get a stack trace of TLL itself
@@ -168,29 +168,29 @@ when there's a bug in their program.
 
 3.  Add a `catch` statement to handle these errors.
 
-### Documentation
+### Documentation {: .exercise}
 
 The docstring in each action function explain what it does.
 Rewrite those for `do_repeat` and `do_seq` to be clearer and more consistent.
 
-### Tracing
+### Tracing {: .exercise}
 
 Add a `--debug` command-line flag to `tllfunc.py`.
 When enabled, it makes TLL print a messages showing each function call and its result.
 
-### Returning Early
+### Returning Early {: .exercise}
 
 Add a `"return"` instruction to TLL that ends a function call immediately
 and returns a single value.
 (Hint: try throwing an exception.)
 
-### Variable Arguments
+### Variable Arguments {: .exercise}
 
 Add variable-length parameter lists to TLL
 so that a user-defined function can be called with any number of arguments.
 (This exercise depends on having implemented arrays earlier.)
 
-### Closures
+### Closures {: .exercise}
 
 `tllfunc.py` allows users to define functions inside functions.
 What variables can the inner function access when you do this?

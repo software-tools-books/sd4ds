@@ -312,18 +312,18 @@ The implementation:
 </li>
 </ol>
 <h2 id="interpreter-exercises">Section 6.5: Exercises</h2>
-<h3>Arrays</h3>
+<h3 class="exercise">Arrays</h3>
 <p>Implement fixed-size one-dimensional arrays:
 <code>["array", "new", 10]</code> creates an array of 10 elements,
 while other instructions get and set particular array elements by index.</p>
-<h3>While Loops</h3>
+<h3 class="exercise">While Loops</h3>
 <p>Add a <code>while</code> loop to TLL.</p>
-<h3>Loop Variables</h3>
+<h3 class="exercise">Loop Variables</h3>
 <p>The <code>"repeat"</code> instruction runs some other instruction(s) several times,
 but there is no way to access the loop counter inside those instructions.
 Modify <code>"repeat"</code> so that programs can do this.
 (Hint: allow people to create a new variable to hold the loop counter's current value.)</p>
-<h3>Error handling</h3>
+<h3 class="exercise">Error handling</h3>
 <p>Several of the instruction functions started with <code>assert</code> statements,
 which means that users get a stack trace of TLL itself
 when there's a bug in their program.</p>
@@ -340,21 +340,21 @@ when there's a bug in their program.</p>
 <p>Add a <code>catch</code> statement to handle these errors.</p>
 </li>
 </ol>
-<h3>Documentation</h3>
+<h3 class="exercise">Documentation</h3>
 <p>The docstring in each action function explain what it does.
 Rewrite those for <code>do_repeat</code> and <code>do_seq</code> to be clearer and more consistent.</p>
-<h3>Tracing</h3>
+<h3 class="exercise">Tracing</h3>
 <p>Add a <code>--debug</code> command-line flag to <code>tllfunc.py</code>.
 When enabled, it makes TLL print a messages showing each function call and its result.</p>
-<h3>Returning Early</h3>
+<h3 class="exercise">Returning Early</h3>
 <p>Add a <code>"return"</code> instruction to TLL that ends a function call immediately
 and returns a single value.
 (Hint: try throwing an exception.)</p>
-<h3>Variable Arguments</h3>
+<h3 class="exercise">Variable Arguments</h3>
 <p>Add variable-length parameter lists to TLL
 so that a user-defined function can be called with any number of arguments.
 (This exercise depends on having implemented arrays earlier.)</p>
-<h3>Closures</h3>
+<h3 class="exercise">Closures</h3>
 <p><code>tllfunc.py</code> allows users to define functions inside functions.
 What variables can the inner function access when you do this?
 What variables <em>should</em> it be able to access?

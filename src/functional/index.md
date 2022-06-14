@@ -48,7 +48,7 @@ title: "A Minimal Functional Programming Toolkit"
 -   Introduce `globals()` and `locals()`
 -   These are copies of the actual tables
 
-```python
+```{: .python}
 def f(x):
     print(f"before {x}")
     locals()["x"] = "changed"
@@ -58,13 +58,13 @@ f("original")
 ```
 
 -   Build our own lookup tables
--   E.g., process nested data by looking up handler functions on the fly rather than using `if`
+-   E.g., select which function to run based on a command-line (string) argument
 
 ## Metadata {: #functional-metadata}
 
 -   Functions are objects and objects have attributes
 
-```python
+```{: .python}
 >>> def f(x=0):
         "Documentation"
         pass
@@ -83,15 +83,15 @@ f("original")
 ```
 
 -   Use this to get all the docstrings out of a module for display
+-   Note: a class is just an object too
+    -   So we can pass classes to functions or other classes
+    -   Will explore this later
 
-## Classes and Modules {: #functional-classes}
+## Modules {: #functional-modules}
 
--   A class is just an object too
--   Pass classes to functions or other classes
-    -   FIXME: example
--   And modules
+-   A module is just another (kind of) dictionary
 
-```python
+```{: .python title="a.py"}
 """Docstring for module"""
 
 def f(x):
@@ -103,19 +103,48 @@ if __name__ == '__main__':
     f(3)
 ```
 
-```python
+```{: .python title="b.py"}
 import a
 
 print(dir(a))
 print(a.__doc__)
 ```
 
+-   We can load modules dynamically
+
+```{: .python title="loader.py"}
+import sys
+from importlib import import_module
+
+name = sys.argv[1]
+loaded = import_module(name)
+print(loaded)
+loaded.f(3)
+```
+
+-   Works for files in sub-directories FIXME: subdir
+-   But what about arbitrary directories like `/tmp`
+-   Solution: temporarily add that directory to `sys.path`
+
+```{: .python title="loader_path.py"}
+import sys
+from importlib import import_module
+
+extra = sys.argv[1]
+name = sys.argv[2]
+
+sys.path.insert(0, extra)
+loaded = import_module(name)
+sys.path = sys.path[1:]
+print(loaded)
+```
+
 ## Exercises {: #functional-exercises}
 
 ### Reduce and scan {: .exercise}
 
--   Implement `reduce`
--   Implement `scan`
+-   Implement `reduce`.
+-   Implement `scan`.
 -   What should they do with empty data?
 
 ### Function attributes {: .exercise}
@@ -125,4 +154,9 @@ print(a.__doc__)
 
 ### Missing documentation {: .exercise}
 
--   
+-   Write a program that loads a single Python file
+    and produces a list of all the functions that *don't* have docstrings.
+
+### Entry points {: .exercise}
+
+-   Write a function that calls `entrypoint()` from every file named on the command line.
