@@ -22,6 +22,7 @@ chapters = [
     "dataframe",
     "pipeline",
     "configuration",
+    "cache",
     "interpreter",
     "unittest",
     "build",
@@ -80,6 +81,7 @@ exclude = [
     "*.pyc",
     "*.svg",
     "*~",
+    "*/__pycache__"
 ]
 
 # Warn about missing or unused entries.
