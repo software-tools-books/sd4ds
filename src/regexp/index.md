@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Regular Expression Engine"
+title: "A Modest Regular Expression Engine"
 ---
 
 FIXME

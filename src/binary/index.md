@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Binary Storage System"
+title: "A Modest Binary Storage System"
 ---
 
 FIXME

@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Dataframe"
+title: "A Modest Dataframe"
 ---
 
 Dataframes aren't magical:

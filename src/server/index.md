@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Web Server"
+title: "A Modest Web Server"
 ---
 
 The web has changed society in countless ways over the last two decades,

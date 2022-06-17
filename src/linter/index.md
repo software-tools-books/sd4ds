@@ -1,3 +1,3 @@
 ---
-title: "A Minimal Code Checker"
+title: "A Modest Code Checker"
 ---

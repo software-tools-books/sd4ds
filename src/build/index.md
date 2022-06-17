@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Build Manager"
+title: "A Modest Build Manager"
 ---
 
 FIXME

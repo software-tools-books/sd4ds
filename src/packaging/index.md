@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Package Manager"
+title: "A Modest Package Manager"
 ---
 
 FIXME

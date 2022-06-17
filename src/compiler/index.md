@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Compiler"
+title: "A Modest Compiler"
 ---
 
 You might feel there's still magic in our interpreter,

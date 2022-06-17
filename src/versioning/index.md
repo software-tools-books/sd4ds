@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Version Control System"
+title: "A Modest Version Control System"
 ---
 
 FIXME

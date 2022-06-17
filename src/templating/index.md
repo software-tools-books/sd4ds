@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Page Templating System"
+title: "A Modest Page Templating System"
 ---
 
 FIXME

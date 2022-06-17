@@ -6,7 +6,7 @@ title: "Introduction"
 
 ## Audience {: #introduction-audience}
 
-Every lesson should be written with specific learners in mind [% b Wilson2019 %]..
+Every lesson should be written with specific learners in mind [% b Wilson2019 %].
 These two personas describe ours:
 
 -   **Jess** is doing a PhD in ecology.
@@ -58,7 +58,7 @@ and the empty parentheses makes it hard to tell
 whether we're talking about "the function itself" or "a call to the function with no parameters".
 {: .continue}
 
-We Unix shell commands like this:
+We show Unix shell commands like this:
 
 ```{: .sh}
 for filename in *.dat
@@ -67,7 +67,7 @@ do
 done
 ```
 
-and display data files and programs' output like this:
+and data files and programs' output like this:
 {: .continue}
 
 ```{: .txt}

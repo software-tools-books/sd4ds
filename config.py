@@ -13,12 +13,12 @@ markdown_settings = {
 
 # Site title and subtitle.
 title = "Software Design for Data Scientists"
-tagline = "A minimal introduction using Python"
+tagline = "A modest introduction using Python"
 
 # Chapters (slugs in order).
 chapters = [
     "introduction",
-    "functional",
+    "toolkit",
     "dataframe",
     "pipeline",
     "configuration",
@@ -28,6 +28,7 @@ chapters = [
     "reader",
     "versioning",
     "packaging",
+    "database",
     "binary",
     "regexp",
     "templating",

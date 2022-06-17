@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Interpreter"
+title: "A Modest Interpreter"
 ---
 
 Programming languages aren't magical:

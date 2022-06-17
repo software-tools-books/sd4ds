@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Configuration Manager"
+title: "A Modest Configuration Manager"
 ---
 
 -   Current configuration syntax allows one "overall" section and one section per pipeline stage

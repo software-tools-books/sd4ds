@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Pipeline Manager"
+title: "A Modest Pipeline Manager"
 ---
 
 -   Want reproducible data processing pipelines with a "test run" option

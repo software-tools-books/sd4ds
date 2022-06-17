@@ -1,5 +1,5 @@
 ---
-title: "A Minimal Functional Programming Toolkit"
+title: "A Modest Python Toolkit"
 ---
 
 -   The single biggest idea in programming is that *code is just another kind of data*

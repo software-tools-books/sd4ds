@@ -19,7 +19,7 @@
       <div class="column">
         <h2><a href="../">Software Design for Data Scientists</a></h2>
         <p>
-          A minimal introduction using Python
+          A modest introduction using Python
         </p>
 	<ol class="toc-chapter">
   
@@ -30,98 +30,104 @@
   </li>
   
   <li>
-    <a href="../functional/">
-      A Minimal Functional Programming Toolkit
+    <a href="../toolkit/">
+      A Modest Python Toolkit
     </a>
   </li>
   
   <li>
     <a href="../dataframe/">
-      A Minimal Dataframe
+      A Modest Dataframe
     </a>
   </li>
   
   <li>
     <a href="../pipeline/">
-      A Minimal Pipeline Manager
+      A Modest Pipeline Manager
     </a>
   </li>
   
   <li>
     <a href="../configuration/">
-      A Minimal Configuration Manager
+      A Modest Configuration Manager
     </a>
   </li>
   
   <li>
     <a href="../interpreter/">
-      A Minimal Interpreter
+      A Modest Interpreter
     </a>
   </li>
   
   <li>
     <a href="../unittest/">
-      <strong>A Minimal Unit Testing Framework</strong>
+      <strong>A Modest Unit Testing Framework</strong>
     </a>
   </li>
   
   <li>
     <a href="../build/">
-      A Minimal Build Manager
+      A Modest Build Manager
     </a>
   </li>
   
   <li>
     <a href="../reader/">
-      A Minimal CSV File Reader
+      A Modest CSV File Reader
     </a>
   </li>
   
   <li>
     <a href="../versioning/">
-      A Minimal Version Control System
+      A Modest Version Control System
     </a>
   </li>
   
   <li>
     <a href="../packaging/">
-      A Minimal Package Manager
+      A Modest Package Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../database/">
+      A Modest Database
     </a>
   </li>
   
   <li>
     <a href="../binary/">
-      A Minimal Binary Storage System
+      A Modest Binary Storage System
     </a>
   </li>
   
   <li>
     <a href="../regexp/">
-      A Minimal Regular Expression Engine
+      A Modest Regular Expression Engine
     </a>
   </li>
   
   <li>
     <a href="../templating/">
-      A Minimal Page Templating System
+      A Modest Page Templating System
     </a>
   </li>
   
   <li>
     <a href="../linter/">
-      A Minimal Code Checker
+      A Modest Code Checker
     </a>
   </li>
   
   <li>
     <a href="../server/">
-      A Minimal Web Server
+      A Modest Web Server
     </a>
   </li>
   
   <li>
     <a href="../compiler/">
-      A Minimal Compiler
+      A Modest Compiler
     </a>
   </li>
   
@@ -181,7 +187,7 @@
       </div>
       <div class="column bordered">
 	<main>
-          <h1>A Minimal Unit Testing Framework</h1>
+          <h1>A Modest Unit Testing Framework</h1>
           <p>We have written many small programs in the previous chapters,
 but haven't really tested any of them.
 That's OK for exploratory programming,
@@ -344,7 +350,7 @@ error 1
 </li>
 </ol>
 <p>We can solve several of these problems at once by looking up test functions dynamically.
-As we said in <a class="x-ref" href="../functional/">Chapter 2</a>,
+As we said in <a class="x-ref" href="../toolkit/">Chapter 2</a>,
 Python stores the variables and functions we define in a dictionary.
 We can get that dictionary by calling the function <code>globals</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
@@ -433,7 +439,7 @@ error: test_sign_error name &#39;sgn&#39; is not defined
 <p>This approach is less typing and less fragile than our first,
 but we can improve it by showing the test function's <a class="gl-ref" href="../gloss/#docstring" markdown="1">docstring</a>
 if it has one.
-As we said in <a class="x-ref" href="../functional/">Chapter 2</a>,
+As we said in <a class="x-ref" href="../toolkit/">Chapter 2</a>,
 functions are just objects,
 which means they can have attributes.
 If we give a function a docstring:</p>
