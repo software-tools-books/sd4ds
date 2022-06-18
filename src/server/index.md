@@ -2,21 +2,13 @@
 title: "A Modest Web Server"
 ---
 
-The web has changed society in countless ways over the last two decades,
-but its core has changed very little.
-Most systems still follow the rules that Tim Berners-Lee laid out
-a quarter of a century ago.
-In particular,
-most web servers still handle the same kinds of messages they did then,
-in the same way.
+The Internet is much simpler than most people realize
+(as well as being more complex than anyone could possibly have imagined).
+Most systems still follow the rules they did thirty years ago;
+in particular,
+most web servers still handle the same kinds of messages in the same way.
 
-This chapter will explore how they do that.
-At the same time,
-it will explore how developers can create software systems
-that don't need to be rewritten
-in order to add new features.
-
-## Background {: #server-background}
+## Sockets {: #server-sockets}
 
 Pretty much every program on the web
 runs on a family of communication standards called Internet Protocol (IP).
@@ -30,7 +22,7 @@ A socket consists of an IP address that identifies a particular machine
 and a port number on that machine.
 The IP address consists of four 8-bit numbers,
 such as `174.136.14.108`;
-the Domain Name System (DNS) matches these numbers to symbolic names like `aosabook.org`
+the Domain Name System (DNS) matches these numbers to symbolic names like `example.com`
 that are easier for human beings to remember.
 
 A port number is a number in the range 0-65535
@@ -39,6 +31,117 @@ that uniquely identifies the socket on the host machine.
 then a port number is like an extension.)
 Ports 0-1023 are reserved for the operating system's use;
 anyone else can use the remaining ports.
+
+> ### Character Encodings
+>
+> Once upon a time, computers stored every character in a single byte.
+> That worked well if you only needed to handle the Latin alphabet
+> without accented characters,
+> but as soon as you wanted to spell Montréal properly
+> or use Greek or kanji or Klingon,
+> you couldn't fit everything into 8 bits.
+> The modern solution is called Unicode,
+> and there's no better description of it than [Joel Spolsky's][spolsky-unicode].
+> What this means in practice is that we have to convert strings to plain old bytes
+> and vice versa
+> when we send text on the web;
+> almost everyone uses an encoding called UTF-8 for this.
+
+Here's a simple socket client:
+
+```python
+import socket
+import sys
+
+KILOBYTE = 1024
+SERVER_ADDRESS = ("", 8080)
+
+message = sys.argv[1]
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.connect(SERVER_ADDRESS)
+sock.sendall(bytes(message, "utf-8"))
+print(f"client sent {len(message)} bytes")
+
+received = sock.recv(KILOBYTE)
+print(f"client received {len(received)} bytes: '{str(received, 'utf-8')}'")
+```
+
+From top to bottom, it:
+
+1.  Imports some modules and defines some constants.
+    The most interesting of these is `SERVER_ADDRESS`
+    The empty string `""` for the host means "the current machine";
+    we could also use the string `"localhost"`.
+2.  We use `socket.socket` to create a new socket.
+    The values `AF_INET` and `SOCK_STREAM` specify the protocols we're using;
+    we'll always use those in our examples,
+    so we won't go into details about them.
+3.  We connect to the server...
+4.  ...send our message as a bunch of bytes with `sock.sendall`...
+5.  ...and print a message saying the data's been sent.
+6.  We then read up to a kilobyte from the socket with `sock.recv`.
+    If we were expecting longer messages,
+    we'd keep reading from the socket until there was no more data,
+    but we're trying to keep this example simple.
+7.  Finally, we print another diagnostic message.
+
+The receiving end is a little more complicated:
+
+```python
+import socketserver
+
+
+KILOBYTE = 1024
+SERVER_ADDRESS = ("", 8080)
+
+
+class MyHandler(socketserver.BaseRequestHandler):
+    """The request handler class for our server."""
+
+    def handle(self):
+        """Handle a single request."""
+        data = self.request.recv(KILOBYTE)
+        msg = f"got request from {self.client_address[0]}: {len(data)}"
+        print(msg)
+        self.request.sendall(bytes(msg, "utf-8"))
+
+
+if __name__ == "__main__":
+    server = socketserver.TCPServer(SERVER_ADDRESS, MyHandler)
+    server.serve_forever()
+```
+
+Python's `socketserver` library provides two things:
+a class called `TCPServer` that listens for incoming connections
+and then manages them for us,
+and another class called `BaseRequestHandler`
+that does everything *except* process the incoming data.
+In order to do that,
+we derive a class of our own from `BaseRequestHandler` that provides a `handle` method.
+Every time `TCPServer` gets a new connection
+it creates a new instance of our class
+and calls its `handle` method.
+
+Our `handle` method is the inverse of the code that sends request:
+
+1.  Read up to a kilobyte from `self.request`
+    (which is set up automatically for us in the base class `BaseRequestHandler`).
+2.  Construct and print a diagnostic message.
+3.  Use `self.request` again to send data back to whoever we received the message from.
+
+The easiest way to test this is to open two terminal windows side by side.
+The transcript below shows the sequence of operations side by side:
+
+```
+$ python socket_server.py       |
+                                | $ python socket_client.py "a test message"
+                                | client sent 14 bytes
+got request from 127.0.0.1: 14  |
+                                | client received 30 bytes: 'got request from 127.0.0.1: 14
+```
+
+## HTTP {: #server-http}
 
 The Hypertext Transfer Protocol (HTTP) describes one way that
 programs can exchange data over IP.
@@ -51,26 +154,33 @@ or some mix of the two.
 
 The most important thing about an HTTP request is that it's just text:
 any program that wants to can create one or parse one.
-In order to be understood,
-though,
-that text must have the parts shown in FIXME:figure.
+An absolutely minimal HTTP request has just a *method*,
+a *URL*,
+and a *protocol version*
+on a single line separated by spaces:
+
+```
+GET /index.html HTTP/1.1
+```
 
 The HTTP method is almost always either "GET" (to fetch information)
 or "POST" (to submit form data or upload files).
 The URL specifies what the client wants;
 it is often a path to a file on disk,
-such as `/research/experiments.html`,
+such as `/index.html`,
 but (and this is the crucial part)
 it's completely up to the server to decide what to do with it.
 The HTTP version is usually "HTTP/1.0" or "HTTP/1.1";
 the differences between the two don't matter to us.
 
-HTTP headers are key/value pairs like the three shown below:
+Most real requests have a few extra lines called *headers*,
+which are key value pairs like the three shown below:
 
 ```
+GET /index.html HTTP/1.1
 Accept: text/html
 Accept-Language: en, fr
-If-Modified-Since: 16-May-2005
+If-Modified-Since: 16-May-2022
 ```
 
 Unlike the keys in hash tables,
@@ -79,104 +189,60 @@ This allows a request to do things like
 specify that it's willing to accept several types of content.
 
 Finally,
-the body of the request is any extra data associated with the request.
+the *body* of the request is any extra data associated with the request.
 This is used when submitting data via web forms,
 when uploading files,
 and so on.
 There must be a blank line between the last header and the start of the body
 to signal the end of the headers.
+If there is a body,
+the request must have a header called `Content-Length`
+that tells the server how many bytes to read in the body of the request.
 
+An HTTP response is formatted like an HTTP request.
+Its first line has the protocol,
+a *status code* (like 200 for "OK" or 404 for "Not Found")
+and a status phrase (like "OK").
+There are then some headers,
+a blank line,
+and the body of the response:
 
-One header,
-called `Content-Length`,
-tells the server how many bytes to expect to read in the body of the request.
+```
+HTTP/1.1 200 OK
+Date: Thu, 16 June 2022 12:28:53 GMT
+Server: minserve/2.2.14 (Linux)
+Last-Modified: Wed, 15 Jun 2022 19:15:56 GMT
+Content-Type: text/html
+Content-Length: 53
 
-HTTP responses are formatted like HTTP requests.
-The version, headers, and body have the same form and meaning.
-The status code is a number indicating what happened when the request was processed:
-200 means "everything worked",
-404 means "not found",
-and other codes have other meanings.
-The status phrase repeats that information in a human-readable phrase like "OK" or "not found".
-
-For the purposes of this chapter
-there are only two other things we need to know about HTTP.
-
-The first is that it is *stateless*:
-each request is handled on its own,
-and the server doesn't remember anything between one request and the next.
-If an application wants to keep track of something like a user's identity,
-it must do so itself.
-
-The usual way to do this is with a cookie,
-which is a short character string that the server sends to the client,
-and the client later returns to the server.
-When a user performs some function that requires state to be saved across several requests,
-the server creates a new cookie,
-stores it in a database,
-and sends it to her browser.
-Each time her browser sends the cookie back,
-the server uses it to look up information about what the user is doing.
-
-The second thing we need to know about HTTP 
-is that a URL can be supplemented with parameters
-to provide even more information.
-For example,
-if we're using a search engine,
-we have to specify what our search terms are.
-We could add these to the path in the URL,
-but what we should do is add parameters to the URL.
-We do this by adding '?' to the URL
-followed by 'key=value' pairs separated by '&amp;'.
-For example,
-the URL `http://www.google.ca?q=Python`
-asks Google to search for pages related to Python:
-the key is the letter 'q',
-and the value is 'Python'.
-The longer query
-`http://www.google.ca/search?q=Python&amp;client=Firefox`
-tells Google that we're using Firefox,
-and so on.
-We can pass whatever parameters we want,
-but again,
-it's up to the application running on the web site to decide
-which ones to pay attention to,
-and how to interpret them.
-
-Of course,
-if '?' and '&amp;' are special characters,
-there must be a way to escape them,
-just as there must be a way to put a double quote character inside a character string
-delimited by double quotes.
-The URL encoding standard
-represents special characters using '%' followed by a 2-digit code,
-and replaces spaces with the '+' character.
-Thus,
-to search Google for "grade&nbsp;=&nbsp;A+" (with the spaces),
-we would use the URL `http://www.google.ca/search?q=grade+%3D+A%2B`.
-
-Opening sockets, constructing HTTP requests, and parsing responses is tedious,
-so most people use libraries to do most of the work.
-Python comes with such a library called `urllib2`
-(because it's a replacement for an earlier library called `urllib`),
-but it exposes a lot of plumbing that most people never want to care about.
-The [Requests](https://pypi.python.org/pypi/requests) library is an easier-to-use alternative to `urllib2`.
-Here's an example that uses it to download a page from the AOSA book site:
-
-```{: .python}
-import requests
-response = requests.get('http://aosabook.org/en/500L/web-server/testpage.html')
-print 'status code:', response.status_code
-print 'content length:', response.headers['content-length']
-print response.text
+<html>
+<body>
+<h1>Hello, World!</h1>
+</body>
+</html>
 ```
 
-``` 
+Constructing HTTP requests is tedious,
+so most people use libraries to do most of the work.
+The most popular such library in Python is called [requests][requests].
+
+```python
+import requests
+
+response = requests.get("http://third-bit.com/test.html")
+print("status code:", response.status_code)
+print("content length:", response.headers["content-length"])
+print(response.text)
+```
+```text
 status code: 200
-content length: 61
+content length: 109
 <html>
+  <head>
+    <title>A Test Page</title>
+  </head>
   <body>
-    <p>Test page.</p>
+    <h1>A Test Page</h1>
   </body>
 </html>
 ```
@@ -188,9 +254,9 @@ its `content_length` member  is the number of bytes in the response data,
 and `text` is the actual data
 (in this case, an HTML page).
 
-## Hello, Web {: #server-hello}
+## Hello, Web {: #server-static}
 
-We're now ready to write our first simple web server.
+We're now ready to write our first simple HTTP server.
 The basic idea is simple:
 
 1.  Wait for someone to connect to our server and send an HTTP request;
@@ -201,72 +267,74 @@ The basic idea is simple:
 6.  send it back.
 
 Steps 1, 2, and 6 are the same from one application to another,
-so the Python standard library has a module called `BaseHTTPServer`
-that does those for us.
-We just have to take care of steps 3-5,
-which we do in the little program below:
+so the Python standard library has a module called `http.server`
+that contains tools to do that for us
+so that we just have to take care of steps 3-5.
+Here's our first working web server
 
 ```{: .python}
-import BaseHTTPServer
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
-class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-    '''Handle HTTP requests by returning a fixed 'page'.'''
-
-    # Page to send back.
-    Page = '''\
+# Page to send back.
+PAGE = """\
 <html>
 <body>
 <p>Hello, web!</p>
 </body>
 </html>
-'''
+"""
+
+class RequestHandler(BaseHTTPRequestHandler):
+    """Handle HTTP requests by returning a fixed "page"."""
 
     # Handle a GET request.
     def do_GET(self):
+        content = bytes(PAGE, "utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html")
-        self.send_header("Content-Length", str(len(self.Page)))
+        self.send_header("Content-Length", str(len(content)))
         self.end_headers()
-        self.wfile.write(self.Page)
+        self.wfile.write(content)
 
-#----------------------------------------------------------------------
 
-if __name__ == '__main__':
-    serverAddress = ('', 8080)
-    server = BaseHTTPServer.HTTPServer(serverAddress, RequestHandler)
+if __name__ == "__main__":
+    server_address = ("", 8080)
+    server = HTTPServer(server_address, RequestHandler)
     server.serve_forever()
 ```
 
-The library's `BaseHTTPRequestHandler` class
-takes care of parsing the incoming HTTP request
-and deciding what method it contains.
-If the method is GET,
-the class calls a method named `do_GET`.
-Our class `RequestHandler` overrides this method
-to dynamically generate a simple page:
-the text is stored in the class-level variable `Page`,
-which we send back to the client after sending
-a 200 response code,
-a `Content-Type` header telling the client to interpret our data as HTML,
-and the page's length.
-(The `end_headers` method call inserts the blank line
-that separates our headers from the page itself.)
+Let's start at the bottom and work our way up.
 
-But `RequestHandler` isn't the whole story:
-we still need the last three lines to actually start a server running.
-The first of these lines defines the server's address as a tuple:
-the empty string means "run on the current machine",
-and 8080 is the port.
-We then create an instance of \newline `BaseHTTPServer.HTTPServer`
-with that address and the name of our request handler class as parameters,
-then ask it to run forever
-(which in practice means until we kill it with Control-C).
+1.  Again, `SERVER_ADDRESS` that specifies the host the server is running on
+    and the port it's listening on.
+2.  The `HTTPServer` class takes care of parsing requests and sending back responses.
+    When we construct it,
+    we give it the server address and the name of the class we've written
+    that handles requests the way we want---in this case, `RequestHandler`.
+3.  Finally, we call the server's `serve_forever` method.
+    It will then run until it crashes or we stop it with Ctrl-C.
+
+So what does `RequestHandler` do?
+
+1.  When the server receives a `GET` request,
+    it looks in the request handler for a method called `do_GET`.
+    (If it gets a `POST`, it looks for `do_POST` and so on.)
+2.  `do_GET` converts the text of the page we want to send back
+    from characters to bytes---we'll talk about this below.
+3.  It then sends a response code (200),
+    a couple of headers to say what the content type is
+    and how many bytes the receiver should expect,
+    and a blank line (produced by the `end_headers` method).
+4.  Finally, `do_GET` sends the content of the response
+    by calling `self.wfile.write`.
+    `self.wfile` is something that looks and acts like a write-only file,
+    but is actually sending bytes to the socket connection.
 
 If we run this program from the command line,
 it doesn't display anything:
 
 ```bash
-$ python server.py
+$ python serve_static_content.py
 ```
 
 If we then go to `http://localhost:8080` with our browser,
@@ -280,8 +348,8 @@ Hello, web!
 and this in our shell:
 
 ```
-127.0.0.1 - - [24/Feb/2014 10:26:28] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [24/Feb/2014 10:26:28] "GET /favicon.ico HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jun/2022 06:34:59] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [16/Jun/2022 06:35:00] "GET /favicon.ico HTTP/1.1" 200 -
 ```
 
 The first line is straightforward:
@@ -292,433 +360,9 @@ our browser automatically sends a second request
 for an image file called `/favicon.ico`,
 which it will display as an icon in the address bar if it exists.
 
-## Displaying Values {: #server-display}
+## Exercises {: #server-exercises}
 
-Let's modify our web server to display some of the values
-included in the HTTP request.
-(We'll do this pretty frequently when debugging,
-so we might as well get some practice.)
-To keep our code clean,
-we'll separate creating the page from sending it:
+FIXME
 
-```{: .python}
-class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-
-    # ...page template...
-
-    def do_GET(self):
-        page = self.create_page()
-        self.send_page(page)
-
-    def create_page(self):
-        # ...fill in...
-
-    def send_page(self, page):
-        # ...fill in...
-```
-
-`send_page` is pretty much what we had before:
-
-```{: .python}
-    def send_page(self, page):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.send_header("Content-Length", str(len(page)))
-        self.end_headers()
-        self.wfile.write(page)
-```
-
-The template for the page we want to display is
-just a string containing an HTML table
-with some formatting placeholders:
-
-```{: .python}
-    Page = '''\
-<html>
-<body>
-<table>
-<tr>  <td>Header</td>         <td>Value</td>          </tr>
-<tr>  <td>Date and time</td>  <td>{date_time}</td>    </tr>
-<tr>  <td>Client host</td>    <td>{client_host}</td>  </tr>
-<tr>  <td>Client port</td>    <td>{client_port}s</td> </tr>
-<tr>  <td>Command</td>        <td>{command}</td>      </tr>
-<tr>  <td>Path</td>           <td>{path}</td>         </tr>
-</table>
-</body>
-</html>
-'''
-```
-
-\noindent and the method that fills this in is:
-
-```{: .python}
-    def create_page(self):
-        values = {
-            'date_time'   : self.date_time_string(),
-            'client_host' : self.client_address[0],
-            'client_port' : self.client_address[1],
-            'command'     : self.command,
-            'path'        : self.path
-        }
-        page = self.Page.format(**values)
-        return page
-```
-
-The main body of the program is unchanged:
-as before,
-it creates an instance of the `HTTPServer` class
-with an address and this request handler as parameters,
-then serves requests forever.
-If we run it and send a request from a browser
-for `http://localhost:8080/something.html`,
-we get:
-
-```
-  Date and time  Mon, 24 Feb 2014 17:17:12 GMT
-  Client host    127.0.0.1
-  Client port    54548
-  Command        GET
-  Path           /something.html
-```
-
-Notice that we do *not* get a 404 error,
-even though the page `something.html` doesn't exist as a file on disk.
-That's because a web server is just a program,
-and can do whatever it wants when it gets a request:
-send back the file named in the previous request,
-serve up a Wikipedia page chosen at random,
-or whatever else we program it to.
-
-## Serving Static Pages {: #server-static}
-
-The obvious next step is to start serving pages from the disk
-instead of generating them on the fly.
-We'll start by rewriting `do_GET`:
-
-```{: .python}
-    def do_GET(self):
-        try:
-
-            # Figure out what exactly is being requested.
-            full_path = os.getcwd() + self.path
-
-            # It doesn't exist...
-            if not os.path.exists(full_path):
-                raise ServerException("'{0}' not found".format(self.path))
-
-            # ...it's a file...
-            elif os.path.isfile(full_path):
-                self.handle_file(full_path)
-
-            # ...it's something we don't handle.
-            else:
-                raise ServerException("Unknown object '{0}'".format(self.path))
-
-        # Handle errors.
-        except Exception as msg:
-            self.handle_error(msg)
-```
-
-This method assumes that it's allowed to serve any files in or below
-the directory that the web server is running in
-(which it gets using `os.getcwd`).
-It combines this with the path provided in the URL
-(which the library automatically puts in `self.path`,
-and which always starts with a leading '/')
-to get the path to the file the user wants.
-
-If that doesn't exist,
-or if it isn't a file,
-the method reports an error by raising and catching an exception.
-If the path matches a file,
-on the other hand,
-it calls a helper method named `handle_file`
-to read and return the contents.
-This method just reads the file
-and uses our existing `send_content` to send it back to the client:
-
-```{: .python} 
-    def handle_file(self, full_path):
-        try:
-            with open(full_path, 'rb') as reader:
-                content = reader.read()
-            self.send_content(content)
-        except IOError as msg:
-            msg = "'{0}' cannot be read: {1}".format(self.path, msg)
-            self.handle_error(msg)
-```
-
-Note that we open the file in binary mode&mdash;the 'b' in 'rb'&mdash;so that
-Python won't try to "help" us by altering byte sequences that look like a Windows line ending.
-Note also that reading the whole file into memory when serving it is a bad idea in real life,
-where the file might be several gigabytes of video data.
-Handling that situation is outside the scope of this chapter.
-
-To finish off this class,
-we need to write the error handling method
-and the template for the error reporting page:
-
-```{: .python} 
-    Error_Page = """\
-        <html>
-        <body>
-        <h1>Error accessing {path}</h1>
-        <p>{msg}</p>
-        </body>
-        </html>
-        """
-
-    def handle_error(self, msg):
-        content = self.Error_Page.format(path=self.path, msg=msg)
-        self.send_content(content)
-```
-
-This program works,
-but only if we don't look too closely.
-The problem is that it always returns a status code of 200,
-even when the page being requested doesn't exist.
-Yes,
-the page sent back in that case contains an error message,
-but since our browser can't read English,
-it doesn't know that the request actually failed.
-In order to make that clear,
-we need to modify `handle_error` and `send_content` as follows:
-
-```{: .python} 
-    # Handle unknown objects.
-    def handle_error(self, msg):
-        content = self.Error_Page.format(path=self.path, msg=msg)
-        self.send_content(content, 404)
-
-    # Send actual content.
-    def send_content(self, content, status=200):
-        self.send_response(status)
-        self.send_header("Content-type", "text/html")
-        self.send_header("Content-Length", str(len(content)))
-        self.end_headers()
-        self.wfile.write(content)
-```
-
-Note that we don't raise `ServerException` when a file can't be found,
-but generate an error page instead.
-A `ServerException` is meant to signal an internal error in the server code,
-i.e.,
-something that *we* got wrong.
-The error page created by `handle_error`,
-on the other hand,
-appears when the *user* got something wrong,
-i.e.,
-sent us the URL of a file that doesn't exist. [^handleerror]
-
-[^handleerror]: We're going to use `handle_error` several times throughout this chapter, including several cases where the status code `404` isn't appropriate. As you read on, try to think of how you would extend this program so that the status response code can be supplied easily in each case.
-
-## Listing Directories {: #server-listdir}
-
-As our next step,
-we could teach the web server to display a listing of a directory's contents
-when the path in the URL is a directory rather than a file.
-We could even go one step further
-and have it look in that directory for an `index.html` file to display,
-and only show a listing of the directory's contents if that file is not present.
-
-But building these rules into `do_GET` would be a mistake,
-since the resulting method would be a long tangle of `if` statements
-controlling special behaviors.
-The right solution is to step back and solve the general problem,
-which is figuring out what to do with a URL.
-Here's a rewrite of the `do_GET` method:
-
-```{: .python}
-    def do_GET(self):
-        try:
-
-            # Figure out what exactly is being requested.
-            self.full_path = os.getcwd() + self.path
-
-            # Figure out how to handle it.
-            for case in self.Cases:
-                handler = case()
-                if handler.test(self):
-                    handler.act(self)
-                    break
-
-        # Handle errors.
-        except Exception as msg:
-            self.handle_error(msg)
-```
-
-The first step is the same:
-figure out the full path to the thing being requested.
-After that,
-though,
-the code looks quite different.
-Instead of a bunch of inline tests,
-this version loops over a set of cases stored in a list.
-Each case is an object with two methods:
-`test`,
-which tells us whether it's able to handle the request,
-and `act`,
-which actually takes some action.
-As soon as we find the right case,
-we let it handle the request
-and break out of the loop.
-
-These three case classes reproduce the behavior of our previous server:
-
-```{: .python}
-class case_no_file(object):
-    '''File or directory does not exist.'''
-
-    def test(self, handler):
-        return not os.path.exists(handler.full_path)
-
-    def act(self, handler):
-        raise ServerException("'{0}' not found".format(handler.path))
-
-
-class case_existing_file(object):
-    '''File exists.'''
-
-    def test(self, handler):
-        return os.path.isfile(handler.full_path)
-
-    def act(self, handler):
-        handler.handle_file(handler.full_path)
-
-
-class case_always_fail(object):
-    '''Base case if nothing else worked.'''
-
-    def test(self, handler):
-        return True
-
-    def act(self, handler):
-        raise ServerException("Unknown object '{0}'".format(handler.path))
-```
-
-\noindent and here's how we construct the list of case handlers
-at the top of the `RequestHandler` class:
-
-```{: .python} 
-class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-    '''
-    If the requested path maps to a file, that file is served.
-    If anything goes wrong, an error page is constructed.
-    '''
-
-    Cases = [case_no_file(),
-             case_existing_file(),
-             case_always_fail()]
-
-    ...everything else as before...
-```
-
-Now,
-on the surface this has made our server more complicated,
-not less:
-the file has grown from 74 lines to 99,
-and there's an extra level of indirection
-without any new functionality.
-The benefit comes when we go back to the task that started this chapter
-and try to teach our server to serve up
-the `index.html` page for a directory if there is one,
-and a listing of the directory if there isn't.
-The handler for the former is:
-
-```{: .python}
-class case_directory_index_file(object):
-    '''Serve index.html page for a directory.'''
-
-    def index_path(self, handler):
-        return os.path.join(handler.full_path, 'index.html')
-
-    def test(self, handler):
-        return os.path.isdir(handler.full_path) and \
-               os.path.isfile(self.index_path(handler))
-
-    def act(self, handler):
-        handler.handle_file(self.index_path(handler))
-```
-
-Here,
-the helper method `index_path` constructs the path to the `index.html` file;
-putting it in the case handler prevents clutter in the main `RequestHandler`.
-`test` checks whether the path is a directory containing an `index.html` page,
-and `act` asks the main request handler to serve that page.
-
-The only change needed to `RequestHandler` is to add a `case_directory_index_file` object to our `Cases` list:
-
-```{: .python} 
-    Cases = [case_no_file(),
-             case_existing_file(),
-             case_directory_index_file(),
-             case_always_fail()]
-```
-
-What about directories that don't contain `index.html` pages?
-The test is the same as the one above
-with a `not` strategically inserted,
-but what about the `act` method?
-What should it do?
-
-```{: .python}
-class case_directory_no_index_file(object):
-    '''Serve listing for a directory without an index.html page.'''
-
-    def index_path(self, handler):
-        return os.path.join(handler.full_path, 'index.html')
-
-    def test(self, handler):
-        return os.path.isdir(handler.full_path) and \
-               not os.path.isfile(self.index_path(handler))
-
-    def act(self, handler):
-        ???
-```
-
-It seems we've backed ourselves into a corner.
-Logically,
-the `act` method should create and return the directory listing,
-but our existing code doesn't allow for that:
-`RequestHandler.do_GET` calls `act`,
-but doesn't expect or handle a return value from it.
-For now,
-let's add a method to `RequestHandler` to generate a directory listing,
-and call that from the case handler's `act`:
-
-```{: .python} 
-class case_directory_no_index_file(object):
-    '''Serve listing for a directory without an index.html page.'''
-
-    # ...index_path and test as above...
-
-    def act(self, handler):
-        handler.list_dir(handler.full_path)
-
-
-class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-
-    # ...all the other code...
-
-    # How to display a directory listing.
-    Listing_Page = '''\
-        <html>
-        <body>
-        <ul>
-        {0}
-        </ul>
-        </body>
-        </html>
-        '''
-
-    def list_dir(self, full_path):
-        try:
-            entries = os.listdir(full_path)
-            bullets = ['<li>{0}</li>'.format(e) 
-                for e in entries if not e.startswith('.')]
-            page = self.Listing_Page.format('\n'.join(bullets))
-            self.send_content(page)
-        except OSError as msg:
-            msg = "'{0}' cannot be listed: {1}".format(self.path, msg)
-            self.handle_error(msg)
-```
+[requests]: https://requests.readthedocs.io/
+[spolsky-unicode]: https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/
