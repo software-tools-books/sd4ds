@@ -19,6 +19,7 @@ def main():
     """Convert HTML to LateX."""
     options = parse_args()
     text = sys.stdin.read()
+    text = text.replace(r"\(", "<math>").replace(r"\)", "</math>")
     soup = BeautifulSoup(text, "html.parser")
     state = {
         "appendix": False,
@@ -50,8 +51,8 @@ def children(node, state, accum, doEscape):
 def citation(node, state, accum, doEscape):
     """Handle bibliographic citation."""
     cites = node.find_all("a")
-    assert all(has_class(child, "bibref") for child in cites)
-    keys = ",".join([c["href"].lstrip("#") for c in cites])
+    assert all(has_class(child, "bib-ref") for child in cites)
+    keys = ",".join([c["href"].split("#")[1] for c in cites])
     accum.append(rf"\cite{{{keys}}}")
 
 
@@ -97,35 +98,35 @@ def handle(node, state, accum, doEscape):
     elif not isinstance(node, Tag):
         pass
 
-    # <a class="crossref"> => section cross-reference
-    elif (node.name == "a") and has_class(node, "crossref"):
+    # <a class="figref"> => figure cross-reference
+    elif node_match(node, "a", "fig-ref"):
+        key = node["href"].split("#")[1]
+        accum.append(rf"\figref{{{key}}}")
+
+    # <a class="glossref"> => glossary cross-reference
+    elif node_match(node, "a", "gl-ref"):
+        accum.append(r"\glossref{")
+        children(node, state, accum, doEscape)
+        accum.append("}")
+
+    # <a class="link-ref"> => just show the link
+    elif node_match(node, "a", "link-ref"):
+        children(node, state, accum, doEscape)
+
+    # <a class="tbl-ref"> => table cross-reference
+    elif node_match(node, "a", "tbl-ref"):
+        key = node["href"].split("#")[1]
+        accum.append(rf"\tblref{{{key}}}")
+
+    # <a class="x-ref"> => section cross-reference
+    elif node_match(node, "a", "x-ref"):
         key = node["href"].lstrip("#")
         kind = node.text.split(" ")[0]
         assert kind in CROSSREFS
         accum.append(rf"\{CROSSREFS[kind]}{{{key}}}")
 
-    # <a class="figref"> => figure cross-reference
-    elif (node.name == "a") and has_class(node, "figref"):
-        key = node["href"].split("#")[1]
-        accum.append(rf"\figref{{{key}}}")
-
-    # <a class="glossref"> => glossary cross-reference
-    elif (node.name == "a") and has_class(node, "glossref"):
-        accum.append(r"\glossref{")
-        children(node, state, accum, doEscape)
-        accum.append("}")
-
-    # <a class="linkref"> => just show the link
-    elif (node.name == "a") and has_class(node, "linkref"):
-        children(node, state, accum, doEscape)
-
-    # <a class="tblref"> => table cross-reference
-    elif (node.name == "a") and has_class(node, "tblref"):
-        key = node["href"].split("#")[1]
-        accum.append(rf"\tblref{{{key}}}")
-
     # <a> without class
-    elif node.name == "a":
+    elif node_match(node, "a"):
         # pure internal link in glossary
         if node["href"].startswith("#"):
             accum.append(r"\glosskey{")
@@ -140,46 +141,49 @@ def handle(node, state, accum, doEscape):
             accum.append("}")
 
     # <blockquote> => callout (formatted as quotation)
-    elif node.name == "blockquote":
+    elif node_match(node, "blockquote"):
         accum.append("\\begin{callout}\n")
         children(node, state, accum, doEscape)
         accum.append("\\end{callout}\n")
 
     # <code> => inline typewriter text
-    elif node.name == "code":
+    elif node_match(node, "code"):
         temp = "".join(children(node, state, [], True))
         temp = temp.replace("'", r"{\textquotesingle}")
         accum.append(rf"\texttt{{{temp}}}")
 
-    # <div class="bibliography"> => placeholder for bibliography
-    elif (node.name == "div") and has_class(node, "bibliography"):
-        accum.append("\\printbibliography[heading=none]\n")
-
     # <div class="break-before"> => pass through
-    elif (node.name == "div") and has_class(node, "break-before"):
+    elif node_match(node, "div", "break-before"):
         children(node, state, accum, doEscape)
 
+    # <div class="highlight"> => code
+    elif node_match(node, "div", "highlight"):
+        children(node, state, accum, doEscape)
 
     # <div class="pagebreak"> => force a LaTeX page break
-    elif (node.name == "div") and has_class(node, "pagebreak"):
+    elif node_match(node, "div", "pagebreak"):
         accum.append("\n\\newpage\n")
 
     # <div class="table"> => pass through
-    elif (node.name == "div") and has_class(node, "table"):
+    elif node_match(node, "div", "table"):
         children(node, state, accum, doEscape)
 
+    # <dl class="bibliography"> => placeholder for bibliography
+    elif node_match(node, "dl", "bib-list"):
+        accum.append("\\printbibliography[heading=none]\n")
+
     # <em> => italics
-    elif node.name == "em":
+    elif node_match(node, "em"):
         accum.append(r"\emph{")
         children(node, state, accum, doEscape)
         accum.append(r"}")
 
     # <figure> => figpdf macro
-    elif node.name == "figure":
+    elif node_match(node, "figure"):
         figure(node, state, accum, doEscape)
 
     # <h1> => chapter title
-    elif node.name == "h1":
+    elif node_match(node, "h1"):
         assert node.has_attr("id")
         state["slug"] = node["id"]
         content = "".join(children(node, state, [], doEscape))
@@ -194,7 +198,7 @@ def handle(node, state, accum, doEscape):
         accum.append("}\n")
 
     # <h2> => section title (with or without ID)
-    elif node.name == "h2":
+    elif node_match(node, "h2"):
         title = "".join(children(node, state, [], doEscape))
         if ":" in title:
             title = title.split(":", 1)[1].strip()
@@ -217,25 +221,29 @@ def handle(node, state, accum, doEscape):
         accum.append("}\n")
 
     # other <h3> => subsection (unnumbered)
-    elif node.name == "h3":
+    elif node_match(node, "h3"):
         accum.append(r"\subsection*{")
         children(node, state, accum, doEscape)
         accum.append("}\n")
 
     # <li> => list item
-    elif node.name == "li":
+    elif node_match(node, "li"):
         accum.append(r"\item ")
         children(node, state, accum, doEscape)
         accum.append("\n")
 
+    # <math> => math text
+    elif node_match(node, "math"):
+        accum.append(f"${node.text}$")
+
     # <ol> => ordered list
-    elif node.name == "ol":
+    elif node_match(node, "ol"):
         accum.append("\\begin{enumerate}\n")
         children(node, state, accum, doEscape)
         accum.append("\\end{enumerate}\n")
 
     # <p> => paragraph (possibly a continuation)
-    elif node.name == "p":
+    elif node_match(node, "p"):
         accum.append("\n")
         if has_class(node, "continue"):
             accum.append(r"\noindent")
@@ -244,63 +252,63 @@ def handle(node, state, accum, doEscape):
         accum.append("\n")
 
     # <pre> => preformatted text
-    elif node.name == "pre":
-        title = ""
-        if node.has_attr("title"):
-            title = f"caption={{{node['title']}}},captionpos=b,"
-        child = node.contents[0]
-        assert child.name == "code", "Expected code as child of pre"
+    elif node_match(node, "pre"):
+        assert len(node.contents) == 2, f"Bad code node {node}"
+        title, body = node.contents[0], node.contents[1]
+        assert title.name == "span", "Expected span as title node of pre"
+        title = "" # FIXME
+        assert body.name == "code", "Expected code as body of pre"
         accum.append(f"\\begin{{lstlisting}}[{title}frame=single,frameround=tttt]\n")
-        children(child, state, accum, False)
+        children(body, state, accum, False)
         accum.append("\\end{lstlisting}\n")
 
     # <section> => chapter (recurse only)
-    elif node.name == "section":
+    elif node_match(node, "section"):
         if node.h1["id"] == "contents":
             accum.append("\\printindex\n")
         else:
             children(node, state, accum, doEscape)
 
-    # <span class="citation"> => citations
-    elif (node.name == "span") and has_class(node, "citation"):
+    # <span class="bib-ref"> => citations
+    elif node_match(node, "span", "bib-ref"):
         citation(node, state, accum, doEscape)
 
     # <span class="glosskey"> => format glossary key
-    elif (node.name == "span") and has_class(node, "glosskey"):
+    elif node_match(node, "span", "glosskey"):
         accum.append("\\noindent\n")
         accum.append(r"\glosskey{")
         children(node, state, accum, doEscape)
         accum.append(r"}")
 
     # <span class="indexentry"> => add an index entry
-    elif (node.name == "span") and has_class(node, "indexentry"):
+    elif node_match(node, "span", "indexentry"):
         children(node, state, accum, doEscape)
         index_entry(node, state, accum, doEscape)
 
-    # <span> => report
-    elif node.name == "span":
-        print("SPAN", str(node), file=sys.stderr)
+    # <span> => ignore
+    elif node_match(node, "span"):
+        children(node, state, accum, doEscape)
 
     # <strong> => bold text
-    elif node.name == "strong":
+    elif node_match(node, "strong"):
         accum.append(r"\textbf{")
         children(node, state, accum, doEscape)
         accum.append(r"}")
 
     # <table> => a table
-    elif node.name == 'table':
+    elif node_match(node, "table"):
         table(node, state, accum, doEscape)
 
     # <td> => pass through
-    elif node.name == "td":
+    elif node_match(node, "td"):
         children(node, state, accum, doEscape)
 
     # <th> => pass through
-    elif node.name == "th":
+    elif node_match(node, "th"):
         children(node, state, accum, doEscape)
 
     # <ul> => unordered list
-    elif node.name == "ul":
+    elif node_match(node, "ul"):
         accum.append("\\begin{itemize}\n")
         children(node, state, accum, doEscape)
         accum.append("\\end{itemize}\n")
@@ -323,6 +331,15 @@ def index_entry(node, state, accum, doEscape):
     assert (node.name == "span") and node.has_attr("index-key")
     for key in [k.strip() for k in node["index-key"].split(";")]:
         accum.append(fr"\index{{{escape(key, doEscape)}}}")
+
+
+def node_match(node, name, cls=None):
+    """Does this node match requirements?"""
+    if node.name != name:
+        return False
+    if cls is None:
+        return True
+    return has_class(node, cls)
 
 
 def parse_args():

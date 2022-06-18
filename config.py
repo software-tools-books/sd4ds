@@ -8,7 +8,10 @@ theme = "mccole"
 
 # Enable various Markdown extensions.
 markdown_settings = {
-    "extensions": ["markdown.extensions.extra", "pymdownx.superfences"]
+    "extensions": [
+        "markdown.extensions.extra",
+        "pymdownx.superfences"
+    ]
 }
 
 # Site title and subtitle.
@@ -77,12 +80,16 @@ copy = [
 exclude = [
     "*.csv",
     "*.gz",
+    "*.out",
     "*.py",
     "*.pyc",
     "*.svg",
     "*~",
     "*/__pycache__"
 ]
+
+# Debug.
+debug = True
 
 # Warn about missing or unused entries.
 warnings = False

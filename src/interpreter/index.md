@@ -106,7 +106,9 @@ Doing this in `tllfunc.py` makes TLL less than 60 lines longer:
 
 3.  A function definition looks like:
 
-        ["def", "same", ["num"], ["get", "num"]]
+    ```{: .text}
+    ["def", "same", ["num"], ["get", "num"]]
+    ```
 
     It has a name, a (possibly empty) list of parameter names,
     and a single instruction as a body
@@ -115,14 +117,18 @@ Doing this in `tllfunc.py` makes TLL less than 60 lines longer:
 4.  Functions are stored in the environment like any other value.
     The value stored for the function defined above would be:
 
-        ["func", ["num"], ["get", "num"]]
+    ```{: .text}
+    ["func", ["num"], ["get", "num"]]
+    ```
 
     We don't need to store the name: that's recorded by the environment,
     just like it is for any other variable.
 
 5.  A function call looks like:
 
-        ["call", "same", 3]
+    ```{: .text}
+    ["call", "same", 3]
+    ```
 
     The values passed to the functions are normally expressions rather than constants,
     and are *not* put in a sub-list.

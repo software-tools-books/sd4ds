@@ -17,8 +17,9 @@ def bibliography_ref(pargs, kwargs, node):
     used = util.make_config("bibliography")
     used.update(pargs)
 
-    links = [f'<a href="@root/bib/#{k}">{k}</a>' for k in pargs]
-    return f"[{', '.join(links)}]"
+    links = [f'<a class="bib-ref" href="@root/bib/#{k}">{k}</a>' for k in pargs]
+    links = ", ".join(links)
+    return f'<span class="bib-ref">[{links}]</span>'
 
 
 @shortcodes.register("bibliography")
