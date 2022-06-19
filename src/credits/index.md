@@ -2,7 +2,7 @@
 title: "Credits"
 ---
 
-**[Greg Wilson][wilson_greg]** has worked in industry and academia for 35 years,
+[% i "Wilson, Greg" %]**[Greg Wilson][wilson_greg]**[% /i %] has worked in industry and academia for 35 years,
 and is the author, co-author, or editor of several books,
 including *Beautiful Code*,
 *[The Architecture of Open Source Applications][aosa]*,

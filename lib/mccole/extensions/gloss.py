@@ -41,7 +41,8 @@ def glossary(pargs, kwargs, node):
     except KeyError as exc:
         util.fail(f"Glossary entries missing key, term, or {lang}: {exc}.")
 
-    return "\n\n".join(_as_markdown(glossary, lang, entry) for entry in glossary)
+    entries = "\n\n".join(_as_markdown(glossary, lang, entry) for entry in glossary)
+    return f'<div class="glossary" markdown="1">\n{entries}\n</div>'
 
 
 @ivy.events.register(ivy.events.Event.EXIT)
