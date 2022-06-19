@@ -103,7 +103,7 @@ def handle(node, state, accum, doEscape):
         key = node["href"].split("#")[1]
         accum.append(rf"\figref{{{key}}}")
 
-    # <a class="glossref"> => glossary cross-reference
+    # <a class="gl-ref"> => glossary cross-reference
     elif node_match(node, "a", "gl-ref"):
         accum.append(r"\glossref{")
         children(node, state, accum, doEscape)
@@ -152,8 +152,17 @@ def handle(node, state, accum, doEscape):
         temp = temp.replace("'", r"{\textquotesingle}")
         accum.append(rf"\texttt{{{temp}}}")
 
+    # <dd> => body of labeled itemize
+    elif node_match(node, "dd"):
+        children(node, state, accum, doEscape)
+        accum.append("\n\n")
+
     # <div class="break-before"> => pass through
     elif node_match(node, "div", "break-before"):
+        children(node, state, accum, doEscape)
+
+    # <div class="glossary"> => pass through
+    elif node_match(node, "div", "glossary"):
         children(node, state, accum, doEscape)
 
     # <div class="highlight"> => code
@@ -168,9 +177,19 @@ def handle(node, state, accum, doEscape):
     elif node_match(node, "div", "table"):
         children(node, state, accum, doEscape)
 
-    # <dl class="bibliography"> => placeholder for bibliography
+    # <dl class="bib-list"> => placeholder for bibliography
     elif node_match(node, "dl", "bib-list"):
         accum.append("\\printbibliography[heading=none]\n")
+
+    # <dl> => itemize list
+    elif node_match(node, "dl"):
+        children(node, state, accum, doEscape)
+
+    # <dt> => itemize key
+    elif node_match(node, "dt"):
+        accum.append(r"\noindent \textbf{")
+        children(node, state, accum, doEscape)
+        accum.append("}: ")
 
     # <em> => italics
     elif node_match(node, "em"):
@@ -273,15 +292,14 @@ def handle(node, state, accum, doEscape):
     elif node_match(node, "span", "bib-ref"):
         citation(node, state, accum, doEscape)
 
-    # <span class="glosskey"> => format glossary key
-    elif node_match(node, "span", "glosskey"):
-        accum.append("\\noindent\n")
+    # <span class="gl-key"> => format glossary key
+    elif node_match(node, "span", "gl-key"):
         accum.append(r"\glosskey{")
         children(node, state, accum, doEscape)
         accum.append(r"}")
 
     # <span class="indexentry"> => add an index entry
-    elif node_match(node, "span", "indexentry"):
+    elif node_match(node, "span", "ix-entry"):
         children(node, state, accum, doEscape)
         index_entry(node, state, accum, doEscape)
 
@@ -328,8 +346,8 @@ def has_class(node, cls):
 
 def index_entry(node, state, accum, doEscape):
     """Construct index entries."""
-    assert (node.name == "span") and node.has_attr("index-key")
-    for key in [k.strip() for k in node["index-key"].split(";")]:
+    assert (node.name == "span") and node.has_attr("ix-key")
+    for key in [k.strip() for k in node["ix-key"].split(";")]:
         accum.append(fr"\index{{{escape(key, doEscape)}}}")
 
 
