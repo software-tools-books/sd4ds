@@ -234,7 +234,7 @@ def handle(node, state, accum, doEscape):
 
     # <math> => math text
     elif node_match(node, "math"):
-        accum.append(f"${node.text}$")
+        accum.append(f"${make_math(node.text)}$")
 
     # <ol> => ordered list
     elif node_match(node, "ol"):
@@ -331,6 +331,11 @@ def index_entry(node, state, accum, doEscape):
     assert (node.name == "span") and node.has_attr("index-key")
     for key in [k.strip() for k in node["index-key"].split(";")]:
         accum.append(fr"\index{{{escape(key, doEscape)}}}")
+
+
+def make_math(text):
+    """Convert text to math symbols."""
+    return text.replace("×", r"{\times}")
 
 
 def node_match(node, name, cls=None):
