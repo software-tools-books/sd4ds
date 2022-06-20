@@ -39,16 +39,16 @@ matching the start of the target string being searched.
 It then tries the pattern against each successive substring of the target string
 until it finds a match or runs out of characters:
 
-[% fixme file="simple-regex.js" keep="match" %]
+[% excerpt f="simple_regexp.py" keep="match" %]
 
 `match_here` does the matching and recursing:
 
-[% fixme file="simple-regex.js" keep="match_here" %]
+[% excerpt f="simple_regexp.py" keep="match_here" %]
 
 We use a table of test cases and expected results to test it:
 
-[% fixme file="simple-regex.js" keep="tests" %]
-[% fixme file="simple-regex.out" %]
+[% excerpt f="simple_regexp.py" keep="tests" %]
+[% excerpt f="simple_regexp.out" %]
 
 This program seems to work,
 but it actually contains an error that we will correct in the exercises.

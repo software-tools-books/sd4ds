@@ -251,12 +251,99 @@ it easily accounts for 95 percent of all instances."</p>
 matching the start of the target string being searched.
 It then tries the pattern against each successive substring of the target string
 until it finds a match or runs out of characters:</p>
-<p><span class="FIXME">FIXME</span></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pattern</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># &quot;^&quot; at start of pattern matches start of text.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;^&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">match_here</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Try all possible starting points for pattern.</span>
+    <span class="c1"># We need a do-while loop to handle the case of</span>
+    <span class="c1"># matching an empty string.</span>
+    <span class="n">i_text</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">match_here</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">i_text</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">i_text</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">i_text</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">break</span>
+
+    <span class="c1"># Nothing worked.</span>
+    <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div>
 <p><code>match_here</code> does the matching and recursing:</p>
-<p><span class="FIXME">FIXME</span></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">match_here</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">i_pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">i_text</span><span class="p">):</span>
+    <span class="c1"># There is no more pattern to match.</span>
+    <span class="k">if</span> <span class="n">i_pattern</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># &quot;$&quot; at end of pattern matches end of text.</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">i_pattern</span> <span class="o">==</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">pattern</span><span class="p">[</span><span class="n">i_pattern</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;$&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i_text</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">))):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># &quot;*&quot; following current character means match many.</span>
+    <span class="k">if</span> <span class="p">(((</span><span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span> <span class="o">-</span> <span class="n">i_pattern</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">pattern</span><span class="p">[</span><span class="n">i_pattern</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;*&quot;</span><span class="p">)):</span>
+        <span class="k">while</span> <span class="p">((</span><span class="n">i_text</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="n">i_text</span><span class="p">]</span> <span class="o">==</span> <span class="n">pattern</span><span class="p">[</span><span class="n">i_pattern</span><span class="p">])):</span>
+            <span class="n">i_text</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">match_here</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">i_pattern</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">i_text</span><span class="p">)</span>
+
+    <span class="c1"># There is no more text to match.</span>
+    <span class="k">if</span> <span class="n">i_text</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># Match a single character.</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">pattern</span><span class="p">[</span><span class="n">i_pattern</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">pattern</span><span class="p">[</span><span class="n">i_pattern</span><span class="p">]</span> <span class="o">==</span> <span class="n">text</span><span class="p">[</span><span class="n">i_text</span><span class="p">])):</span>
+        <span class="k">return</span> <span class="n">match_here</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">i_pattern</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">i_text</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Nothing worked.</span>
+    <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div>
 <p>We use a table of test cases and expected results to test it:</p>
-<p><span class="FIXME">FIXME</span>
-<span class="FIXME">FIXME</span></p>
+<p><div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;^a&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;^b&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;a$&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;a$&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;a*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;a*&quot;</span><span class="p">,</span> <span class="s2">&quot;baac&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;ab*c&quot;</span><span class="p">,</span> <span class="s2">&quot;ac&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;ab*c&quot;</span><span class="p">,</span> <span class="s2">&quot;abc&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;ab*c&quot;</span><span class="p">,</span> <span class="s2">&quot;abbbc&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;ab*c&quot;</span><span class="p">,</span> <span class="s2">&quot;abxc&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">regexp</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">match</span><span class="p">(</span><span class="n">regexp</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;pass&quot;</span> <span class="k">if</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span> <span class="k">else</span> <span class="s2">&quot;fail&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">regexp</span><span class="si">}</span><span class="s2">&#39; X &#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39; == </span><span class="si">{</span><span class="n">actual</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>&#39;&#39; X &#39;&#39; == True: pass
+&#39;a&#39; X &#39;a&#39; == True: pass
+&#39;b&#39; X &#39;a&#39; == False: pass
+&#39;a&#39; X &#39;ab&#39; == True: pass
+&#39;b&#39; X &#39;ab&#39; == True: pass
+&#39;ab&#39; X &#39;ba&#39; == False: pass
+&#39;^a&#39; X &#39;ab&#39; == True: pass
+&#39;^b&#39; X &#39;ab&#39; == False: pass
+&#39;a$&#39; X &#39;ab&#39; == False: pass
+&#39;a$&#39; X &#39;ba&#39; == True: pass
+&#39;a*&#39; X &#39;&#39; == True: pass
+&#39;a*&#39; X &#39;baac&#39; == True: pass
+&#39;ab*c&#39; X &#39;ac&#39; == True: pass
+&#39;ab*c&#39; X &#39;abc&#39; == True: pass
+&#39;ab*c&#39; X &#39;abbbc&#39; == True: pass
+&#39;ab*c&#39; X &#39;abxc&#39; == False: pass
+</code></pre></div></p>
 <p>This program seems to work,
 but it actually contains an error that we will correct in the exercises.
 (Think about what happens if we match the pattern <code>a*ab</code> against the string <code>'aab'</code>.)
