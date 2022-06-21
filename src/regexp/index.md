@@ -2,7 +2,7 @@
 title: "A Modest Regular Expression Engine"
 ---
 
-We have been using patterns to match filenames against patterns since FIXME.
+We have been using patterns to match filenames against patterns since [% fixme %].
 This lesson will explore how that works
 by building a simple version of the [% i "regular expression" %][% g regular_expression "regular expressions" %][% /i %]
 used to match text in everything from editor and shell commands to web scrapers.
@@ -76,12 +76,12 @@ Each matching object has a method that takes the target string and the index to 
 Its output is the index to continue matching at
 or `None` indicating that matching failed.
 We can combine these objects to match complex patterns
-(FIXME).
+([% fixme %]).
 
 The first step to implement this is to write test cases,
 which forces us to define the syntax we are going to support:
 
-[% fixme file="regex-initial/regex-complete.js" %]
+[% excerpt f="oop_main.py" %]
 
 Next,
 we define a [% g base_class "base class" %] that all matchers will inherit from.
@@ -89,7 +89,7 @@ This class contains the `match` method that users will call
 so that we can start matching right away
 no matter what kind of matcher we have at the top level of our pattern.
 
-[% fixme file="regex-initial/regex-base.js" %]
+[% excerpt f="oop_base.py" %]
 
 The base class also defines a `_match` method (with a leading underscore)
 that other classes will fill in with actual matching code.
@@ -98,30 +98,22 @@ so that if we forget to provide `_match` in a [% g derived_class "derived class"
 our code will fail with a meaningful reminder.
 {: .continue}
 
-We can now define empty versions of each matching class that all say "no match here"
+We can now define each matching class,
 like this one for literal characters:
 
-[% fixme file="regex-initial/regex-lit.js" %]
+[% excerpt f="oop_lit_initial.py" %]
 
 Our tests now run, but most of them fail:
 "most" because we expect some tests not to match,
 so the test runner reports `true`.
-{: .continue}
-
-[% fixme file="regex-initial.out" %]
-
 This output tells us how much work we have left to do:
 when all of these tests pass,
 we're finished.
 {: .continue}
 
-Let's implement a literal character string matcher first:
+Let's fill in a literal character string matcher first:
 
-[% fixme file="regex-beginning/regex-lit.js" %]
-
-Some tests now pass, others still fail (as they should):
-
-[% fixme file="regex-beginning.out" %]
+[% excerpt f="oop_lit.py" %]
 
 We will tackle `RegexSeq` next so that we can combine other matchers.
 This is why we have tests for `Seq(Lit('a'), Lit('b'))` and `Lit('ab')`:
@@ -150,25 +142,25 @@ Each matcher will try each of its possibilities and then see if the rest will al
 This design means we can get rid of `RegexSeq`,
 but it does make our tests a little harder to read:
 
-[% fixme file="regex-recursive/regex-complete.js" %]
+[% excerpt f="re_main.py" %]
 
 Here's how this works for matching a literal expression:
 
-[% fixme file="regex-recursive/regex-lit.js" %]
+[% excerpt file="re_lit.py" %]
 
 The `_match` method checks whether all of the pattern matches the target text starting at the current location.
 If so, it checks whether the rest of the overall pattern matches what's left.
 Matching the start `^` and end `$` anchors is just as straightforward.
 
-[% fixme file="regex-recursive/regex-start.js" %]
+[% excerpt f="re_start.py" %]
 
-[% fixme file="regex-recursive/regex-end.js" %]
+[% excerpt fr="re_end.py" %]
 
 Matching either/or is done by trying the first pattern and the rest,
 and if that fails,
 trying the second pattern and the rest:
 
-[% fixme file="regex-recursive/regex-alt.js" %]
+[% excerpt file="re_alt.py" %]
 
 To match a repetition,
 we figure out the maximum number of matches that might be left,
@@ -177,7 +169,7 @@ then count down until something succeeds.
 Each non-empty repetition matches at least one character,
 so the number of remaining characters is the maximum number of matches worth trying.
 
-[% fixme file="regex-recursive/regex-any.js" %]
+[% excerpt file="re_any.py" %]
 
 With these classes in place,
 our tests all pass:
