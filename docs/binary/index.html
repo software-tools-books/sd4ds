@@ -44,6 +44,12 @@
   </li>
   
   <li>
+    <a href="../scraper/">
+      A Modest Web Scraper
+    </a>
+  </li>
+  
+  <li>
     <a href="../pipeline/">
       A Modest Pipeline Manager
     </a>
@@ -210,7 +216,7 @@ Before we start,
 please remember that real binary data formats tend to be pretty complicated:
 good libraries exist for working with every image, sound, and video format there is:
 please don't write one of your own unless you are really sure you need to.</p>
-<h2 id="binary-why">Section 14.1: Why Binary?</h2>
+<h2 id="binary-why">Section 15.1: Why Binary?</h2>
 <p>Why store data in a format that can't be handled by editors like Notepad and Nano?
 There are generally four reasons:</p>
 <ol>
@@ -263,7 +269,7 @@ it makes sense to avoid paying the conversion cost over and over.</p>
     It would be possible, but it would hardly be sensible.</p>
 </li>
 </ol>
-<h2 id="binary-storage">Section 14.2: Storage</h2>
+<h2 id="binary-storage">Section 15.2: Storage</h2>
 <p>Let's start by looking at how numbers are stored.
 If we only have 1's and 0's,
 the natural way to store a positive integer is to use base 2,
@@ -317,7 +323,7 @@ may be shifted around to avoid leading zeroes,
 for example,
 and some bit patterns are reserved for positive and negative infinity---but
 those details don't matter when we're doing I/O.</p>
-<h2 id="binary-io">Section 14.3: Input and Output</h2>
+<h2 id="binary-io">Section 15.3: Input and Output</h2>
 <p>Most functions that handle text pretend that files are made up of lines:
 they read characters until they see an end-of-line marker,
 then hand back those characters as a string.
@@ -348,7 +354,7 @@ This translation is handy when we're working with text,
 since it means our programs only have to deal with one style of line ending
 no mater what platform the code is running on,
 but it messes up non-textual data.</p>
-<h2 id="binary-packing">Section 14.4: Packing and Unpacking</h2>
+<h2 id="binary-packing">Section 15.4: Packing and Unpacking</h2>
 <p>There's another tricky bit here as well.
 In C and Fortran,
 integers are "naked" 32-bit values:
@@ -577,7 +583,7 @@ Please always remember that libraries already exist to handle
 (almost) every binary format ever created
 and to read data from almost every instrument on the market,
 so you shouldn't worry about 1's and 0's unless you really have to.</p>
-<h2 id="binary-exericses">Section 14.5: Exercises</h2>
+<h2 id="binary-exericses">Section 15.5: Exercises</h2>
 <h3>Big-endian vs. little-endian</h3>
 <p>The packed representation of the integer 5 is <code>b'\x05\x00\x00\x00'</code>.
 This is called <em>little-endian</em>, and is used by Intel and ARM processors.

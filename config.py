@@ -23,6 +23,7 @@ chapters = [
     "introduction",
     "toolkit",
     "dataframe",
+    "scraper",
     "pipeline",
     "configuration",
     "cache",

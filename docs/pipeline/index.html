@@ -44,6 +44,12 @@
   </li>
   
   <li>
+    <a href="../scraper/">
+      A Modest Web Scraper
+    </a>
+  </li>
+  
+  <li>
     <a href="../pipeline/">
       <strong>A Modest Pipeline Manager</strong>
     </a>
@@ -218,7 +224,7 @@
 <li>Quick, which function is getting <code>delta</code> as a parameter?</li>
 <li>And how does someone reproduce this without reading the history of your GitHub repo?</li>
 </ul>
-<h2 id="pipeline-funclist">Section 4.1: Lists of Functions</h2>
+<h2 id="pipeline-funclist">Section 5.1: Lists of Functions</h2>
 <ul>
 <li>Break it down to more readable steps:</li>
 </ul>
@@ -243,7 +249,7 @@
     <span class="n">data</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">)</span>
 <span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;output.csv&quot;</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="pipeline-config">Section 4.2: Configuration</h2>
+<h2 id="pipeline-config">Section 5.2: Configuration</h2>
 <ul>
 <li>Every function remembers the name it was given when it was defined</li>
 </ul>
@@ -426,7 +432,7 @@
 <ul>
 <li>Now the test runs</li>
 </ul>
-<h2 id="pipeline-global">Section 4.3: Global Configuration</h2>
+<h2 id="pipeline-global">Section 5.3: Global Configuration</h2>
 <ul>
 <li>We want global configuration (passed to all stages) as well as local (per-stage)<ul>
 <li>I.e., a configuration file like this:</li>
@@ -581,7 +587,7 @@
 <ul>
 <li>Please use these sparingly</li>
 </ul>
-<h2 id="pipeline-provenance">Section 4.4: Provenance</h2>
+<h2 id="pipeline-provenance">Section 5.4: Provenance</h2>
 <ul>
 <li>We want to know what each run of a pipeline actually did<ul>
 <li>Automatically record functions and their parameters in a structured way</li>

@@ -44,6 +44,12 @@
   </li>
   
   <li>
+    <a href="../scraper/">
+      A Modest Web Scraper
+    </a>
+  </li>
+  
+  <li>
     <a href="../pipeline/">
       A Modest Pipeline Manager
     </a>
@@ -202,7 +208,7 @@ Regular expressions are the best tool for the job,
 so this lesson will explore how they work by building a simple but extensible pattern matcher.
 Our approach is inspired by <span class="ix-entry" ix-key="Kernighan, Brian" markdown="1">[Brian Kernighan's][kernighan-brian]</span> entry
 in <span class="bib-ref">[<a class="bib-ref" href="../bib/#Oram2007">Oram2007</a>]</span>.</p>
-<h2 id="regexp-simple">Section 15.1: Simple Patterns</h2>
+<h2 id="regexp-simple">Section 16.1: Simple Patterns</h2>
 <p>Our matcher will initially handle just the five cases shown in
 <a class="tbl-ref" href="FIXME">Table&nbsp;pattern-matching-cases</a>.
 These cases are a small subset of what JavaScript provides,
@@ -350,7 +356,7 @@ but it actually contains an error that we will correct in the exercises.
 It is also hard to extend:
 <code>match_here</code> is already very complicated,
 and handling parentheses in patterns like <code>a(bc)*d</code> will make it more complicated still.</p>
-<h2 id="regexp-direct">Section 15.2: A Direct Matcher</h2>
+<h2 id="regexp-direct">Section 16.2: A Direct Matcher</h2>
 <p>Instead of packing all our code into one function,
 we can implement each kind of match separately.
 Doing this makes it easier to add more matchers:
@@ -446,7 +452,7 @@ it matches as much as it can.
 As a result,
 <code>a*</code> will match the leading <code>"a"</code>, leaving nothing for the literal <code>a</code> to match.
 Our current implementation doesn't give us a way to try other possible matches when this happens.</p>
-<h2 id="regexp-alternative">Section 15.3: An Alternative Design</h2>
+<h2 id="regexp-alternative">Section 16.3: An Alternative Design</h2>
 <p>Let's re-think our design
 and have each matcher take its own arguments and a <code>rest</code> parameter containing the rest of the matchers
 (<span class="FIXME">FIXME</span>).
@@ -581,7 +587,7 @@ it is normal to have to revise a design the first two or three times we try to e
 As <span class="bib-ref">[<a class="bib-ref" href="../bib/#Brand1995">Brand1995</a>]</span> said of buildings,
 the things we make learn how to do things better as we use them.</p>
 </blockquote>
-<h2 id="regexp-exercises">Section 15.4: Exercises</h2>
+<h2 id="regexp-exercises">Section 16.4: Exercises</h2>
 <h3 class="exercise">Find and fix the error</h3>
 <p>The first regular expression matcher contains an error:
 the pattern <code>'a*ab'</code> should match the string <code>'aab'</code> but doesn't.
