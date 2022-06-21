@@ -196,19 +196,14 @@
       <div class="column bordered">
 	<main>
           <h1>A Modest Regular Expression Engine</h1>
-          <p>We have been using patterns to match filenames against patterns since FIXME.
-This lesson will explore how that works
-by building a simple version of the <span class="ix-entry" ix-key="regular expression" markdown="1"><a class="gl-ref" href="../gloss/#regular_expression" markdown="1">regular expressions</a></span>
-used to match text in everything from editor and shell commands to web scrapers.
+          <p>Sooner or later,
+every data scientist needs to scrape data out of text files.
+Regular expressions are the best tool for the job,
+so this lesson will explore how they work by building a simple but extensible pattern matcher.
 Our approach is inspired by <span class="ix-entry" ix-key="Kernighan, Brian" markdown="1">[Brian Kernighan's][kernighan-brian]</span> entry
 in <span class="bib-ref">[<a class="bib-ref" href="../bib/#Oram2007">Oram2007</a>]</span>.</p>
 <h2 id="regexp-simple">Section 15.1: Simple Patterns</h2>
-<p>Our matcher will use a recursive strategy:
-If the first element of the pattern matches where we are,
-we see if the rest of the pattern matches what's left;
-otherwise,
-we see if the the pattern will match further along.
-Our matcher will initially handle just the five cases shown in
+<p>Our matcher will initially handle just the five cases shown in
 <a class="tbl-ref" href="FIXME">Table&nbsp;pattern-matching-cases</a>.
 These cases are a small subset of what JavaScript provides,
 but as <span class="ix-entry" ix-key="Kernighan, Brian" markdown="1">Kernighan</span> wrote,
@@ -247,7 +242,12 @@ it easily accounts for 95 percent of all instances."</p>
 </tbody>
 </table>
 </div>
-<p>The function users call handles the special case of <code>^</code> at the start of a pattern
+<p>Matching is conceptually simple.
+If the first element of the pattern matches where we are,
+we see if the rest of the pattern matches what's left;
+otherwise,
+we see if the the pattern will match further along.
+The function users call handles the special case of <code>^</code> at the start of a pattern
 matching the start of the target string being searched.
 It then tries the pattern against each successive substring of the target string
 until it finds a match or runs out of characters:</p>
@@ -347,58 +347,98 @@ until it finds a match or runs out of characters:</p>
 <p>This program seems to work,
 but it actually contains an error that we will correct in the exercises.
 (Think about what happens if we match the pattern <code>a*ab</code> against the string <code>'aab'</code>.)
-Our design is also hard to extend:
-handling parentheses in patterns like <code>a(bc)*d</code> will require major changes.
-We need to explore a different approach.</p>
-<h2 id="regexp-extensible">Section 15.2: An Extensible Matcher</h2>
+It is also hard to extend:
+<code>match_here</code> is already very complicated,
+and handling parentheses in patterns like <code>a(bc)*d</code> will make it more complicated still.</p>
+<h2 id="regexp-direct">Section 15.2: A Direct Matcher</h2>
 <p>Instead of packing all our code into one function,
 we can implement each kind of match separately.
 Doing this makes it easier to add more matchers:
-we just define a function we can mix in with calls to the ones we already have.</p>
-<p>Rather than having these functions do the matching immediately,
+we just define something we can mix in with the matchers we already have.</p>
+<p>Rather than matching text immediately,
 though,
-we will have each one return an object that knows how to match itself against some text.
-Doing this allows us to build a complex match once and re-use it many times.
+we will create objects that know how to do matches
+so that we can build a complex matcher once and re-use it many times.
 This is a common pattern in text processing:
 we may want to apply a regular expression to each line in a large set of files,
 so recycling matchers makes programs more efficient.</p>
-<p>Each matching object has a method that takes the target string and the index to start matching at as inputs.
+<p>Each matching object has a method
+that takes the target string and the index to start matching at as inputs.
 Its output is the index to continue matching at
 or <code>None</code> indicating that matching failed.
-We can combine these objects to match complex patterns
-(FIXME).</p>
+We can combine these objects to match complex patterns.</p>
 <p>The first step to implement this is to write test cases,
-which forces us to define the syntax we are going to support:</p>
-<p><span class="FIXME">FIXME</span></p>
+which forces us to define how our classes will work:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)],</span>
+        <span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">)],</span>
+        <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)],</span>
+        <span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">)],</span>
+        <span class="p">[</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">))],</span>
+        <span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">))],</span>
+        <span class="p">[</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;ab&quot;</span><span class="p">)],</span>
+        <span class="p">[</span><span class="s2">&quot;^a&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Start</span><span class="p">(),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">))],</span>
+        <span class="p">[</span><span class="s2">&quot;^b&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Start</span><span class="p">(),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">))],</span>
+        <span class="p">[</span><span class="s2">&quot;a$&quot;</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="n">End</span><span class="p">())],</span>
+        <span class="p">[</span><span class="s2">&quot;a$&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="n">End</span><span class="p">())],</span>
+        <span class="p">[</span><span class="s2">&quot;a*&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Any</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)],</span>
+        <span class="p">[</span><span class="s2">&quot;a*&quot;</span><span class="p">,</span> <span class="s2">&quot;baac&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Any</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)],</span>
+        <span class="p">[</span><span class="s2">&quot;ab*c&quot;</span><span class="p">,</span> <span class="s2">&quot;ac&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="n">Any</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">))],</span>
+        <span class="p">[</span><span class="s2">&quot;ab*c&quot;</span><span class="p">,</span> <span class="s2">&quot;abc&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="n">Any</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">))],</span>
+        <span class="p">[</span><span class="s2">&quot;ab*c&quot;</span><span class="p">,</span> <span class="s2">&quot;abbbc&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="n">Any</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">))],</span>
+        <span class="p">[</span><span class="s2">&quot;ab*c&quot;</span><span class="p">,</span> <span class="s2">&quot;abxc&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="n">Any</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">))],</span>
+        <span class="p">[</span><span class="s2">&quot;ab|cd&quot;</span><span class="p">,</span> <span class="s2">&quot;xaby&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Alt</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;ab&quot;</span><span class="p">),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;cd&quot;</span><span class="p">))],</span>
+        <span class="p">[</span><span class="s2">&quot;ab|cd&quot;</span><span class="p">,</span> <span class="s2">&quot;acdc&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Alt</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;ab&quot;</span><span class="p">),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;cd&quot;</span><span class="p">))],</span>
+        <span class="p">[</span><span class="s2">&quot;a(b|c)d&quot;</span><span class="p">,</span> <span class="s2">&quot;xabdy&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="n">Alt</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">)),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">))],</span>
+        <span class="p">[</span><span class="s2">&quot;a(b|c)d&quot;</span><span class="p">,</span> <span class="s2">&quot;xabady&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">Seq</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="n">Alt</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">)),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">))]</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">matcher</span><span class="p">)</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;pass&quot;</span> <span class="k">if</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span> <span class="k">else</span> <span class="s2">&quot;fail&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&#39; X &#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39; == </span><span class="si">{</span><span class="n">actual</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
 <p>Next,
 we define a <a class="gl-ref" href="../gloss/#base_class" markdown="1">base class</a> that all matchers will inherit from.
 This class contains the <code>match</code> method that users will call
 so that we can start matching right away
 no matter what kind of matcher we have at the top level of our pattern.</p>
-<p><span class="FIXME">FIXME</span></p>
-<p class="continue">The base class also defines a <code>_match</code> method (with a leading underscore)
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MatchBase</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div>
+<p class="continue">The base class defines a <code>match</code> method
 that other classes will fill in with actual matching code.
-The base implementation of this method throws an exception
-so that if we forget to provide <code>_match</code> in a <a class="gl-ref" href="../gloss/#derived_class" markdown="1">derived class</a>
-our code will fail with a meaningful reminder.</p>
-<p>We can now define empty versions of each matching class that all say "no match here"
+The base implementation of this method always returns <code>None</code>
+so that if we forget to implement it in a derived class,
+matching will always fail.</p>
+<p>We can now define each matching class,
 like this one for literal characters:</p>
-<p><span class="FIXME">FIXME</span></p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Lit</span><span class="p">(</span><span class="n">MatchBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chars</span> <span class="o">=</span> <span class="n">chars</span>
+
+    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">nextIndex</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chars</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nextIndex</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">nextIndex</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chars</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">nextIndex</span>
+</code></pre></div>
 <p class="continue">Our tests now run, but most of them fail:
 "most" because we expect some tests not to match,
-so the test runner reports <code>true</code>.</p>
-<p><span class="FIXME">FIXME</span></p>
-<p class="continue">This output tells us how much work we have left to do:
+so the test runner reports <code>true</code>.
+This output tells us how much work we have left to do:
 when all of these tests pass,
 we're finished.</p>
-<p>Let's implement a literal character string matcher first:</p>
-<p><span class="FIXME">FIXME</span></p>
-<p>Some tests now pass, others still fail (as they should):</p>
-<p><span class="FIXME">FIXME</span></p>
-<p>We will tackle <code>RegexSeq</code> next so that we can combine other matchers.
-This is why we have tests for <code>Seq(Lit('a'), Lit('b'))</code> and <code>Lit('ab')</code>:
-all children have to match in order without gaps.</p>
-<p>But suppose we have the pattern <code>a*ab</code>.
+<p>What about repetition?
+It can just apply a pattern over and over to consume as many matches as possible---or can it?
+Suppose we have the pattern <code>a*ab</code>.
 This ought to match the text <code>"ab"</code>, but will it?
 <code>*</code> is <span class="ix-entry" ix-key="greedy algorithm;algorithm!greedy" markdown="1"><a class="gl-ref" href="../gloss/#greedy_algorithm" markdown="1">greedy</a></span>:
 it matches as much as it can.
@@ -412,29 +452,109 @@ and have each matcher take its own arguments and a <code>rest</code> parameter c
 (<span class="FIXME">FIXME</span>).
 (We will provide a default of <code>None</code> in the creation function
 so we don't have to type <code>None</code> over and over again.)
-Each matcher will try each of its possibilities and then see if the rest will also match.</p>
+Each matcher will try each of its possibilities and then see if the rest will also match:</p>
+<p>{% excerpt f="re_base.py" %]</p>
 <p><span class="FIXME">FIXME</span></p>
-<p>This design means we can get rid of <code>RegexSeq</code>,
-but it does make our tests a little harder to read:</p>
-<p><span class="FIXME">FIXME</span></p>
-<p>Here's how this works for matching a literal expression:</p>
-<p><span class="FIXME">FIXME</span></p>
-<p>The <code>_match</code> method checks whether all of the pattern matches the target text starting at the current location.
-If so, it checks whether the rest of the overall pattern matches what's left.
+<p>This design means we can get rid of <code>Seq</code>,
+but it does mean our expressions become deeply nested.
+For example, the expression to match <code>ab*c</code> is:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">Any</span><span class="p">(</span><span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">),</span> <span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">)))</span>
+</code></pre></div>
+<p>Here's how this strategy works for matching a literal expression:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">re_base</span> <span class="kn">import</span> <span class="n">RegexBase</span>
+
+<span class="k">class</span> <span class="nc">Lit</span><span class="p">(</span><span class="n">RegexBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chars</span><span class="p">,</span> <span class="n">rest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">rest</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chars</span> <span class="o">=</span> <span class="n">chars</span>
+
+    <span class="k">def</span> <span class="nf">_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+        <span class="n">next_index</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chars</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">next_index</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">next_index</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chars</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">next_index</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">next_index</span><span class="p">)</span>
+</code></pre></div>
+<p>The <code>_match</code> method checks whether all of the pattern matches the target text
+starting at the current location.
+If so,
+it checks whether the rest of the overall pattern matches what's left.
 Matching the start <code>^</code> and end <code>$</code> anchors is just as straightforward.</p>
-<p><span class="FIXME">FIXME</span></p>
-<p><span class="FIXME">FIXME</span></p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">re_base</span> <span class="kn">import</span> <span class="n">RegexBase</span>
+
+<span class="k">class</span> <span class="nc">Start</span><span class="p">(</span><span class="n">RegexBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">re_base</span> <span class="kn">import</span> <span class="n">RegexBase</span>
+
+<span class="k">class</span> <span class="nc">End</span><span class="p">(</span><span class="n">RegexBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+</code></pre></div>
 <p>Matching either/or is done by trying the first pattern and the rest,
 and if that fails,
 trying the second pattern and the rest:</p>
-<p><span class="FIXME">FIXME</span></p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">re_base</span> <span class="kn">import</span> <span class="n">RegexBase</span>
+
+<span class="k">class</span> <span class="nc">Alt</span><span class="p">(</span><span class="n">RegexBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">rest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">rest</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">left</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">right</span>
+
+    <span class="k">def</span> <span class="nf">_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">):</span>
+            <span class="n">after_pat</span> <span class="o">=</span> <span class="n">pat</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">after_pat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">after_pat</span>
+                <span class="n">after_rest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">after_pat</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">after_rest</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">after_rest</span>
+        <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div>
 <p>To match a repetition,
 we figure out the maximum number of matches that might be left,
 then count down until something succeeds.
 (We start with the maximum because matching is supposed to be greedy.)
 Each non-empty repetition matches at least one character,
 so the number of remaining characters is the maximum number of matches worth trying.</p>
-<p><span class="FIXME">FIXME</span></p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">re_base</span> <span class="kn">import</span> <span class="n">RegexBase</span>
+
+<span class="k">class</span> <span class="nc">Any</span><span class="p">(</span><span class="n">RegexBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">,</span> <span class="n">rest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">rest</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="n">child</span>
+
+    <span class="k">def</span> <span class="nf">_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+        <span class="n">max_possible</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span>
+        <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_possible</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">after_many</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_many</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">after_many</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">after_many</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_match_many</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">start</span>
+</code></pre></div>
 <p>With these classes in place,
 our tests all pass:</p>
 <p><span class="FIXME">FIXME</span></p>
@@ -462,26 +582,13 @@ As <span class="bib-ref">[<a class="bib-ref" href="../bib/#Brand1995">Brand1995<
 the things we make learn how to do things better as we use them.</p>
 </blockquote>
 <h2 id="regexp-exercises">Section 15.4: Exercises</h2>
-<h3 class="exercise">Split once</h3>
-<p>Modify the query selector code so that selectors like <code>div#id</code> and <code>div.class</code> are only split into pieces once
-rather than being re-split each time <code>match_here</code> is called.</p>
 <h3 class="exercise">Find and fix the error</h3>
 <p>The first regular expression matcher contains an error:
 the pattern <code>'a*ab'</code> should match the string <code>'aab'</code> but doesn't.
 Figure out why it fails and fix it.</p>
-<h3 class="exercise">Unit tests</h3>
-<p>Rewrite the tests for selectors and regular expressions to use Mocha.</p>
-<h3 class="exercise">Find all with query selectors</h3>
-<p>Modify the query selector so that it returns <em>all</em> matches, not just the first one.</p>
-<h3 class="exercise">Select based on attributes</h3>
-<p>Modify the query selector to handle <code>[attribute="value"]</code> selectors,
-so that (for example) <code>div[align=center]</code> returns all <code>div</code> elements
-whose <code>align</code> attribute has the value <code>"center"</code>.</p>
-<h3 class="exercise">Child selectors</h3>
-<p>The expression <code>parent &gt; child</code> selects all nodes of type <code>child</code>
-that are immediate children of nodes of type <code>parent</code>---for example,
-<code>div &gt; p</code> selects all paragraphs that are immediate children of <code>div</code> elements.
-Modify <code>simple-selectors.js</code> to handle this kind of matching.</p>
+<h3 class="exercise">One more than length</h3>
+<p>The main loop in <code>RegexBase.match</code> has <code>+1</code> inside the <code>range</code> call.
+Which test(s) break when this is removed and why?</p>
 <h3 class="exercise">Find all with regular expressions</h3>
 <p>Modify the regular expression matcher to return <em>all</em> matches rather than just the first one.</p>
 <h3 class="exercise">Find one or more with regular expressions</h3>
@@ -490,7 +597,7 @@ Modify <code>simple-selectors.js</code> to handle this kind of matching.</p>
 <p>Add a new regular expression matching class that matches any character from a set,
 so that <code>Charset('aeiou')</code> matches any lower-case vowel.</p>
 <h3 class="exercise">Make repetition more efficient</h3>
-<p>Rewrite <code>RegexAny</code> so that it does not repeatedly re-match text.</p>
+<p>Rewrite <code>Any</code> so that it does not repeatedly re-match text.</p>
 <h3 class="exercise">Lazy matching</h3>
 <p>The regular expressions we have seen so far are <a class="gl-ref" href="../gloss/#eager_matching" markdown="1">eager</a>:
 they match as much as they can, as early as they can.

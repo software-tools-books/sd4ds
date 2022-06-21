@@ -3,7 +3,7 @@ class RegexBase:
         self.rest = rest
 
     def match(self, text):
-        for i in range(len(text)):
+        for i in range(len(text) + 1):
             if self._match(text, i) is not None:
                 return True
         return False

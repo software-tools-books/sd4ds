@@ -2,20 +2,15 @@
 title: "A Modest Regular Expression Engine"
 ---
 
-We have been using patterns to match filenames against patterns since [% fixme %].
-This lesson will explore how that works
-by building a simple version of the [% i "regular expression" %][% g regular_expression "regular expressions" %][% /i %]
-used to match text in everything from editor and shell commands to web scrapers.
+Sooner or later,
+every data scientist needs to scrape data out of text files.
+Regular expressions are the best tool for the job,
+so this lesson will explore how they work by building a simple but extensible pattern matcher.
 Our approach is inspired by [% i "Kernighan, Brian" %][Brian Kernighan's][kernighan-brian][% /i %] entry
 in [% b Oram2007 %].
 
 ## Simple Patterns {: #regexp-simple}
 
-Our matcher will use a recursive strategy:
-If the first element of the pattern matches where we are,
-we see if the rest of the pattern matches what's left;
-otherwise,
-we see if the the pattern will match further along.
 Our matcher will initially handle just the five cases shown in
 [% t pattern-matching-cases %].
 These cases are a small subset of what JavaScript provides,
@@ -34,6 +29,11 @@ it easily accounts for 95 percent of all instances."
 | Zero or more of something | *         |
 </div>
 
+Matching is conceptually simple.
+If the first element of the pattern matches where we are,
+we see if the rest of the pattern matches what's left;
+otherwise,
+we see if the the pattern will match further along.
 The function users call handles the special case of `^` at the start of a pattern
 matching the start of the target string being searched.
 It then tries the pattern against each successive substring of the target string
@@ -53,35 +53,35 @@ We use a table of test cases and expected results to test it:
 This program seems to work,
 but it actually contains an error that we will correct in the exercises.
 (Think about what happens if we match the pattern `a*ab` against the string `'aab'`.)
-Our design is also hard to extend:
-handling parentheses in patterns like `a(bc)*d` will require major changes.
-We need to explore a different approach.
+It is also hard to extend:
+`match_here` is already very complicated,
+and handling parentheses in patterns like `a(bc)*d` will make it more complicated still.
 
-## An Extensible Matcher {: #regexp-extensible}
+## A Direct Matcher {: #regexp-direct}
 
 Instead of packing all our code into one function,
 we can implement each kind of match separately.
 Doing this makes it easier to add more matchers:
-we just define a function we can mix in with calls to the ones we already have.
+we just define something we can mix in with the matchers we already have.
 
-Rather than having these functions do the matching immediately,
+Rather than matching text immediately,
 though,
-we will have each one return an object that knows how to match itself against some text.
-Doing this allows us to build a complex match once and re-use it many times.
+we will create objects that know how to do matches
+so that we can build a complex matcher once and re-use it many times.
 This is a common pattern in text processing:
 we may want to apply a regular expression to each line in a large set of files,
 so recycling matchers makes programs more efficient.
 
-Each matching object has a method that takes the target string and the index to start matching at as inputs.
+Each matching object has a method
+that takes the target string and the index to start matching at as inputs.
 Its output is the index to continue matching at
 or `None` indicating that matching failed.
-We can combine these objects to match complex patterns
-([% fixme %]).
+We can combine these objects to match complex patterns.
 
 The first step to implement this is to write test cases,
-which forces us to define the syntax we are going to support:
+which forces us to define how our classes will work:
 
-[% excerpt f="oop_main.py" %]
+[% excerpt f="direct.py" keep="tests" %]
 
 Next,
 we define a [% g base_class "base class" %] that all matchers will inherit from.
@@ -89,19 +89,19 @@ This class contains the `match` method that users will call
 so that we can start matching right away
 no matter what kind of matcher we have at the top level of our pattern.
 
-[% excerpt f="oop_base.py" %]
+[% excerpt f="direct.py" keep="base_class" %]
 
-The base class also defines a `_match` method (with a leading underscore)
+The base class defines a `match` method
 that other classes will fill in with actual matching code.
-The base implementation of this method throws an exception
-so that if we forget to provide `_match` in a [% g derived_class "derived class" %]
-our code will fail with a meaningful reminder.
+The base implementation of this method always returns `None`
+so that if we forget to implement it in a derived class,
+matching will always fail.
 {: .continue}
 
 We can now define each matching class,
 like this one for literal characters:
 
-[% excerpt f="oop_lit_initial.py" %]
+[% excerpt f="direct.py" keep="lit" %]
 
 Our tests now run, but most of them fail:
 "most" because we expect some tests not to match,
@@ -111,15 +111,9 @@ when all of these tests pass,
 we're finished.
 {: .continue}
 
-Let's fill in a literal character string matcher first:
-
-[% excerpt f="oop_lit.py" %]
-
-We will tackle `RegexSeq` next so that we can combine other matchers.
-This is why we have tests for `Seq(Lit('a'), Lit('b'))` and `Lit('ab')`:
-all children have to match in order without gaps.
-
-But suppose we have the pattern `a*ab`.
+What about repetition?
+It can just apply a pattern over and over to consume as many matches as possible---or can it?
+Suppose we have the pattern `a*ab`.
 This ought to match the text `"ab"`, but will it?
 `*` is [% i "greedy algorithm" "algorithm!greedy" %][% g greedy_algorithm "greedy" %][% /i %]:
 it matches as much as it can.
@@ -135,32 +129,39 @@ and have each matcher take its own arguments and a `rest` parameter containing t
 ([% fixme pattern-matching-rest %]).
 (We will provide a default of `None` in the creation function
 so we don't have to type `None` over and over again.)
-Each matcher will try each of its possibilities and then see if the rest will also match.
+Each matcher will try each of its possibilities and then see if the rest will also match:
+
+{% excerpt f="re_base.py" %]
 
 [% fixme slug="pattern-matching-rest" img="figures/rest.svg" alt="Matching the rest of the pattern" caption="Using "rest" to match the remainder of a pattern." %]
 
-This design means we can get rid of `RegexSeq`,
-but it does make our tests a little harder to read:
+This design means we can get rid of `Seq`,
+but it does mean our expressions become deeply nested.
+For example, the expression to match `ab*c` is:
 
-[% excerpt f="re_main.py" %]
+```{: .python}
+Lit("a", Any(Lit("b"), Lit("c")))
+```
 
-Here's how this works for matching a literal expression:
+Here's how this strategy works for matching a literal expression:
 
-[% excerpt file="re_lit.py" %]
+[% excerpt f="re_lit.py" %]
 
-The `_match` method checks whether all of the pattern matches the target text starting at the current location.
-If so, it checks whether the rest of the overall pattern matches what's left.
+The `_match` method checks whether all of the pattern matches the target text
+starting at the current location.
+If so,
+it checks whether the rest of the overall pattern matches what's left.
 Matching the start `^` and end `$` anchors is just as straightforward.
 
 [% excerpt f="re_start.py" %]
 
-[% excerpt fr="re_end.py" %]
+[% excerpt f="re_end.py" %]
 
 Matching either/or is done by trying the first pattern and the rest,
 and if that fails,
 trying the second pattern and the rest:
 
-[% excerpt file="re_alt.py" %]
+[% excerpt f="re_alt.py" %]
 
 To match a repetition,
 we figure out the maximum number of matches that might be left,
@@ -169,12 +170,12 @@ then count down until something succeeds.
 Each non-empty repetition matches at least one character,
 so the number of remaining characters is the maximum number of matches worth trying.
 
-[% excerpt file="re_any.py" %]
+[% excerpt f="re_any.py" %]
 
 With these classes in place,
 our tests all pass:
 
-[% fixme file="regex-recursive.out" %]
+[% fixme f="re_main.out" %]
 
 The most important thing about this design is how extensible it is:
 if we want to add other kinds of matching,
@@ -202,37 +203,16 @@ we can put them together however we want.
 
 ## Exercises {: #regexp-exercises}
 
-### Split once {: .exercise}
-
-Modify the query selector code so that selectors like `div#id` and `div.class` are only split into pieces once
-rather than being re-split each time `match_here` is called.
-
 ### Find and fix the error {: .exercise}
 
 The first regular expression matcher contains an error:
 the pattern `'a*ab'` should match the string `'aab'` but doesn't.
 Figure out why it fails and fix it.
 
-### Unit tests {: .exercise}
+### One more than length {: .exercise}
 
-Rewrite the tests for selectors and regular expressions to use Mocha.
-
-### Find all with query selectors {: .exercise}
-
-Modify the query selector so that it returns *all* matches, not just the first one.
-
-### Select based on attributes {: .exercise}
-
-Modify the query selector to handle `[attribute="value"]` selectors,
-so that (for example) `div[align=center]` returns all `div` elements
-whose `align` attribute has the value `"center"`.
-
-### Child selectors {: .exercise}
-
-The expression `parent > child` selects all nodes of type `child`
-that are immediate children of nodes of type `parent`---for example,
-`div > p` selects all paragraphs that are immediate children of `div` elements.
-Modify `simple-selectors.js` to handle this kind of matching.
+The main loop in `RegexBase.match` has `+1` inside the `range` call.
+Which test(s) break when this is removed and why?
 
 ### Find all with regular expressions {: .exercise}
 
@@ -249,7 +229,7 @@ so that `Charset('aeiou')` matches any lower-case vowel.
 
 ### Make repetition more efficient {: .exercise}
 
-Rewrite `RegexAny` so that it does not repeatedly re-match text.
+Rewrite `Any` so that it does not repeatedly re-match text.
 
 ### Lazy matching {: .exercise}
 
