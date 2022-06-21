@@ -45,12 +45,13 @@ pdf: docs/sd4ds.tex
 clean:
 	@find . -name '*~' -exec rm {} \;
 
-## lint: check code
+## lint: check code and structure
 .PHONY: lint
 lint:
 	-flake8
 	-isort --check .
 	-black --check .
+	python bin/lint.py --src src
 
 ## valid: run html5validator on generated files
 .PHONY: valid
