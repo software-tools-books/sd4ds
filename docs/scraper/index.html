@@ -355,7 +355,7 @@ and then click on <code>[Visualize Execution]</code>.
 As you click <code>[Next]</code>,
 it will show you what's happening step by step as your code runs.</p>
 <div align="center">
-  <img src="add_len.png" alt="Visualization of add_len function"/>
+  <img src="add_len.png" alt="Visualization of add_len function" width="80%"/>
 </div>
 
 <h2 id="scraper-htmlcss">Section 4.2: HTML and CSS</h2>
@@ -393,7 +393,7 @@ In HTML,
 escape sequences are written <code>&amp;name;</code>,
 i.e.,
 an ampersand, the name of the character, and a semi-colon.
-A few common escape sequences are shown in \tblref{t:htmlcss-escapes}.</p>
+A few common escape sequences are shown below:</p>
 <table>
 <thead>
 <tr>
@@ -584,12 +584,11 @@ and we can use <code>&lt;br/&gt;</code> to force a line break in text
 <span class="p">&lt;</span><span class="nt">br</span><span class="p">/&gt;</span>
 <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;../index.html&quot;</span><span class="p">&gt;</span>home page (relative path)<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
 </code></pre></div>
-<h2 class="scraper-images">Images</h2>
-<p>Images can be stored inside HTML pages in two ways:
-by embedding SVG
-or by encoding the image as text and including that text in the body of the page,
-which is clever,
-but makes the source of the pages very hard to read.</p>
+<p>Images can be stored directly inside HTML pages by embedding SVG
+or by encoding the image as text and including that text in the body of the page.
+The first is hard to edit,
+since most text editors don't allow you to draw,
+while the second is both hard to edit and impossible to read.</p>
 <p>It is far more common to store each image in a separate file
 and refer to that file using an <code>img</code> element
 (which also allows us to use the image in many places without copying it).
@@ -599,9 +598,9 @@ this can be either a URL or a local path.
 Every <code>img</code> should also include a <code>title</code> attribute (whose purpose is self-explanatory)
 and an <code>alt</code> attribute with some descriptive text to aid accessibility and search engines.
 (Again, we have wrapped and broken lines so that they will display nicely in the printed version.)</p>
-<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;./assets/logo.png&quot;</span> <span class="na">title</span><span class="o">=</span><span class="s">&quot;Book Logo&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;./img/logo.png&quot;</span> <span class="na">title</span><span class="o">=</span><span class="s">&quot;Book Logo&quot;</span>
      <span class="na">alt</span><span class="o">=</span><span class="s">&quot;Displays the book logo using a local path&quot;</span> <span class="p">/&gt;</span>
-<span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://js4ds.org/assets/logo.png&quot;</span>
+<span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://third-bit.com/sd4ds/img/logo.png&quot;</span>
      <span class="na">title</span><span class="o">=</span><span class="s">&quot;Book Logo&quot;</span>
      <span class="na">alt</span><span class="o">=</span><span class="s">&quot;Display the book logo using a URL&quot;</span> <span class="p">/&gt;</span>
 </code></pre></div>
@@ -609,11 +608,8 @@ and an <code>alt</code> attribute with some descriptive text to aid accessibilit
 <ol>
 <li>
 <p>Since <code>img</code> elements don't contain any text,
-    they are often written with the trailing-slash notation.
-    However,
-    they are also often written improperly as <code>&lt;img\ src="..."&gt;</code> without any slashes at all.
-    Browsers will understand this,
-    but some software packages will complain.</p>
+    they are often written with the trailing-slash notation,
+    or as <code>&lt;img src="..."&gt;</code> without any slashes at all.</p>
 </li>
 <li>
 <p>If an image file is referred to using a path rather than a URL,
@@ -626,7 +622,6 @@ and an <code>alt</code> attribute with some descriptive text to aid accessibilit
     the root directory of the filesystem is.</p>
 </li>
 </ol>
-<h2 class="scraper-css">Cascading Style Sheets</h2>
 <p>When HTML first appeared, people styled elements by setting their attributes:</p>
 <div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
   <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -690,12 +685,6 @@ in which case every element with that class has that style.</p>
 as in <code>&lt;span class="keyword highlight"&gt;…&lt;/span&gt;</code>.
 (The <code>span</code> element simply marks a region of text,
 but has no effect unless it's styled.)</p>
-<p>These features are one
-(but unfortunately not the only)
-common source of confusion with CSS:
-if one may override general rules with specific ones
-but also provide multiple values for class,
-how do we keep track of which rules will apply to an element with multiple classes?</p>
 <p>One other thing CSS can do is match specific elements.
 We can label particular elements uniquely within a page using the <code>id</code> attribute,
 then refer to those elements using <code>#name</code> as a selector.
@@ -716,14 +705,14 @@ if we create a page that gives two spans unique IDs:</p>
 <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
 </code></pre></div>
 <p class="continue">then we can style those spans like this:</p>
-<div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="nt">major</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">span</span><span class="p">#</span><span class="nn">major</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="k">text-decoration</span><span class="p">:</span><span class="w"> </span><span class="kc">underline</span><span class="w"> </span><span class="kc">red</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
-<span class="err">#</span><span class="w"> </span><span class="nt">minor</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="nt">span</span><span class="p">#</span><span class="nn">minor</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="k">text-decoration</span><span class="p">:</span><span class="w"> </span><span class="kc">overline</span><span class="w"> </span><span class="kc">blue</span><span class="p">;</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
-<blockquote>
+<div class="callout">
 <h3>Internal Links</h3>
 <p>We can link to an element in a page using <code>#name</code>
 inside the link's <code>href</code>:
@@ -734,8 +723,8 @@ This is particularly useful <em>within</em> pages:
 <code>&lt;a href="#place"&gt;jump&lt;/a&gt;</code>
 takes us straight to the <code>#place</code> element within this page.
 Internal links like this are often used for cross-referencing and to create a table of contents.</p>
-</blockquote>
-<h2 id="scraper-exercises">Section 4.5: Exercises</h2>
+</div>
+<h2 id="scraper-exercises">Section 4.3: Exercises</h2>
 <h3 class="exercise">Joining All Strings</h3>
 <p>Write a function called <code>join_all</code> that joins all the strings
 in a bunch of nested lists.

@@ -176,10 +176,11 @@ As you click `[Next]`,
 it will show you what's happening step by step as your code runs.
 
 <div align="center">
-  <img src="add_len.png" alt="Visualization of add_len function"/>
+  <img src="add_len.png" alt="Visualization of add_len function" width="80%"/>
 </div>
 
 ## HTML and CSS {: #scraper-htmlcss}
+
 HTML is the standard way to represent documents for presentation in web browsers,
 and CSS is the standard way to describe how it should look.
 Both are more complicated than they should have been,
@@ -217,7 +218,7 @@ In HTML,
 escape sequences are written `&name;`,
 i.e.,
 an ampersand, the name of the character, and a semi-colon.
-A few common escape sequences are shown in \tblref{t:htmlcss-escapes}.
+A few common escape sequences are shown below:
 
 | Name         | Escape Sequence | Character |
 | ------------ | --------------- | --------- |
@@ -405,13 +406,11 @@ and we can use `<br/>` to force a line break in text
 <a href="../index.html">home page (relative path)</a>
 ```
 
-## Images {: .scraper-images}
-
-Images can be stored inside HTML pages in two ways:
-by embedding SVG
-or by encoding the image as text and including that text in the body of the page,
-which is clever,
-but makes the source of the pages very hard to read.
+Images can be stored directly inside HTML pages by embedding SVG
+or by encoding the image as text and including that text in the body of the page.
+The first is hard to edit,
+since most text editors don't allow you to draw,
+while the second is both hard to edit and impossible to read.
 
 It is far more common to store each image in a separate file
 and refer to that file using an `img` element
@@ -424,9 +423,9 @@ and an `alt` attribute with some descriptive text to aid accessibility and searc
 (Again, we have wrapped and broken lines so that they will display nicely in the printed version.)
 
 ```{: .html}
-<img src="./assets/logo.png" title="Book Logo"
+<img src="./img/logo.png" title="Book Logo"
      alt="Displays the book logo using a local path" />
-<img src="https://js4ds.org/assets/logo.png"
+<img src="https://third-bit.com/sd4ds/img/logo.png"
      title="Book Logo"
      alt="Display the book logo using a URL" />
 ```
@@ -434,11 +433,8 @@ and an `alt` attribute with some descriptive text to aid accessibility and searc
 Two things to note here are:
 
 1.  Since `img` elements don't contain any text,
-    they are often written with the trailing-slash notation.
-    However,
-    they are also often written improperly as `<img\ src="...">` without any slashes at all.
-    Browsers will understand this,
-    but some software packages will complain.
+    they are often written with the trailing-slash notation,
+    or as `<img src="...">` without any slashes at all.
 
 2.  If an image file is referred to using a path rather than a URL,
     that path can be either relative
@@ -448,8 +444,6 @@ Two things to note here are:
     if it's an absolute path,
     it's interpreted relative to wherever the web browser thinks
     the root directory of the filesystem is.
-
-## Cascading Style Sheets {: .scraper-css}
 
 When HTML first appeared, people styled elements by setting their attributes:
 
@@ -531,13 +525,6 @@ as in `<span class="keyword highlight">…</span>`.
 (The `span` element simply marks a region of text,
 but has no effect unless it's styled.)
 
-These features are one
-(but unfortunately not the only)
-common source of confusion with CSS:
-if one may override general rules with specific ones
-but also provide multiple values for class,
-how do we keep track of which rules will apply to an element with multiple classes?
-
 One other thing CSS can do is match specific elements.
 We can label particular elements uniquely within a page using the `id` attribute,
 then refer to those elements using `#name` as a selector.
@@ -564,25 +551,27 @@ then we can style those spans like this:
 {: .continue}
 
 ```{: .css}
-#major {
+span#major {
   text-decoration: underline red;
 }
-#minor {
+span#minor {
   text-decoration: overline blue;
 }
 ```
 
-> ### Internal Links
->
-> We can link to an element in a page using `#name`
-> inside the link's `href`:
-> for example,
-> `<a href="page.html#place">text</a>`
-> refers to the `#place` element in `page.html`.
-> This is particularly useful *within* pages:
-> `<a href="#place">jump</a>`
-> takes us straight to the `#place` element within this page.
-> Internal links like this are often used for cross-referencing and to create a table of contents.
+<div class="callout" markdown="1">
+### Internal Links
+
+We can link to an element in a page using `#name`
+inside the link's `href`:
+for example,
+`<a href="page.html#place">text</a>`
+refers to the `#place` element in `page.html`.
+This is particularly useful *within* pages:
+`<a href="#place">jump</a>`
+takes us straight to the `#place` element within this page.
+Internal links like this are often used for cross-referencing and to create a table of contents.
+</div>
 
 ## Exercises {: #scraper-exercises}
 
