@@ -202,7 +202,623 @@
       <div class="column bordered">
 	<main>
           <h1>A Modest Web Scraper</h1>
-          <p>FIXME</p>
+          <p>This short lesson will show you how to build a fully functional web scraper.
+We'll tackle the problem in three steps:
+handling nested data,
+handling HTML,
+and finally getting HTML pages from the web.</p>
+<h2 id="scraper-nested">Section 4.1: Nested Data</h2>
+<p>The list <code>flat</code> contains three strings:</p>
+<div class="highlight"><pre><span></span><code>flat = [&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;lime&quot;]
+</code></pre></div>
+<p>If we want to get the total length of those strings,
+we just add up the lengths of the items in <code>flat</code>:</p>
+<div class="highlight"><pre><span></span><code>total = 0
+for word in flat:
+    total += len(word)
+</code></pre></div>
+<p>If we have a list of lists,
+we can use a double loop:</p>
+<div class="highlight"><pre><span></span><code>double = [[&quot;red&quot;, &quot;green&quot;], [&quot;blue&quot;, &quot;lime&quot;]]
+total = 0
+for sublist in double:
+    for word in sublist:
+        total += len(word)
+</code></pre></div>
+<p>But what if we have a mix of words and lists?
+What do we do if we have a structure like this:</p>
+<div class="highlight"><pre><span></span><code>irregular = [&quot;red&quot;, [&quot;green&quot;, &quot;blue&quot;], [&quot;lime&quot;]]
+</code></pre></div>
+<p>We could test the type of the item in the outer loop,
+and only run the inner loop when the item is a sublist:</p>
+<div class="highlight"><pre><span></span><code>total = 0
+for thing in irregular:
+    if isinstance(thing, str):
+        total += len(thing)
+    elif isinstance(thing, list):
+        for item in thing:
+            total += len(item)
+    else:
+        print(&quot;Whoops, I don&#39;t know what&quot;, thing, &quot;is&quot;)
+</code></pre></div>
+<p>That code isn't easy to read.
+It also breaks as soon as we have sub-sub-lists like this:</p>
+<div class="highlight"><pre><span></span><code>nested = [&quot;red&quot;, [&quot;green&quot;, [&quot;blue&quot;, &quot;lime&quot;]]]
+</code></pre></div>
+<p>To handle this,
+we need to take a step back and write a function.
+Here's our first attempt:</p>
+<div class="highlight"><pre><span></span><code>def add_len(thing):
+    # If we&#39;re given a string, return its length immediately.
+    if isinstance(thing, str):
+        return len(thing)
+
+    # If it&#39;s not a string, it had better be a list.
+    assert isinstance(thing, list)
+
+    # It&#39;s a list, so do something with each of its items.
+    pass # What do we do here?
+</code></pre></div>
+<p>The last line of the code block above is the hard part.
+We know we have a list.
+We know it contains string and lists.
+We want the total length of all the strings it contains.
+If we had a magic function that could give us that total,
+we'd be done:</p>
+<div class="highlight"><pre><span></span><code>def add_len(thing):
+    if isinstance(thing, str):
+        return len(thing)
+
+    assert isinstance(thing, list)
+
+    total = 0
+    for item in thing: # we can loop because we know &#39;thing&#39; is a list
+        total += magic_function(item) # this is the part we&#39;re missing
+    return total
+</code></pre></div>
+<p>But we <em>have</em> the magic function we need:
+it's called <code>add_len</code>.
+Let's plug that in to get the final version of <code>add_len</code>:</p>
+<div class="highlight"><pre><span></span><code>def add_len(thing):
+    if isinstance(thing, str):
+        return len(thing)
+
+    assert isinstance(thing, list)
+
+    total = 0
+    for item in thing:
+        total += add_len(item)
+    return total
+</code></pre></div>
+<p>Let's trace its execution.</p>
+<ol>
+<li>
+<p><code>add_len("red")</code>:
+    since <code>thing</code> is the string <code>"red"</code>,
+    the function immediately returns 3.</p>
+</li>
+<li>
+<p><code>add_len(["red"])</code>:
+    <code>thing</code> is a list with one item,
+    so we initialize <code>total</code> to 0 and go around our loop once.
+    Inside the loop, we add <code>add_len("red")</code> to <code>total</code>.
+    We've already established that <code>add_len("red")</code> returns 3,
+    so we set <code>total</code> to 0+3,
+    finish the loop,
+    and return 3.</p>
+</li>
+<li>
+<p><code>add_len(["red", "green"])</code>:
+    OK, <code>thing</code> is a list with two items,
+    so our loop calls <code>add_len("red")</code> and <code>add_len("green")</code>
+    in that order,
+    setting <code>total</code> to 3 and then 8
+    and returns that.</p>
+</li>
+<li>
+<p><code>add_len(["red", ["green", "blue"]])</code>:
+    we'll trace this one point by point.
+    The initial call to <code>add_len</code> sees a list so it goes to the bottom code.</p>
+<ul>
+<li>It initializes <code>total</code> to 0.</li>
+<li>The first time around the loop we call <code>add_len("red")</code>.
+    This returns 3, so <code>total</code> becomes 3.</li>
+<li>The second time around the loop we call <code>add_len(["green", "blue"])</code>.
+    Since we've given <code>add_len</code> a list,
+    we go into a loop inside <em>that</em> call to the function.<ul>
+<li>We initialize <code>total</code> to 0.
+    This is <em>not</em> the same variable as the <code>total</code> mentioned above:
+    this <code>total</code> belongs to the new call to <code>add_total</code>,
+    just like different people each have their own nose.</li>
+<li>The first time around the loop we call <code>add_len("green")</code>.
+    It returns 5, so we set this function call's <code>total</code> to 5.</li>
+<li>The second time around we call <code>add_len("blue")</code>,
+    so total becomes 9.</li>
+<li>There's nothing else in the list, so this function call returns 9.</li>
+</ul>
+</li>
+<li>We're now back in the initial function call.
+    Its total is 3 (the length of <code>"red"</code>)
+    and the call to <code>add_len(["green", "blue"])</code> just returned 9,
+    so we set <code>total</code> to 12.</li>
+<li>There's nothing else in this function call's list,
+    so we return 12
+    and we're done.</li>
+</ul>
+</li>
+</ol>
+<p>This explanation is probably very confusing,
+so please head over to <a href="https://pythontutor.com/visualize.html#mode=edit">https://pythontutor.com/visualize.html#mode=edit</a>,
+copy the <code>add_len</code> function into the text box,
+add a line to call the function,
+and then click on <code>[Visualize Execution]</code>.
+As you click <code>[Next]</code>,
+it will show you what's happening step by step as your code runs.</p>
+<div align="center">
+  <img src="add_len.png" alt="Visualization of add_len function"/>
+</div>
+
+<h2 id="scraper-htmlcss">Section 4.2: HTML and CSS</h2>
+<p>HTML is the standard way to represent documents for presentation in web browsers,
+and CSS is the standard way to describe how it should look.
+Both are more complicated than they should have been,
+but in order to create web applications,
+we need to understand a little of both.</p>
+<p>An HTML document contains elements and text
+(and possibly other things that we will ignore for now).
+Elements are shown using tags:
+an opening tag <code>&lt;tagname&gt;</code> shows where the element begins,
+and a corresponding closing tag <code>&lt;/tagname&gt;</code> (with a leading slash) shows where it ends.
+If there's nothing between the two, we can write <code>&lt;tagname/&gt;</code> (with a trailing slash).</p>
+<p>A document's elements must form a tree,
+i.e.,
+they must be strictly nested.
+This means that if Y starts inside X,
+Y must end before X ends,
+so <code>&lt;X&gt;…&lt;Y&gt;…&lt;/Y&gt;&lt;/X&gt;</code> is legal,
+but <code>&lt;X&gt;…&lt;Y&gt;…&lt;/X&gt;&lt;/Y&gt;</code> is not.
+Finally,
+every document should have a single root element that encloses everything else,
+although browsers aren't strict about enforcing this.
+In fact,
+most browsers are pretty relaxed about enforcing any kind of rules at all,
+since most people don't obey them anyway.</p>
+<p>The text in an HTML page is normal printable text.
+However,
+since <code>&lt;</code> and <code>&gt;</code> are used to show where tags start and end,
+we must use escape sequences to represent them,
+just as we use <code>\"</code> to represented a literal double-quote character
+inside a double-quoted string in JavaScript.
+In HTML,
+escape sequences are written <code>&amp;name;</code>,
+i.e.,
+an ampersand, the name of the character, and a semi-colon.
+A few common escape sequences are shown in \tblref{t:htmlcss-escapes}.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Escape Sequence</th>
+<th>Character</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Less than</td>
+<td><code>&amp;lt;</code></td>
+<td>&lt;</td>
+</tr>
+<tr>
+<td>Greater than</td>
+<td><code>&amp;gt;</code></td>
+<td>&gt;</td>
+</tr>
+<tr>
+<td>Ampersand</td>
+<td><code>&amp;amp;</code></td>
+<td>&amp;</td>
+</tr>
+<tr>
+<td>Copyright</td>
+<td><code>&amp;copy;</code></td>
+<td>©</td>
+</tr>
+<tr>
+<td>Plus/minus</td>
+<td><code>&amp;plusmn;</code></td>
+<td>±</td>
+</tr>
+<tr>
+<td>Micro</td>
+<td><code>&amp;micro;</code></td>
+<td>µ</td>
+</tr>
+</tbody>
+</table>
+<p>The first two are self-explanatory,
+and <code>&amp;amp;</code> is needed so that we can write a literal ampersand
+(just as <code>\\</code> is needed in JavaScript strings so that we can write a literal backslash).
+<code>&amp;copy;</code>, <code>&amp;plusmn;</code>, and <code>&amp;micro;</code> are usually not needed any longer,
+since most editors will allow us to put non-ASCII characters directly into documents these days,
+but occasionally we will run into older or stricter systems.</p>
+<p>An HTML page should have:</p>
+<ul>
+<li>a single <code>html</code> element that encloses everything else,</li>
+<li>a single <code>head</code> element that contains information about the page, and</li>
+<li>a single <code>body</code> element that contains the content to be displayed.</li>
+</ul>
+<p>It doesn't matter whether or how we indent the tags showing these elements and the content they contain,
+but laying them out on separate lines
+and indenting to show nesting
+helps human readers.
+Well-written pages also use comments, just like code:
+these start with <code>&lt;!--</code> and end with <code>--&gt;</code>.
+Unfortunately,
+comments cannot be nested,
+i.e.,
+if you comment out a section of a page that already contains a comment,
+the results are unpredictable.</p>
+<p>Here's an empty HTML page with the structure described above:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="cm">&lt;!-- description of page goes here --&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="cm">&lt;!-- content of page goes here --&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+<p class="continue">Nothing shows up if we open this in a browser,
+so let's add a little content:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>This text is displayed in the browser bar<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Displayed Content Starts Here<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>
+      This course introduces core features of <span class="p">&lt;</span><span class="nt">em</span><span class="p">&gt;</span>JavaScript<span class="p">&lt;/</span><span class="nt">em</span><span class="p">&gt;</span>
+      and shows where and how to use them.
+    <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="cm">&lt;!-- The word &quot;JavaScript&quot; is in italics (emphasis) in the preceding paragraph. --&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+<ul>
+<li>
+<p>The <code>title</code> element inside <code>head</code> gives the page a title.
+    This is displayed in the browser bar when the page is open,
+    but is <em>not</em> displayed as part of the page itself.</p>
+</li>
+<li>
+<p>The <code>h1</code> element is a level-1 heading;
+    we can use <code>h2</code>, <code>h3</code>, and so on to create sub-headings.</p>
+</li>
+<li>
+<p>The <code>p</code> element is a paragraph.</p>
+</li>
+<li>
+<p>Inside a heading or a paragraph,
+    we can use <code>em</code> to <em>emphasize</em> text.
+    We can also use <code>strong</code> to make text <strong>stronger</strong>.
+    Tags like these are better than tags like <code>i</code> (for italics) or <code>b</code> (for bold)
+    because they signal intention rather than forcing a particular layout.
+    Someone who is visually impaired, or someone using a small-screen device,
+    may want emphasis of various kinds displayed in different ways.</p>
+</li>
+</ul>
+<p>Elements can be customized by giving them attributes,
+which are written as <code>name="value"</code> pairs inside the element's opening tag.
+Forr example:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">h1</span> <span class="na">align</span><span class="o">=</span><span class="s">&quot;center&quot;</span><span class="p">&gt;</span>A Centered Heading<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</code></pre></div>
+<p class="continue">centers the <code>h1</code> heading on the page, while:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;disclaimer&quot;</span><span class="p">&gt;</span>This planet provided as-is.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</code></pre></div>
+<p class="continue">marks this paragraph as a disclaimer.
+That doesn't mean anything special to HTML,
+but as we'll see later,
+we can define styles based on the <code>class</code> attributes of elements.</p>
+<p>An attribute's name may appear at most once in any element,
+just like a key can only appear once in any JavaScript object,
+so <code>&lt;p align="left" align="right"&gt;…&lt;/p&gt;</code> is illegal.
+If we want to give an attribute multiple values---for example,
+if we want an element to have several classes---we put all the values in one string.
+Unfortunately,
+as the example below shows,
+HTML is inconsistent about whether values should be separated by spaces or semi-colons:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;disclaimer optional&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;color: blue; font-size: 200%;&quot;</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>However they are separated,
+values are supposed to be quoted,
+but in practice we can often get away with <code>name=value</code>.
+And for Boolean attributes whose values are just true or false,
+we can even sometimes just get away with <code>name</code> on its own.</p>
+<p>Headings and paragraphs are all very well,
+but data scientists need more.
+To create an unordered (bulleted) list,
+we use a <code>ul</code> element,
+and wrap each item inside the list in <code>li</code>.
+To create an ordered (numbered) list,
+we use <code>ol</code> instead of <code>ul</code>,
+but still use <code>li</code> for the list items.</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>first<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>second<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>third<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">ol</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>first<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>second<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>third<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">ol</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>Lists can be nested by putting the inner list's <code>ul</code> or <code>ol</code>
+inside one of the outer list's <code>li</code> elements.</p>
+<p>Unsurprisingly,
+we use the <code>table</code> element to create these.
+Each row is a <code>tr</code> (for <code>table row''),
+and within rows,
+column items are shown with `td` (for</code>table data'')
+or <code>th</code> (for ``table heading'').</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">table</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>Alkali<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>   <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>Noble Gas<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span> <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Hydrogen<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Helium<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>    <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Lithium<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>  <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Neon<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>      <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Sodium<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>   <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Argon<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>     <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>Links to other pages are what make HTML hypertext.
+Confusingly,
+the element used to show a link is called <code>a</code>.
+The text inside the element is displayed and (usually) highlighted for clicking.
+Its <code>href</code> attribute specifies what the link is pointing at;
+both local filenames and URLs are supported.
+Oh,
+and we can use <code>&lt;br/&gt;</code> to force a line break in text
+(with a trailing slash inside the tag, since the <code>br</code> element doesn't contain any content):</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://nodejs.org/&quot;</span><span class="p">&gt;</span>Node.js<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">br</span><span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;https://facebook.github.io/react/&quot;</span><span class="p">&gt;</span>React<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">br</span><span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;../index.html&quot;</span><span class="p">&gt;</span>home page (relative path)<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</code></pre></div>
+<h2 class="scraper-images">Images</h2>
+<p>Images can be stored inside HTML pages in two ways:
+by embedding SVG
+or by encoding the image as text and including that text in the body of the page,
+which is clever,
+but makes the source of the pages very hard to read.</p>
+<p>It is far more common to store each image in a separate file
+and refer to that file using an <code>img</code> element
+(which also allows us to use the image in many places without copying it).
+The <code>src</code> attribute of the <code>img</code> tag specifies where to find the file;
+as with the <code>href</code> attribute of an <code>a</code> element,
+this can be either a URL or a local path.
+Every <code>img</code> should also include a <code>title</code> attribute (whose purpose is self-explanatory)
+and an <code>alt</code> attribute with some descriptive text to aid accessibility and search engines.
+(Again, we have wrapped and broken lines so that they will display nicely in the printed version.)</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;./assets/logo.png&quot;</span> <span class="na">title</span><span class="o">=</span><span class="s">&quot;Book Logo&quot;</span>
+     <span class="na">alt</span><span class="o">=</span><span class="s">&quot;Displays the book logo using a local path&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://js4ds.org/assets/logo.png&quot;</span>
+     <span class="na">title</span><span class="o">=</span><span class="s">&quot;Book Logo&quot;</span>
+     <span class="na">alt</span><span class="o">=</span><span class="s">&quot;Display the book logo using a URL&quot;</span> <span class="p">/&gt;</span>
+</code></pre></div>
+<p>Two things to note here are:</p>
+<ol>
+<li>
+<p>Since <code>img</code> elements don't contain any text,
+    they are often written with the trailing-slash notation.
+    However,
+    they are also often written improperly as <code>&lt;img\ src="..."&gt;</code> without any slashes at all.
+    Browsers will understand this,
+    but some software packages will complain.</p>
+</li>
+<li>
+<p>If an image file is referred to using a path rather than a URL,
+    that path can be either relative
+    or absolute.
+    If it's a relative path,
+    it's interpreted starting from where the web page is located;
+    if it's an absolute path,
+    it's interpreted relative to wherever the web browser thinks
+    the root directory of the filesystem is.</p>
+</li>
+</ol>
+<h2 class="scraper-css">Cascading Style Sheets</h2>
+<p>When HTML first appeared, people styled elements by setting their attributes:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">align</span><span class="o">=</span><span class="s">&quot;center&quot;</span><span class="p">&gt;</span>Heading is Centered<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">b</span><span class="p">&gt;</span>Text<span class="p">&lt;/</span><span class="nt">b</span><span class="p">&gt;</span> can be highlighted
+      or <span class="p">&lt;</span><span class="nt">font</span> <span class="na">color</span><span class="o">=</span><span class="s">&quot;coral&quot;</span><span class="p">&gt;</span>colorized<span class="p">&lt;/</span><span class="nt">font</span><span class="p">&gt;</span>.
+    <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>Many still do,
+but a better way is to use Cascading Style Sheets (CSS).
+These allow us to define a style once and use it many times,
+which makes it much easier to maintain consistency.
+Here's a page that uses CSS instead of direct styling:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;simple-style.css&quot;</span> <span class="p">/&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;title&quot;</span><span class="p">&gt;</span>Heading is Centered<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;keyword&quot;</span><span class="p">&gt;</span>Text<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span> can be highlighted
+      or <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;highlight&quot;</span><span class="p">&gt;</span>colorized<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>.
+    <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>The <code>head</code> contains a link to an external style sheet
+stored in the same directory as the page itself;
+we could use a URL here instead of a relative path,
+but the <code>link</code> element <em>must</em> have the <code>rel="stylesheet"</code> attribute.
+Inside the page,
+we then set the <code>class</code> attribute of each element we want to style.</p>
+<p>The file <code>simple-style.css</code> looks like this:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">h1</span><span class="p">.</span><span class="nc">title</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">text-align</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="nt">span</span><span class="p">.</span><span class="nc">keyword</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="kc">bold</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="p">.</span><span class="nc">highlight</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="kc">coral</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p class="continue">Each entry has the form <code>tag.class</code> followed by a group of properties inside curly braces,
+and each property is a key-value pair.
+We can omit the class and just write (for example):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">p</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">font-style</span><span class="p">:</span><span class="w"> </span><span class="kc">italic</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<p class="continue">in which case the style applies to everything with that tag.
+If we do this,
+we can override general rules with specific ones:
+the style for a disclaimer paragraph is defined by <code>p</code> with overrides defined by <code>p.disclaimer</code>.
+We can also omit the tag and simply use <code>.class</code>,
+in which case every element with that class has that style.</p>
+<p>Elements may have multiple values for class,
+as in <code>&lt;span class="keyword highlight"&gt;…&lt;/span&gt;</code>.
+(The <code>span</code> element simply marks a region of text,
+but has no effect unless it's styled.)</p>
+<p>These features are one
+(but unfortunately not the only)
+common source of confusion with CSS:
+if one may override general rules with specific ones
+but also provide multiple values for class,
+how do we keep track of which rules will apply to an element with multiple classes?</p>
+<p>One other thing CSS can do is match specific elements.
+We can label particular elements uniquely within a page using the <code>id</code> attribute,
+then refer to those elements using <code>#name</code> as a selector.
+For example,
+if we create a page that gives two spans unique IDs:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;selector-style.css&quot;</span> <span class="p">/&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>
+      First <span class="p">&lt;</span><span class="nt">span</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;major&quot;</span><span class="p">&gt;</span>keyword<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>.
+    <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>
+      Full <span class="p">&lt;</span><span class="nt">span</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;minor&quot;</span><span class="p">&gt;</span>explanation<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>.
+    <span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+<p class="continue">then we can style those spans like this:</p>
+<div class="highlight"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="nt">major</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">text-decoration</span><span class="p">:</span><span class="w"> </span><span class="kc">underline</span><span class="w"> </span><span class="kc">red</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+<span class="err">#</span><span class="w"> </span><span class="nt">minor</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">text-decoration</span><span class="p">:</span><span class="w"> </span><span class="kc">overline</span><span class="w"> </span><span class="kc">blue</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+<blockquote>
+<h3>Internal Links</h3>
+<p>We can link to an element in a page using <code>#name</code>
+inside the link's <code>href</code>:
+for example,
+<code>&lt;a href="page.html#place"&gt;text&lt;/a&gt;</code>
+refers to the <code>#place</code> element in <code>page.html</code>.
+This is particularly useful <em>within</em> pages:
+<code>&lt;a href="#place"&gt;jump&lt;/a&gt;</code>
+takes us straight to the <code>#place</code> element within this page.
+Internal links like this are often used for cross-referencing and to create a table of contents.</p>
+</blockquote>
+<h2 id="scraper-exercises">Section 4.5: Exercises</h2>
+<h3 class="exercise">Joining All Strings</h3>
+<p>Write a function called <code>join_all</code> that joins all the strings
+in a bunch of nested lists.
+For example:</p>
+<div class="highlight"><pre><span></span><code>join_all([[&quot;red&quot;, [&quot;green&quot;, &quot;blue&quot;]], &quot;lime&quot;])
+</code></pre></div>
+<p class="continue">should return <code>"redgreenbluelime"</code>.</p>
+<h3 class="exercise">Searching Nested Lists</h3>
+<p>Write a function called <code>longest</code> that returns the longest string it finds
+in a bunch of nested lists.
+For example:</p>
+<div class="highlight"><pre><span></span><code>longest([&quot;red&quot;, [&quot;green&quot;, &quot;blue&quot;], [&quot;lime&quot;]])
+</code></pre></div>
+<p class="continue">should return <code>"green"</code>.
+If several strings are of equal longest length,
+return whichever you want.</p>
+<h3 class="exercise">JSON</h3>
+<p>JSON (short for "JavaScript Object Notation")
+consists of nested lists and dictionaries,
+where the dictionaries can only have strings as keys.
+For example,
+this is a valid JSON data structure:</p>
+<div class="highlight"><pre><span></span><code>{&quot;alpha&quot;: 1, &quot;beta&quot;: {&quot;gamma&quot;: [2, 3], &quot;delta&quot;: [4, {&quot;epsilon&quot;: 5}]}}
+</code></pre></div>
+<p class="continue">It may be easier to read if it's written like this:</p>
+<div class="highlight"><pre><span></span><code>{
+    &quot;alpha&quot;: 1,
+    &quot;beta&quot;: {
+        &quot;gamma&quot;: [
+            2,
+            3
+        ],
+        &quot;delta&quot;: [
+            4,
+            {
+                &quot;epsilon&quot;: 5
+            }
+        ]
+    }
+}
+</code></pre></div>
+<p class="continue">Modify <code>add_len</code> so that it returns the total length
+of all the numbers that appear as values in a JSON data structure.
+For example, the result for the data structure shown above is 15.</p>
+<h2 class="exercise">Searching JSON</h2>
+<p>Write a function <code>json_find</code> that takes a list of keys and indices
+and returns the part of a JSON structure at that location.
+For example, the list <code>["beta", "delta", 1]</code> should return the
+dictionary <code>{"epsilon":5}</code> in the previous exercise:</p>
+<ul>
+<li>The key <code>"beta"</code> selects a sub-dictionary.</li>
+<li>They key <code>"delta"</code> selects a list.</li>
+<li>The index 1 selects the second element of that list.</li>
+</ul>
+<h3 class="exercise">Cutting Corners</h3>
+<p>What does your browser display if you forget to close a paragraph or list item tag
+like this:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>This paragraph starts but doesn&#39;t officially end.
+
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Another paragraph starts here but also doesn&#39;t end.
+
+<span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>First item in the list isn&#39;t closed.
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Neither is the second.
+<span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</code></pre></div>
+<h3 class="exercise">Mix and Match</h3>
+<ol>
+<li>
+<p>Create a page that contains a 2×2 table,
+    each cell of which has a three-item bullet-point list.
+    How can you reduce the indentation of the list items within their cells using CSS?</p>
+</li>
+<li>
+<p>Open your page in a different browser (e.g., Firefox or Edge).
+    Do they display your indented lists consistently?</p>
+</li>
+</ol>
+<h3 class="exercise">Color</h3>
+<p>HTML and CSS define names for a small number of colors.
+All other colors must be specified using RGB values.
+Write a small program that creates an HTML page
+that displays the word <code>color</code> in 100 different randomly-generated colors.</p>
 	</main>
       </div>
     </div>

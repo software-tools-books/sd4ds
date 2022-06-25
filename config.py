@@ -73,6 +73,7 @@ extension = "/"
 # Files to copy verbatim.
 copy = [
     "*.html",
+    "*.png",
     "*.py",
     "*.svg",
 ]
@@ -82,6 +83,7 @@ exclude = [
     "*.csv",
     "*.gz",
     "*.out",
+    "*.png",
     "*.py",
     "*.pyc",
     "*.svg",
