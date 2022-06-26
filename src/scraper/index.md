@@ -437,7 +437,7 @@ Internal links like this are often used for cross-referencing and to create a ta
 ## Getting Pages {: #scraper-requests}
 
 -   Use the [requests][requests] library
--   FIXME
+
 
 ## Exercises {: #scraper-exercises}
 
