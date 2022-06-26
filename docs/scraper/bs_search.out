@@ -1,0 +1,15 @@
+<li class="gene">Indy</li>
+<li class="gene">Tinman</li>
+<li class="category">Halloween genes:
+  <ul>
+<li class="gene">Mummy</li>
+<li class="gene">Phantom</li>
+</ul>
+</li>
+<li class="gene">Mummy</li>
+<li class="gene">Phantom</li>
+----
+Indy
+Tinman
+Mummy
+Phantom

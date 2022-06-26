@@ -204,161 +204,10 @@
           <h1>A Modest Web Scraper</h1>
           <p>This short lesson will show you how to build a fully functional web scraper.
 We'll tackle the problem in three steps:
-handling nested data,
-handling HTML,
-and finally getting HTML pages from the web.</p>
-<h2 id="scraper-nested">Section 4.1: Nested Data</h2>
-<p>The list <code>flat</code> contains three strings:</p>
-<div class="highlight"><pre><span></span><code>flat = [&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;lime&quot;]
-</code></pre></div>
-<p>If we want to get the total length of those strings,
-we just add up the lengths of the items in <code>flat</code>:</p>
-<div class="highlight"><pre><span></span><code>total = 0
-for word in flat:
-    total += len(word)
-</code></pre></div>
-<p>If we have a list of lists,
-we can use a double loop:</p>
-<div class="highlight"><pre><span></span><code>double = [[&quot;red&quot;, &quot;green&quot;], [&quot;blue&quot;, &quot;lime&quot;]]
-total = 0
-for sublist in double:
-    for word in sublist:
-        total += len(word)
-</code></pre></div>
-<p>But what if we have a mix of words and lists?
-What do we do if we have a structure like this:</p>
-<div class="highlight"><pre><span></span><code>irregular = [&quot;red&quot;, [&quot;green&quot;, &quot;blue&quot;], [&quot;lime&quot;]]
-</code></pre></div>
-<p>We could test the type of the item in the outer loop,
-and only run the inner loop when the item is a sublist:</p>
-<div class="highlight"><pre><span></span><code>total = 0
-for thing in irregular:
-    if isinstance(thing, str):
-        total += len(thing)
-    elif isinstance(thing, list):
-        for item in thing:
-            total += len(item)
-    else:
-        print(&quot;Whoops, I don&#39;t know what&quot;, thing, &quot;is&quot;)
-</code></pre></div>
-<p>That code isn't easy to read.
-It also breaks as soon as we have sub-sub-lists like this:</p>
-<div class="highlight"><pre><span></span><code>nested = [&quot;red&quot;, [&quot;green&quot;, [&quot;blue&quot;, &quot;lime&quot;]]]
-</code></pre></div>
-<p>To handle this,
-we need to take a step back and write a function.
-Here's our first attempt:</p>
-<div class="highlight"><pre><span></span><code>def add_len(thing):
-    # If we&#39;re given a string, return its length immediately.
-    if isinstance(thing, str):
-        return len(thing)
-
-    # If it&#39;s not a string, it had better be a list.
-    assert isinstance(thing, list)
-
-    # It&#39;s a list, so do something with each of its items.
-    pass # What do we do here?
-</code></pre></div>
-<p>The last line of the code block above is the hard part.
-We know we have a list.
-We know it contains string and lists.
-We want the total length of all the strings it contains.
-If we had a magic function that could give us that total,
-we'd be done:</p>
-<div class="highlight"><pre><span></span><code>def add_len(thing):
-    if isinstance(thing, str):
-        return len(thing)
-
-    assert isinstance(thing, list)
-
-    total = 0
-    for item in thing: # we can loop because we know &#39;thing&#39; is a list
-        total += magic_function(item) # this is the part we&#39;re missing
-    return total
-</code></pre></div>
-<p>But we <em>have</em> the magic function we need:
-it's called <code>add_len</code>.
-Let's plug that in to get the final version of <code>add_len</code>:</p>
-<div class="highlight"><pre><span></span><code>def add_len(thing):
-    if isinstance(thing, str):
-        return len(thing)
-
-    assert isinstance(thing, list)
-
-    total = 0
-    for item in thing:
-        total += add_len(item)
-    return total
-</code></pre></div>
-<p>Let's trace its execution.</p>
-<ol>
-<li>
-<p><code>add_len("red")</code>:
-    since <code>thing</code> is the string <code>"red"</code>,
-    the function immediately returns 3.</p>
-</li>
-<li>
-<p><code>add_len(["red"])</code>:
-    <code>thing</code> is a list with one item,
-    so we initialize <code>total</code> to 0 and go around our loop once.
-    Inside the loop, we add <code>add_len("red")</code> to <code>total</code>.
-    We've already established that <code>add_len("red")</code> returns 3,
-    so we set <code>total</code> to 0+3,
-    finish the loop,
-    and return 3.</p>
-</li>
-<li>
-<p><code>add_len(["red", "green"])</code>:
-    OK, <code>thing</code> is a list with two items,
-    so our loop calls <code>add_len("red")</code> and <code>add_len("green")</code>
-    in that order,
-    setting <code>total</code> to 3 and then 8
-    and returns that.</p>
-</li>
-<li>
-<p><code>add_len(["red", ["green", "blue"]])</code>:
-    we'll trace this one point by point.
-    The initial call to <code>add_len</code> sees a list so it goes to the bottom code.</p>
-<ul>
-<li>It initializes <code>total</code> to 0.</li>
-<li>The first time around the loop we call <code>add_len("red")</code>.
-    This returns 3, so <code>total</code> becomes 3.</li>
-<li>The second time around the loop we call <code>add_len(["green", "blue"])</code>.
-    Since we've given <code>add_len</code> a list,
-    we go into a loop inside <em>that</em> call to the function.<ul>
-<li>We initialize <code>total</code> to 0.
-    This is <em>not</em> the same variable as the <code>total</code> mentioned above:
-    this <code>total</code> belongs to the new call to <code>add_total</code>,
-    just like different people each have their own nose.</li>
-<li>The first time around the loop we call <code>add_len("green")</code>.
-    It returns 5, so we set this function call's <code>total</code> to 5.</li>
-<li>The second time around we call <code>add_len("blue")</code>,
-    so total becomes 9.</li>
-<li>There's nothing else in the list, so this function call returns 9.</li>
-</ul>
-</li>
-<li>We're now back in the initial function call.
-    Its total is 3 (the length of <code>"red"</code>)
-    and the call to <code>add_len(["green", "blue"])</code> just returned 9,
-    so we set <code>total</code> to 12.</li>
-<li>There's nothing else in this function call's list,
-    so we return 12
-    and we're done.</li>
-</ul>
-</li>
-</ol>
-<p>This explanation is probably very confusing,
-so please head over to <a href="https://pythontutor.com/visualize.html#mode=edit">https://pythontutor.com/visualize.html#mode=edit</a>,
-copy the <code>add_len</code> function into the text box,
-add a line to call the function,
-and then click on <code>[Visualize Execution]</code>.
-As you click <code>[Next]</code>,
-it will show you what's happening step by step as your code runs.</p>
-<div align="center">
-  <img src="add_len.png" alt="Visualization of add_len function" width="80%"/>
-</div>
-
-<h2 id="scraper-htmlcss">Section 4.2: HTML and CSS</h2>
+the structure of HTML,
+how to find things in HTML pages,
+and finally getting pages from the web.</p>
+<h2 id="scraper-htmlcss">Section 4.1: HTML and CSS</h2>
 <p>HTML is the standard way to represent documents for presentation in web browsers,
 and CSS is the standard way to describe how it should look.
 Both are more complicated than they should have been,
@@ -724,61 +573,120 @@ This is particularly useful <em>within</em> pages:
 takes us straight to the <code>#place</code> element within this page.
 Internal links like this are often used for cross-referencing and to create a table of contents.</p>
 </div>
-<h2 id="scraper-exercises">Section 4.3: Exercises</h2>
-<h3 class="exercise">Joining All Strings</h3>
-<p>Write a function called <code>join_all</code> that joins all the strings
-in a bunch of nested lists.
-For example:</p>
-<div class="highlight"><pre><span></span><code>join_all([[&quot;red&quot;, [&quot;green&quot;, &quot;blue&quot;]], &quot;lime&quot;])
-</code></pre></div>
-<p class="continue">should return <code>"redgreenbluelime"</code>.</p>
-<h3 class="exercise">Searching Nested Lists</h3>
-<p>Write a function called <code>longest</code> that returns the longest string it finds
-in a bunch of nested lists.
-For example:</p>
-<div class="highlight"><pre><span></span><code>longest([&quot;red&quot;, [&quot;green&quot;, &quot;blue&quot;], [&quot;lime&quot;]])
-</code></pre></div>
-<p class="continue">should return <code>"green"</code>.
-If several strings are of equal longest length,
-return whichever you want.</p>
-<h3 class="exercise">JSON</h3>
-<p>JSON (short for "JavaScript Object Notation")
-consists of nested lists and dictionaries,
-where the dictionaries can only have strings as keys.
-For example,
-this is a valid JSON data structure:</p>
-<div class="highlight"><pre><span></span><code>{&quot;alpha&quot;: 1, &quot;beta&quot;: {&quot;gamma&quot;: [2, 3], &quot;delta&quot;: [4, {&quot;epsilon&quot;: 5}]}}
-</code></pre></div>
-<p class="continue">It may be easier to read if it's written like this:</p>
-<div class="highlight"><pre><span></span><code>{
-    &quot;alpha&quot;: 1,
-    &quot;beta&quot;: {
-        &quot;gamma&quot;: [
-            2,
-            3
-        ],
-        &quot;delta&quot;: [
-            4,
-            {
-                &quot;epsilon&quot;: 5
-            }
-        ]
-    }
-}
-</code></pre></div>
-<p class="continue">Modify <code>add_len</code> so that it returns the total length
-of all the numbers that appear as values in a JSON data structure.
-For example, the result for the data structure shown above is 15.</p>
-<h2 class="exercise">Searching JSON</h2>
-<p>Write a function <code>json_find</code> that takes a list of keys and indices
-and returns the part of a JSON structure at that location.
-For example, the list <code>["beta", "delta", 1]</code> should return the
-dictionary <code>{"epsilon":5}</code> in the previous exercise:</p>
+<h2 id="scraper-search">Section 4.2: Searching HTML</h2>
 <ul>
-<li>The key <code>"beta"</code> selects a sub-dictionary.</li>
-<li>They key <code>"delta"</code> selects a list.</li>
-<li>The index 1 selects the second element of that list.</li>
+<li>Use <a href="https://www.crummy.com/software/BeautifulSoup/">Beautiful Soup</a> to read HTML pages</li>
+<li>It produces a tree of nodes<ul>
+<li>Every node is either an element or some text</li>
+<li>Nodes have attributes</li>
 </ul>
+</li>
+<li>Our first few examples will use "pages" that are strings in the files<ul>
+<li>We'll use fragments rather than full pages</li>
+</ul>
+</li>
+<li>A paragraph containing some bold text and a link</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;p&gt;&lt;strong&gt;RNA&lt;/strong&gt; (n.):</span>
+<span class="s2">&lt;a href=&quot;https://en.wikipedia.org/wiki/RNA&quot;&gt;ribonucleic acid&lt;/a&gt;.&quot;&quot;&quot;</span>
+
+<span class="n">doc</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;type(doc) </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--------&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--------&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">contents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contents</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">:[</span><span class="si">{</span><span class="n">child</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>type(doc) &lt;class &#39;bs4.BeautifulSoup&#39;&gt;
+--------
+&lt;p&gt;&lt;strong&gt;RNA&lt;/strong&gt; (n.):
+&lt;a href=&quot;https://en.wikipedia.org/wiki/RNA&quot;&gt;ribonucleic acid&lt;/a&gt;.&lt;/p&gt;
+--------
+0:[&lt;strong&gt;RNA&lt;/strong&gt;]
+1:[ (n.):
+]
+2:[&lt;a href=&quot;https://en.wikipedia.org/wiki/RNA&quot;&gt;ribonucleic acid&lt;/a&gt;]
+3:[.]
+</code></pre></div></p>
+<ul>
+<li>We have to specify the low-level parser (we use <code>html.parser</code> from the Python standard library)</li>
+<li>We get a document with one child, which is our paragraph</li>
+<li>
+<p>It has four children:</p>
+<ul>
+<li>The <code>strong</code> node</li>
+<li>The text between nodes</li>
+<li>The link</li>
+<li>The trailing text</li>
+</ul>
+</li>
+<li>
+<p>If a node only contains text, <code>.string</code> gets that text</p>
+</li>
+<li>We can search with <code>find</code> to get one node</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;p id=&quot;nematode&quot;&gt;C. elegans&lt;/p&gt;</span>
+<span class="s2">&lt;p id=&quot;zebrafish&quot;&gt;D. rerio&lt;/p&gt;</span>
+<span class="s2">&lt;p id=&quot;fruitfly&quot;&gt;D. melanogaster&lt;/p&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">doc</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;zebrafish&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>D. rerio
+</code></pre></div></p>
+<ul>
+<li>We can use <code>find_all</code> to get all matching nodes at any depth</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;p&gt;Genes:&lt;/p&gt;</span>
+<span class="s2">&lt;ul&gt;</span>
+<span class="s2">&lt;li class=&quot;gene&quot;&gt;Indy&lt;/li&gt;</span>
+<span class="s2">&lt;li class=&quot;gene&quot;&gt;Tinman&lt;/li&gt;</span>
+<span class="s2">&lt;li class=&quot;category&quot;&gt;Halloween genes:</span>
+<span class="s2">  &lt;ul&gt;</span>
+<span class="s2">  &lt;li class=&quot;gene&quot;&gt;Mummy&lt;/li&gt;</span>
+<span class="s2">  &lt;li class=&quot;gene&quot;&gt;Phantom&lt;/li&gt;</span>
+<span class="s2">  &lt;/ul&gt;</span>
+<span class="s2">&lt;/li&gt;</span>
+<span class="s2">&lt;/ul&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">doc</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;li&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;----&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;li&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;gene&quot;</span><span class="p">}):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>&lt;li class=&quot;gene&quot;&gt;Indy&lt;/li&gt;
+&lt;li class=&quot;gene&quot;&gt;Tinman&lt;/li&gt;
+&lt;li class=&quot;category&quot;&gt;Halloween genes:
+  &lt;ul&gt;
+&lt;li class=&quot;gene&quot;&gt;Mummy&lt;/li&gt;
+&lt;li class=&quot;gene&quot;&gt;Phantom&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li class=&quot;gene&quot;&gt;Mummy&lt;/li&gt;
+&lt;li class=&quot;gene&quot;&gt;Phantom&lt;/li&gt;
+----
+Indy
+Tinman
+Mummy
+Phantom
+</code></pre></div></p>
+<h2 id="scraper-requests">Section 4.3: Getting Pages</h2>
+<ul>
+<li>Use the <a href="https://docs.python-requests.org/">requests</a> library</li>
+<li>FIXME</li>
+</ul>
+<h2 id="scraper-exercises">Section 4.4: Exercises</h2>
 <h3 class="exercise">Cutting Corners</h3>
 <p>What does your browser display if you forget to close a paragraph or list item tag
 like this:</p>

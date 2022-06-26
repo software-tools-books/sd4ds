@@ -214,7 +214,158 @@
 <li>We'll play with this data structure in <a class="x-ref" href="../interpreter/">Chapter 8</a> and <a class="x-ref" href="../compiler/">Chapter 20</a></li>
 <li>But since many design techniques rely on this fact, we'll explore it here</li>
 </ul>
-<h2 id="functional-data">Section 2.1: Functions as Data</h2>
+<h2 id="scraper-nested">Section 2.1: Nested Data</h2>
+<p>The list <code>flat</code> contains three strings:</p>
+<div class="highlight"><pre><span></span><code>flat = [&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;, &quot;lime&quot;]
+</code></pre></div>
+<p>If we want to get the total length of those strings,
+we just add up the lengths of the items in <code>flat</code>:</p>
+<div class="highlight"><pre><span></span><code>total = 0
+for word in flat:
+    total += len(word)
+</code></pre></div>
+<p>If we have a list of lists,
+we can use a double loop:</p>
+<div class="highlight"><pre><span></span><code>double = [[&quot;red&quot;, &quot;green&quot;], [&quot;blue&quot;, &quot;lime&quot;]]
+total = 0
+for sublist in double:
+    for word in sublist:
+        total += len(word)
+</code></pre></div>
+<p>But what if we have a mix of words and lists?
+What do we do if we have a structure like this:</p>
+<div class="highlight"><pre><span></span><code>irregular = [&quot;red&quot;, [&quot;green&quot;, &quot;blue&quot;], [&quot;lime&quot;]]
+</code></pre></div>
+<p>We could test the type of the item in the outer loop,
+and only run the inner loop when the item is a sublist:</p>
+<div class="highlight"><pre><span></span><code>total = 0
+for thing in irregular:
+    if isinstance(thing, str):
+        total += len(thing)
+    elif isinstance(thing, list):
+        for item in thing:
+            total += len(item)
+    else:
+        print(&quot;Whoops, I don&#39;t know what&quot;, thing, &quot;is&quot;)
+</code></pre></div>
+<p>That code isn't easy to read.
+It also breaks as soon as we have sub-sub-lists like this:</p>
+<div class="highlight"><pre><span></span><code>nested = [&quot;red&quot;, [&quot;green&quot;, [&quot;blue&quot;, &quot;lime&quot;]]]
+</code></pre></div>
+<p>To handle this,
+we need to take a step back and write a function.
+Here's our first attempt:</p>
+<div class="highlight"><pre><span></span><code>def add_len(thing):
+    # If we&#39;re given a string, return its length immediately.
+    if isinstance(thing, str):
+        return len(thing)
+
+    # If it&#39;s not a string, it had better be a list.
+    assert isinstance(thing, list)
+
+    # It&#39;s a list, so do something with each of its items.
+    pass # What do we do here?
+</code></pre></div>
+<p>The last line of the code block above is the hard part.
+We know we have a list.
+We know it contains string and lists.
+We want the total length of all the strings it contains.
+If we had a magic function that could give us that total,
+we'd be done:</p>
+<div class="highlight"><pre><span></span><code>def add_len(thing):
+    if isinstance(thing, str):
+        return len(thing)
+
+    assert isinstance(thing, list)
+
+    total = 0
+    for item in thing: # we can loop because we know &#39;thing&#39; is a list
+        total += magic_function(item) # this is the part we&#39;re missing
+    return total
+</code></pre></div>
+<p>But we <em>have</em> the magic function we need:
+it's called <code>add_len</code>.
+Let's plug that in to get the final version of <code>add_len</code>:</p>
+<div class="highlight"><pre><span></span><code>def add_len(thing):
+    if isinstance(thing, str):
+        return len(thing)
+
+    assert isinstance(thing, list)
+
+    total = 0
+    for item in thing:
+        total += add_len(item)
+    return total
+</code></pre></div>
+<p>Let's trace its execution.</p>
+<ol>
+<li>
+<p><code>add_len("red")</code>:
+    since <code>thing</code> is the string <code>"red"</code>,
+    the function immediately returns 3.</p>
+</li>
+<li>
+<p><code>add_len(["red"])</code>:
+    <code>thing</code> is a list with one item,
+    so we initialize <code>total</code> to 0 and go around our loop once.
+    Inside the loop, we add <code>add_len("red")</code> to <code>total</code>.
+    We've already established that <code>add_len("red")</code> returns 3,
+    so we set <code>total</code> to 0+3,
+    finish the loop,
+    and return 3.</p>
+</li>
+<li>
+<p><code>add_len(["red", "green"])</code>:
+    OK, <code>thing</code> is a list with two items,
+    so our loop calls <code>add_len("red")</code> and <code>add_len("green")</code>
+    in that order,
+    setting <code>total</code> to 3 and then 8
+    and returns that.</p>
+</li>
+<li>
+<p><code>add_len(["red", ["green", "blue"]])</code>:
+    we'll trace this one point by point.
+    The initial call to <code>add_len</code> sees a list so it goes to the bottom code.</p>
+<ul>
+<li>It initializes <code>total</code> to 0.</li>
+<li>The first time around the loop we call <code>add_len("red")</code>.
+    This returns 3, so <code>total</code> becomes 3.</li>
+<li>The second time around the loop we call <code>add_len(["green", "blue"])</code>.
+    Since we've given <code>add_len</code> a list,
+    we go into a loop inside <em>that</em> call to the function.<ul>
+<li>We initialize <code>total</code> to 0.
+    This is <em>not</em> the same variable as the <code>total</code> mentioned above:
+    this <code>total</code> belongs to the new call to <code>add_total</code>,
+    just like different people each have their own nose.</li>
+<li>The first time around the loop we call <code>add_len("green")</code>.
+    It returns 5, so we set this function call's <code>total</code> to 5.</li>
+<li>The second time around we call <code>add_len("blue")</code>,
+    so total becomes 9.</li>
+<li>There's nothing else in the list, so this function call returns 9.</li>
+</ul>
+</li>
+<li>We're now back in the initial function call.
+    Its total is 3 (the length of <code>"red"</code>)
+    and the call to <code>add_len(["green", "blue"])</code> just returned 9,
+    so we set <code>total</code> to 12.</li>
+<li>There's nothing else in this function call's list,
+    so we return 12
+    and we're done.</li>
+</ul>
+</li>
+</ol>
+<p>This explanation is probably very confusing,
+so please head over to <a href="https://pythontutor.com/visualize.html#mode=edit">https://pythontutor.com/visualize.html#mode=edit</a>,
+copy the <code>add_len</code> function into the text box,
+add a line to call the function,
+and then click on <code>[Visualize Execution]</code>.
+As you click <code>[Next]</code>,
+it will show you what's happening step by step as your code runs.</p>
+<div align="center">
+  <img src="add_len.png" alt="Visualization of add_len function" width="80%"/>
+</div>
+
+<h2 id="functional-data">Section 2.2: Functions as Data</h2>
 <ul>
 <li>Here's what happens when we create a variable whose value is an integer FIGURE<ul>
 <li>Python turns the characters into a number</li>
@@ -265,7 +416,7 @@
 <p>Sidebar: these are methods of the list class in JavaScript to enable a <a class="gl-ref" href="../gloss/#fluent_interface" markdown="1">fluent interface</a></p>
 </li>
 </ul>
-<h2 id="functional-lookup">Section 2.2: Lookup Tables</h2>
+<h2 id="functional-lookup">Section 2.3: Lookup Tables</h2>
 <ul>
 <li>Introduce <code>globals()</code> and <code>locals()</code></li>
 <li>These are copies of the actual tables</li>
@@ -281,7 +432,7 @@
 <li>Build our own lookup tables</li>
 <li>E.g., select which function to run based on a command-line (string) argument</li>
 </ul>
-<h2 id="functional-metadata">Section 2.3: Metadata</h2>
+<h2 id="functional-metadata">Section 2.4: Metadata</h2>
 <ul>
 <li>Functions are objects and objects have attributes</li>
 </ul>
@@ -309,7 +460,7 @@
 </ul>
 </li>
 </ul>
-<h2 id="functional-modules">Section 2.4: Modules</h2>
+<h2 id="functional-modules">Section 2.5: Modules</h2>
 <ul>
 <li>A module is just another (kind of) dictionary</li>
 </ul>
@@ -355,7 +506,61 @@
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">loaded</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="functional-exercises">Section 2.5: Exercises</h2>
+<h2 id="functional-exercises">Section 2.6: Exercises</h2>
+<h3 class="exercise">Joining All Strings</h3>
+<p>Write a function called <code>join_all</code> that joins all the strings
+in a bunch of nested lists.
+For example:</p>
+<div class="highlight"><pre><span></span><code>join_all([[&quot;red&quot;, [&quot;green&quot;, &quot;blue&quot;]], &quot;lime&quot;])
+</code></pre></div>
+<p class="continue">should return <code>"redgreenbluelime"</code>.</p>
+<h3 class="exercise">Searching Nested Lists</h3>
+<p>Write a function called <code>longest</code> that returns the longest string it finds
+in a bunch of nested lists.
+For example:</p>
+<div class="highlight"><pre><span></span><code>longest([&quot;red&quot;, [&quot;green&quot;, &quot;blue&quot;], [&quot;lime&quot;]])
+</code></pre></div>
+<p class="continue">should return <code>"green"</code>.
+If several strings are of equal longest length,
+return whichever you want.</p>
+<h3 class="exercise">JSON</h3>
+<p>JSON (short for "JavaScript Object Notation")
+consists of nested lists and dictionaries,
+where the dictionaries can only have strings as keys.
+For example,
+this is a valid JSON data structure:</p>
+<div class="highlight"><pre><span></span><code>{&quot;alpha&quot;: 1, &quot;beta&quot;: {&quot;gamma&quot;: [2, 3], &quot;delta&quot;: [4, {&quot;epsilon&quot;: 5}]}}
+</code></pre></div>
+<p class="continue">It may be easier to read if it's written like this:</p>
+<div class="highlight"><pre><span></span><code>{
+    &quot;alpha&quot;: 1,
+    &quot;beta&quot;: {
+        &quot;gamma&quot;: [
+            2,
+            3
+        ],
+        &quot;delta&quot;: [
+            4,
+            {
+                &quot;epsilon&quot;: 5
+            }
+        ]
+    }
+}
+</code></pre></div>
+<p class="continue">Modify <code>add_len</code> so that it returns the total length
+of all the numbers that appear as values in a JSON data structure.
+For example, the result for the data structure shown above is 15.</p>
+<h2 class="exercise">Searching JSON</h2>
+<p>Write a function <code>json_find</code> that takes a list of keys and indices
+and returns the part of a JSON structure at that location.
+For example, the list <code>["beta", "delta", 1]</code> should return the
+dictionary <code>{"epsilon":5}</code> in the previous exercise:</p>
+<ul>
+<li>The key <code>"beta"</code> selects a sub-dictionary.</li>
+<li>They key <code>"delta"</code> selects a list.</li>
+<li>The index 1 selects the second element of that list.</li>
+</ul>
 <h3 class="exercise">Reduce and scan</h3>
 <ul>
 <li>Implement <code>reduce</code>.</li>

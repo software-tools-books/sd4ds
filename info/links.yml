@@ -7,6 +7,9 @@
 - key: black
   title: Black
   url: https://black.readthedocs.io/
+- key: bs
+  title: Beautiful Soup
+  url: https://www.crummy.com/software/BeautifulSoup/
 - key: carpentries
   url: https://carpentries.org/
   title: The Carpentries

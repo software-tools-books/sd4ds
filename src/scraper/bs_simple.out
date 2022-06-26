@@ -1,0 +1,10 @@
+type(doc) <class 'bs4.BeautifulSoup'>
+--------
+<p><strong>RNA</strong> (n.):
+<a href="https://en.wikipedia.org/wiki/RNA">ribonucleic acid</a>.</p>
+--------
+0:[<strong>RNA</strong>]
+1:[ (n.):
+]
+2:[<a href="https://en.wikipedia.org/wiki/RNA">ribonucleic acid</a>]
+3:[.]
