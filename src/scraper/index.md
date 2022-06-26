@@ -412,8 +412,7 @@ Internal links like this are often used for cross-referencing and to create a ta
     -   We'll use fragments rather than full pages
 -   A paragraph containing some bold text and a link
 
-[% excerpt f="bs_simple.py" %]
-[% excerpt f="bs_simple.out" %]
+[% excerpt pat="bs_simple.*" fill="py out" %]
 
 -   We have to specify the low-level parser (we use `html.parser` from the Python standard library)
 -   We get a document with one child, which is our paragraph
@@ -426,18 +425,23 @@ Internal links like this are often used for cross-referencing and to create a ta
 -   If a node only contains text, `.string` gets that text
 -   We can search with `find` to get one node
 
-[% excerpt f="bs_selector.py" %]
-[% excerpt f="bs_selector.out" %]
+[% excerpt pat="bs_selector.*" fill="py out" %]
 
 -   We can use `find_all` to get all matching nodes at any depth
 
-[% excerpt f="bs_search.py" %]
-[% excerpt f="bs_search.out" %]
+[% excerpt pat="bs_search.*" fill="py out" %]
 
 ## Getting Pages {: #scraper-requests}
 
 -   Use the [requests][requests] library
 
+[% excerpt pat="get_page.*" fill="py out" %]
+
+-   Parse the result and look for items
+
+[% excerpt pat="get_table.*" fill="py out" %]
+
+{% excerpt
 
 ## Exercises {: #scraper-exercises}
 
