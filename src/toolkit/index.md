@@ -410,3 +410,7 @@ dictionary `{"epsilon":5}` in the previous exercise:
 ### Entry points {: .exercise}
 
 -   Write a function that calls `entrypoint()` from every file named on the command line.
+
+### Line numbers {: .exercise}
+
+-   <https://twitter.com/nedbat/status/1540686497556246529>
