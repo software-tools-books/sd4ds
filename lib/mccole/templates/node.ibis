@@ -9,12 +9,16 @@
     <link rel="stylesheet" href="@root/tango.css">
     <script>
       MathJax = {
-	tex: {
-	  inlineMath: [['\\(', '\\)']]
-	}
+        tex: {
+          inlineMath: [['\\(', '\\)']]
+        }
       };
     </script>
-    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script
+      type="text/javascript"
+      id="MathJax-script"
+      async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
   </head>
   <body>
     <div class="row">
@@ -23,15 +27,15 @@
         <p>
           {{ site.tagline }}
         </p>
-	{% include "contents.html" %}
+        {% include "contents.html" %}
       </div>
       <div class="column bordered">
-	<main>
+        <main>
           <h1>{{ node.title }}</h1>
+          {% include "syllabus.html" %}
           {{ node.html }}
-	</main>
+        </main>
       </div>
     </div>
   </body>
 </html>
-B

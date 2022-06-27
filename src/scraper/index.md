@@ -1,5 +1,10 @@
 ---
 title: "A Modest Web Scraper"
+syllabus:
+- The basics of HTML and CSS.
+- Finding things in web pages.
+- Getting pages from the web.
+- Using a work queue to manage search.
 ---
 
 This short lesson will show you how to build a fully functional web scraper.

@@ -1,5 +1,8 @@
 ---
 title: "A Modest Regular Expression Engine"
+syllabus:
+- Using polymorphism to create extensible systems.
+- How chaining objects together simplifies execution.
 ---
 
 Sooner or later,

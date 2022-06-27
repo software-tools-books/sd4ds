@@ -1,5 +1,10 @@
 ---
 title: "A Modest Interpreter"
+syllabus:
+- Representing programs as trees and trees as nested lists.
+- The recursive evaluation cycle.
+- Storing variables in a stack of dictionaries.
+- Using introspection for dynamic dispatch.
 ---
 
 Programming languages aren't magical:

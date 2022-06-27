@@ -1,5 +1,9 @@
 ---
 title: "A Modest Dataframe"
+syllabus:
+- Storing two-dimensional data using one-dimensional data structures.
+- How polymorphism enables performance tuning.
+- Measuring performance to evaluate engineering tradeoffs.
 ---
 
 Dataframes aren't magical:

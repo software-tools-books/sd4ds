@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <title>Software Design for Data Scientists</title>
+    <link rel="stylesheet" href="../mccole.css">
+    <link rel="stylesheet" href="../tango.css">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']]
+        }
+      };
+    </script>
+    <script
+      type="text/javascript"
+      id="MathJax-script"
+      async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="column">
+        <h2><a href="../">Software Design for Data Scientists</a></h2>
+        <p>
+          A modest introduction using Python
+        </p>
+        <ol class="toc-chapter">
+  
+  <li>
+    <a href="../introduction/">
+      Introduction
+    </a>
+  </li>
+  
+  <li>
+    <a href="../toolkit/">
+      A Modest Python Toolkit
+    </a>
+  </li>
+  
+  <li>
+    <a href="../dataframe/">
+      A Modest Dataframe
+    </a>
+  </li>
+  
+  <li>
+    <a href="../scraper/">
+      A Modest Web Scraper
+    </a>
+  </li>
+  
+  <li>
+    <a href="../pipeline/">
+      A Modest Pipeline Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../configuration/">
+      A Modest Configuration Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../cache/">
+      A Minimal Cache
+    </a>
+  </li>
+  
+  <li>
+    <a href="../interpreter/">
+      A Modest Interpreter
+    </a>
+  </li>
+  
+  <li>
+    <a href="../unittest/">
+      A Modest Unit Testing Framework
+    </a>
+  </li>
+  
+  <li>
+    <a href="../build/">
+      A Modest Build Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../reader/">
+      A Modest CSV File Reader
+    </a>
+  </li>
+  
+  <li>
+    <a href="../versioning/">
+      A Modest Version Control System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../packaging/">
+      A Modest Package Manager
+    </a>
+  </li>
+  
+  <li>
+    <a href="../database/">
+      A Modest Database
+    </a>
+  </li>
+  
+  <li>
+    <a href="../binary/">
+      A Modest Binary Storage System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../regexp/">
+      A Modest Regular Expression Engine
+    </a>
+  </li>
+  
+  <li>
+    <a href="../templating/">
+      A Modest Page Templating System
+    </a>
+  </li>
+  
+  <li>
+    <a href="../linter/">
+      A Modest Code Checker
+    </a>
+  </li>
+  
+  <li>
+    <a href="../server/">
+      A Modest Web Server
+    </a>
+  </li>
+  
+  <li>
+    <a href="../compiler/">
+      A Modest Compiler
+    </a>
+  </li>
+  
+  <li>
+    <a href="../conclusion/">
+      Conclusion
+    </a>
+  </li>
+  
+</ol>
+<ol class="toc-appendix">
+  
+  <li>
+    <a href="../bibliography/">
+      Bibliography
+    </a>
+  </li>
+  
+  <li>
+    <a href="../syllabus/">
+      <strong>Syllabus</strong>
+    </a>
+  </li>
+  
+  <li>
+    <a href="../license/">
+      License
+    </a>
+  </li>
+  
+  <li>
+    <a href="../conduct/">
+      Code of Conduct
+    </a>
+  </li>
+  
+  <li>
+    <a href="../glossary/">
+      Glossary
+    </a>
+  </li>
+  
+  <li>
+    <a href="../links/">
+      Links
+    </a>
+  </li>
+  
+  <li>
+    <a href="../credits/">
+      Credits
+    </a>
+  </li>
+  
+  <li>
+    <a href="../contents/">
+      Index
+    </a>
+  </li>
+  
+</ol>
+
+      </div>
+      <div class="column bordered">
+        <main>
+          <h1>Syllabus</h1>
+          
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+          <ul>
+<li><a href="../toolkit" markdown="1">A Modest Python Toolkit</a>
+<ul>
+<li markdown="1">FIXME</li>
+</ul>
+</li>
+<li><a href="../dataframe" markdown="1">A Modest Dataframe</a>
+<ul>
+<li markdown="1">Storing two-dimensional data using one-dimensional data structures.</li>
+<li markdown="1">How polymorphism enables performance tuning.</li>
+<li markdown="1">Measuring performance to evaluate engineering tradeoffs.</li>
+</ul>
+</li>
+<li><a href="../scraper" markdown="1">A Modest Web Scraper</a>
+<ul>
+<li markdown="1">The basics of HTML and CSS.</li>
+<li markdown="1">Finding things in web pages.</li>
+<li markdown="1">Getting pages from the web.</li>
+<li markdown="1">Using a work queue to manage search.</li>
+</ul>
+</li>
+<li><a href="../pipeline" markdown="1">A Modest Pipeline Manager</a>
+<ul>
+<li markdown="1">Treating functions as data.</li>
+<li markdown="1">Creating and configuring flexible processing pipelines.</li>
+<li markdown="1">How closures work.</li>
+<li markdown="1">Using closures to make interoperable functions.</li>
+</ul>
+</li>
+<li><a href="../configuration" markdown="1">A Modest Configuration Manager</a>
+<ul>
+<li markdown="1">Using overlay configuration to provide several levels of control.</li>
+<li markdown="1">Recording assembled configurations for provenance.</li>
+</ul>
+</li>
+<li><a href="../cache" markdown="1">A Minimal Cache</a>
+<ul>
+<li markdown="1">FIXME</li>
+</ul>
+</li>
+<li><a href="../interpreter" markdown="1">A Modest Interpreter</a>
+<ul>
+<li markdown="1">Representing programs as trees and trees as nested lists.</li>
+<li markdown="1">The recursive evaluation cycle.</li>
+<li markdown="1">Storing variables in a stack of dictionaries.</li>
+<li markdown="1">Using introspection for dynamic dispatch.</li>
+</ul>
+</li>
+<li><a href="../unittest" markdown="1">A Modest Unit Testing Framework</a>
+<ul>
+<li markdown="1">How and why to create fixtures for tests.</li>
+<li markdown="1">The three kinds of outcomes a test can have.</li>
+<li markdown="1">Using introspection to find tests automatically.</li>
+</ul>
+</li>
+<li><a href="../build" markdown="1">A Modest Build Manager</a>
+<ul>
+<li markdown="1">FIXME</li>
+</ul>
+</li>
+<li><a href="../reader" markdown="1">A Modest CSV File Reader</a>
+<ul>
+<li markdown="1">FIXME</li>
+</ul>
+</li>
+<li><a href="../versioning" markdown="1">A Modest Version Control System</a>
+<ul>
+<li markdown="1">FIXME</li>
+</ul>
+</li>
+<li><a href="../packaging" markdown="1">A Modest Package Manager</a>
+<ul>
+<li markdown="1">FIXME</li>
+</ul>
+</li>
+<li><a href="../database" markdown="1">A Modest Database</a>
+<ul>
+<li markdown="1">FIXME</li>
+</ul>
+</li>
+<li><a href="../binary" markdown="1">A Modest Binary Storage System</a>
+<ul>
+<li markdown="1">How text and numbers are represented in zeroes and ones.</li>
+<li markdown="1">Binary input and output.</li>
+<li markdown="1">Packing and unpacking raw values.</li>
+<li markdown="1">Creating self-describing data.</li>
+</ul>
+</li>
+<li><a href="../regexp" markdown="1">A Modest Regular Expression Engine</a>
+<ul>
+<li markdown="1">Using polymorphism to create extensible systems.</li>
+<li markdown="1">How chaining objects together simplifies execution.</li>
+</ul>
+</li>
+<li><a href="../templating" markdown="1">A Modest Page Templating System</a>
+<ul>
+<li markdown="1">FIXME</li>
+</ul>
+</li>
+<li><a href="../linter" markdown="1">A Modest Code Checker</a>
+<ul>
+<li markdown="1">FIXME</li>
+</ul>
+</li>
+<li><a href="../server" markdown="1">A Modest Web Server</a>
+<ul>
+<li markdown="1">How IP addresses, ports, and sockets enable communication.</li>
+<li markdown="1">The structure of HTML requests and responses.</li>
+<li markdown="1">The HTTP request/response cycle.</li>
+<li markdown="1">Serving static files and dynamic data.</li>
+<li markdown="1">Handling file uploads.</li>
+</ul>
+</li>
+<li><a href="../compiler" markdown="1">A Modest Compiler</a>
+<ul>
+<li markdown="1">The elements of a very simple CPU.</li>
+<li markdown="1">How to represent instructions as zeroes and ones.</li>
+<li markdown="1">Compiling text into machine-level instructions.</li>
+<li markdown="1">Implementing loops and conditionals using jumps.</li>
+<li markdown="1">Allocating storage for data structures.</li>
+</ul>
+</li>
+</ul>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

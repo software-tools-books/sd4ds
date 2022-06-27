@@ -1,5 +1,9 @@
 ---
 title: "A Modest Unit Testing Framework"
+syllabus:
+- How and why to create fixtures for tests.
+- The three kinds of outcomes a test can have.
+- Using introspection to find tests automatically.
 ---
 
 We have written many small programs in the previous chapters,

@@ -9,12 +9,16 @@
     <link rel="stylesheet" href="../tango.css">
     <script>
       MathJax = {
-	tex: {
-	  inlineMath: [['\\(', '\\)']]
-	}
+        tex: {
+          inlineMath: [['\\(', '\\)']]
+        }
       };
     </script>
-    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script
+      type="text/javascript"
+      id="MathJax-script"
+      async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
   </head>
   <body>
     <div class="row">
@@ -23,7 +27,7 @@
         <p>
           A modest introduction using Python
         </p>
-	<ol class="toc-chapter">
+        <ol class="toc-chapter">
   
   <li>
     <a href="../introduction/">
@@ -155,6 +159,18 @@
 <ol class="toc-appendix">
   
   <li>
+    <a href="../bibliography/">
+      Bibliography
+    </a>
+  </li>
+  
+  <li>
+    <a href="../syllabus/">
+      Syllabus
+    </a>
+  </li>
+  
+  <li>
     <a href="../license/">
       License
     </a>
@@ -163,12 +179,6 @@
   <li>
     <a href="../conduct/">
       Code of Conduct
-    </a>
-  </li>
-  
-  <li>
-    <a href="../bibliography/">
-      Bibliography
     </a>
   </li>
   
@@ -200,8 +210,62 @@
 
       </div>
       <div class="column bordered">
-	<main>
+        <main>
           <h1>A Modest Compiler</h1>
+          
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <ul class="syllabus">
+  
+  <li markdown="1">The elements of a very simple CPU.</li>
+  
+  <li markdown="1">How to represent instructions as zeroes and ones.</li>
+  
+  <li markdown="1">Compiling text into machine-level instructions.</li>
+  
+  <li markdown="1">Implementing loops and conditionals using jumps.</li>
+  
+  <li markdown="1">Allocating storage for data structures.</li>
+  
+  </ul>
+  
+
+
           <p>You might feel there's still magic in our interpreter,
 so let's build something lower-level.
 Our virtual machine simulates a computer with three parts:</p>
@@ -445,9 +509,8 @@ and reverses the array in place.</p>
 <p>C stores character strings as non-zero bytes terminated by a byte containing zero.
 Write a program that starts with the base address of a string in R1
 and finishes with the length of the string (not including the terminator) in the same register.</p>
-	</main>
+        </main>
       </div>
     </div>
   </body>
 </html>
-B

@@ -1,6 +1,7 @@
 :root {
     --faintgray: #F8F8F8;
     --lightgray: #E8E8E8;
+    --darkgray: #D8D8D8;
     --heavyborder: 2px;
     --lightborder: 1px;
     --smalltext: 90%;
@@ -45,6 +46,14 @@ ul {
 
 ol {
     padding-left: 2rem;
+}
+
+ul.syllabus {
+    background-color: var(--lightgray);
+    padding-left: 1.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border: var(--heavyborder) var(--darkgray) solid;
 }
 
 div.callout {

@@ -1,5 +1,11 @@
 ---
 title: "A Modest Web Server"
+syllabus:
+- How IP addresses, ports, and sockets enable communication.
+- The structure of HTML requests and responses.
+- The HTTP request/response cycle.
+- Serving static files and dynamic data.
+- Handling file uploads.
 ---
 
 The Internet is much simpler than most people realize

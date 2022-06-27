@@ -1,5 +1,8 @@
 ---
 title: "A Modest Configuration Manager"
+syllabus:
+- Using overlay configuration to provide several levels of control.
+- Recording assembled configurations for provenance.
 ---
 
 -   Current configuration syntax allows one "overall" section and one section per pipeline stage

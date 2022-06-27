@@ -1,5 +1,10 @@
 ---
 title: "A Modest Binary Storage System"
+syllabus:
+- How text and numbers are represented in zeroes and ones.
+- Binary input and output.
+- Packing and unpacking raw values.
+- Creating self-describing data.
 ---
 
 All data is stored as 1's and 0's

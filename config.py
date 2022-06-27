@@ -45,9 +45,10 @@ chapters = [
 
 # Appendices (slugs in order).
 appendices = [
+    "bibliography",
+    "syllabus",
     "license",
     "conduct",
-    "bibliography",
     "glossary",
     "links",
     "credits",

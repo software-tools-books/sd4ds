@@ -1,5 +1,10 @@
 ---
 title: "A Modest Pipeline Manager"
+syllabus:
+- Treating functions as data.
+- Creating and configuring flexible processing pipelines.
+- How closures work.
+- Using closures to make interoperable functions.
 ---
 
 -   Want reproducible data processing pipelines with a "test run" option

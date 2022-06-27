@@ -1,5 +1,7 @@
 ---
 title: "A Modest Python Toolkit"
+syllabus:
+- FIXME
 ---
 
 -   The single biggest idea in programming is that *code is just another kind of data*

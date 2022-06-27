@@ -9,12 +9,16 @@
     <link rel="stylesheet" href="../tango.css">
     <script>
       MathJax = {
-	tex: {
-	  inlineMath: [['\\(', '\\)']]
-	}
+        tex: {
+          inlineMath: [['\\(', '\\)']]
+        }
       };
     </script>
-    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script
+      type="text/javascript"
+      id="MathJax-script"
+      async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
   </head>
   <body>
     <div class="row">
@@ -23,7 +27,7 @@
         <p>
           A modest introduction using Python
         </p>
-	<ol class="toc-chapter">
+        <ol class="toc-chapter">
   
   <li>
     <a href="../introduction/">
@@ -155,6 +159,18 @@
 <ol class="toc-appendix">
   
   <li>
+    <a href="../bibliography/">
+      Bibliography
+    </a>
+  </li>
+  
+  <li>
+    <a href="../syllabus/">
+      Syllabus
+    </a>
+  </li>
+  
+  <li>
     <a href="../license/">
       License
     </a>
@@ -163,12 +179,6 @@
   <li>
     <a href="../conduct/">
       Code of Conduct
-    </a>
-  </li>
-  
-  <li>
-    <a href="../bibliography/">
-      Bibliography
     </a>
   </li>
   
@@ -200,8 +210,58 @@
 
       </div>
       <div class="column bordered">
-	<main>
+        <main>
           <h1>A Modest Unit Testing Framework</h1>
+          
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <ul class="syllabus">
+  
+  <li markdown="1">How and why to create fixtures for tests.</li>
+  
+  <li markdown="1">The three kinds of outcomes a test can have.</li>
+  
+  <li markdown="1">Using introspection to find tests automatically.</li>
+  
+  </ul>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
           <p>We have written many small programs in the previous chapters,
 but haven't really tested any of them.
 That's OK for exploratory programming,
@@ -528,9 +588,8 @@ why can't we use that variable as the function's docstring like this:</p>
     <span class="n">TEST_SKIP</span>
     <span class="k">assert</span> <span class="n">sign</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
 </code></pre></div>
-	</main>
+        </main>
       </div>
     </div>
   </body>
 </html>
-B

@@ -1,5 +1,11 @@
 ---
 title: "A Modest Compiler"
+syllabus:
+- The elements of a very simple CPU.
+- How to represent instructions as zeroes and ones.
+- Compiling text into machine-level instructions.
+- Implementing loops and conditionals using jumps.
+- Allocating storage for data structures.
 ---
 
 You might feel there's still magic in our interpreter,
