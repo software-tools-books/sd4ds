@@ -27,6 +27,7 @@ chapters = [
     "pipeline",
     "configuration",
     "cache",
+    "invperc",
     "interpreter",
     "unittest",
     "build",
