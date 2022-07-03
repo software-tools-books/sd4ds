@@ -36,8 +36,8 @@
   </li>
   
   <li>
-    <a href="../toolkit/">
-      A Modest Python Toolkit
+    <a href="../persist/">
+      A Modest Persistence Framework
     </a>
   </li>
   
@@ -68,6 +68,12 @@
   <li>
     <a href="../cache/">
       A Minimal Cache
+    </a>
+  </li>
+  
+  <li>
+    <a href="../invperc/">
+      A Modest Physical Simulation
     </a>
   </li>
   
@@ -226,8 +232,6 @@
   
 
   
-
-  
   <ul class="syllabus">
   
   <li markdown="1">How and why to create fixtures for tests.</li>
@@ -279,7 +283,7 @@ Such a tool should:</p>
 <p>Our design is inspired by <a href="https://docs.pytest.org/">Pytest</a>,
 which was in turn inspired by many tools built for other languages
 from the 1980s onward <span class="bib-ref">[<a class="bib-ref" href="../bib/#Meszaros2007">Meszaros2007</a>]</span>.</p>
-<h2 id="unittest-structure">Section 9.1: Structuring Tests</h2>
+<h2 id="unittest-structure">Section 10.1: Structuring Tests</h2>
 <p>As in other unit testing frameworks,
 each test will be a function of zero arguments
 so that the framework can run them all in the same way.
@@ -396,7 +400,7 @@ After all tests are run,
 fail 1
 error 1
 </code></pre></div></p>
-<h2 id="unittest-discovery">Section 9.2: Discovery</h2>
+<h2 id="unittest-discovery">Section 10.2: Discovery</h2>
 <p>This simple approach does what it's supposed to, but:</p>
 <ol>
 <li>
@@ -424,7 +428,6 @@ error 1
 </li>
 </ol>
 <p>We can solve several of these problems at once by looking up test functions dynamically.
-As we said in <a class="x-ref" href="../toolkit/">Chapter 2</a>,
 Python stores the variables and functions we define in a dictionary.
 We can get that dictionary by calling the function <code>globals</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
@@ -513,7 +516,7 @@ error: test_sign_error name &#39;sgn&#39; is not defined
 <p>This approach is less typing and less fragile than our first,
 but we can improve it by showing the test function's <a class="gl-ref" href="../gloss/#docstring" markdown="1">docstring</a>
 if it has one.
-As we said in <a class="x-ref" href="../toolkit/">Chapter 2</a>,
+Again,
 functions are just objects,
 which means they can have attributes.
 If we give a function a docstring:</p>
@@ -577,7 +580,7 @@ error: test_sign_positive argument of type &#39;NoneType&#39; is not iterable
 pass (expected failure): test_sign_zero
 error: test_sign_error/Expect an error. name &#39;sgn&#39; is not defined
 </code></pre></div>
-<h2 id="unittest-exercises">Section 9.3: Exercises</h2>
+<h2 id="unittest-exercises">Section 10.3: Exercises</h2>
 <h3 class="exercise">Literal strings</h3>
 <p>If we have defined a variable with the test-skipping marker,
 why can't we use that variable as the function's docstring like this:</p>

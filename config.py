@@ -21,7 +21,7 @@ tagline = "A modest introduction using Python"
 # Chapters (slugs in order).
 chapters = [
     "introduction",
-    "toolkit",
+    "persist",
     "dataframe",
     "scraper",
     "pipeline",

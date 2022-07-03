@@ -37,7 +37,7 @@
   
   <li>
     <a href="../persist/">
-      A Modest Persistence Framework
+      <strong>A Modest Persistence Framework</strong>
     </a>
   </li>
   
@@ -103,7 +103,7 @@
   
   <li>
     <a href="../versioning/">
-      <strong>A Modest Version Control System</strong>
+      A Modest Version Control System
     </a>
   </li>
   
@@ -217,7 +217,7 @@
       </div>
       <div class="column bordered">
         <main>
-          <h1>A Modest Version Control System</h1>
+          <h1>A Modest Persistence Framework</h1>
           
   
 
@@ -238,12 +238,6 @@
   
 
   
-  <ul class="syllabus">
-  
-  <li markdown="1">FIXME</li>
-  
-  </ul>
-  
 
   
 
@@ -262,7 +256,56 @@
   
 
 
-          <p>FIXME</p>
+          <p>FIXME
+-   Almost all data science is load-process-save
+-   Load and save are complements of each other
+-   The world doesn't need another data format
+-   But a chance to introduce several basic design ideas
+    -   Functions as objects
+    -   Extensibility
+    -   Testing and testability</p>
+<h2 id="persist-flat">Section 2.1: Saving Flat Structures</h2>
+<ul>
+<li>Use <code>type value</code> for built-in types</li>
+<li>Use <code>type number</code> followed by entries for structured types</li>
+<li>Use <code>if</code>-<code>elif</code>-<code>else</code> to reconstruct</li>
+<li>Replace that with lookup table<ul>
+<li>Functions as objects</li>
+</ul>
+</li>
+</ul>
+<h2 id="persist-nested">Section 2.2: Saving Nested Structures</h2>
+<ul>
+<li>Could come up with notation for list of dictionaries of lists</li>
+<li>Use recursion instead</li>
+<li>Function that reads the next thing from the input can call itself</li>
+</ul>
+<h2 id="persist-test">Section 2.3: Testing</h2>
+<ul>
+<li>Introduction to pytest</li>
+<li>Use string IO instead of creating files on disk<ul>
+<li>Design for test: caller provides something stream-like</li>
+<li>Convenience vs. fidelity</li>
+</ul>
+</li>
+</ul>
+<h2 id="persist-extensible">Section 2.5: Extensibility</h2>
+<ul>
+<li>Client can register new names and translation functions<ul>
+<li>Always come in pairs</li>
+</ul>
+</li>
+<li>But it means the loader must register the same types as the saver<ul>
+<li>JSON, YAML, etc. restrict types to avoid this complexity</li>
+</ul>
+</li>
+</ul>
+<h2 id="persist-extensible">Section 2.5: Versioning</h2>
+<ul>
+<li>Colors go from RGB to RGBA</li>
+<li>Preface each archive with version numbers or similar</li>
+</ul>
+<h2 id="persist-exercises">Section 2.6: Exercises</h2>
         </main>
       </div>
     </div>

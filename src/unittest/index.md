@@ -117,7 +117,6 @@ This simple approach does what it's supposed to, but:
     just as we should test our smoke detectors every once in a while.
 
 We can solve several of these problems at once by looking up test functions dynamically.
-As we said in [% x toolkit %],
 Python stores the variables and functions we define in a dictionary.
 We can get that dictionary by calling the function `globals`:
 
@@ -137,7 +136,7 @@ and keep track of their results:
 This approach is less typing and less fragile than our first,
 but we can improve it by showing the test function's [% g docstring "docstring" %]
 if it has one.
-As we said in [% x toolkit %],
+Again,
 functions are just objects,
 which means they can have attributes.
 If we give a function a docstring:

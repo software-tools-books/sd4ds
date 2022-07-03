@@ -30,8 +30,8 @@ and then executes any necessary steps.
 Originally created to manage compilation,
 they are also useful for programs written in interpreted languages
 like JavaScript
-when we want to bundle multiple modules into a single loadable file ([% x module-bundler %])
-or re-create documentation from source code ([% x doc-generator %]).
+when we want to bundle multiple modules into a single loadable file ([% fixme %])
+or re-create documentation from source code ([% fixme %]).
 In this chapter we will create a simple build manager
 based on [Make][gnu-make], [Bajel][bajel], [Jake][jake],
 and other systems discussed in [% b Smith2011 %].
@@ -84,7 +84,7 @@ Our build manager must:
 
 We will store our rules in YAML files like this:
 
-[% excerpt file="three-simple-rules.yml" %]
+[% fixme excerpt f="three-simple-rules.yml" %]
 
 We could equally well have used JSON,
 but it wouldn't have made sense to use CSV:
@@ -97,9 +97,9 @@ so we start by writing a simple driver that loads a JavaScript source file,
 creates an object of whatever class that file exports,
 and runs the `.build` method of that object with the rest of the command-line parameters:
 
-[% excerpt file="driver.js" %]
+[% fixme excerpt f="driver.js" %]
 
-We use the `import` function to dynamically load files containing in [% x unit-test %] as well.
+We use the `import` function to dynamically load files containing in [% fixme %] as well.
 It only saves us a few lines of code in this case,
 but we will use this idea of a general-purpose driver for larger programs in future chapters.
 {: .continue}
@@ -114,11 +114,11 @@ each version of our build manager must be a class that satisfies two requirement
 The `build` method must create a graph from the configuration file,
 check that it does not contain any cycles,
 and then run whatever commands are needed to update stale targets.
-Just as we built a generic `Visitor` class in [% x page-templates %],
+Just as we built a generic `Visitor` class in [% fixme %],
 we can build a generic base class for our build manager that does these steps in this order
 without actually implementing any of them:
 
-[% excerpt file="skeleton-builder.js" %]
+[% fixme excerpt f="skeleton-builder.js" %]
 
 This is an example of
 the Template Method design pattern:
@@ -135,13 +135,13 @@ but to make the evolving code easier to follow we will write them them one by on
 The `loadConfig` method loads the configuration file
 as the builder object is being constructed:
 
-[% excerpt file="config-loader.js" %]
+[% fixme excerpt f="config-loader.js" %]
 
 The first line does the loading;
 the rest of the method checks that the rules are at least superficially plausible.
 We need these checks because YAML is a generic file format
 that doesn't know anything about the extra requirements of our rules.
-And as we first saw in [% x async-programming %],
+And as we first saw in [% fixme %],
 we have to specify that the character encoding of our file is UTF-8
 so that JavaScript knows how to convert bytes into text.
 {: .continue}
@@ -161,22 +161,22 @@ Two features of `graphlib` that took us a while to figure out are that:
 including one to check for cycles,
 so we might as well write that method at this point as well:
 
-[% excerpt file="graph-creator.js" %]
+[% fixme excerpt f="graph-creator.js" %]
 
 We can now create something that displays our configuration when it runs
 but does nothing else:
 
-[% excerpt file="display-only.js" %]
+[% fixme excerpt f="display-only.js" %]
 
 If we run this with our three simple rules as input,
 it shows the graph with `v` and `w` keys to represent the ends of the links:
 
-[% excerpt pat="display-only.*" fill="sh out" %]
+[% fixme excerpt pat="display-only.*" fill="sh out" %]
 
 Let's write a quick test to make sure the cycle detector works as intended:
 
-[% excerpt file="circular-rules.yml" %]
-[% excerpt pat="check-cycles.*" fill="sh out" %]
+[% fixme excerpt f="circular-rules.yml" %]
+[% fixme excerpt pat="check-cycles.*" fill="sh out" %]
 
 ## How can we specify that a file is out of date? {: #build-timestamp}
 
@@ -190,17 +190,17 @@ and the operating system may only report file update times to the nearest millis
 
 More modern build systems store a hash of each file's contents
 and compare the current hash to the stored one to see if the file has changed.
-Since we already looked at hashing in [% x file-backup %],
+Since we already looked at hashing in [% fixme %],
 we will use the timestamp approach here.
-And instead of using a mock filesystem as we did in [% x file-backup %],
+And instead of using a mock filesystem as we did in [% fixme %],
 we will simply load another configuration file that specifies fake timestamps for files:
 
-[% excerpt file="add-timestamps.yml" %]
+[% fixme excerpt f="add-timestamps.yml" %]
 
 Since we want to associate those timestamps with files,
 we add a step to `buildGraph` to read the timestamp file and add information to the graph's nodes:
 
-[% excerpt file="add-timestamps.js" %]
+[% fixme excerpt f="add-timestamps.js" %]
 
 > ### Not quite what we were expecting
 >
@@ -217,7 +217,7 @@ we add a step to `buildGraph` to read the timestamp file and add information to 
 Before we move on,
 let's make sure that adding timestamps works as we want:
 
-[% excerpt pat="add-timestamps.*" fill="sh out" %]
+[% fixme excerpt pat="add-timestamps.*" fill="sh out" %]
 
 ## How can we update out-of-date files? {: #build-update}
 
@@ -233,7 +233,7 @@ so we advance our fictional clock by one for each build.
 Using `graphlib.alg.topsort` to create the topological order,
 we get this:
 
-[% excerpt file="update-timestamps.js" %]
+[% fixme excerpt f="update-timestamps.js" %]
 
 The `run` method:
 
@@ -251,7 +251,7 @@ we see if any of its dependencies currently have timestamps greater than or equa
 When we run this,
 it seems to do the right thing:
 
-[% excerpt pat="update-timestamps.*" fill="sh out" %]
+[% fixme excerpt pat="update-timestamps.*" fill="sh out" %]
 
 <div class="break-before"></div>
 ## How can we add generic build rules? {: #build-generic}
@@ -289,12 +289,12 @@ and `@DEP[1]`, `@DEP[2]`, and so on for specific dependencies
 
 Our variable expander looks like this:
 
-[% excerpt file="variable-expander.js" %]
+[% fixme excerpt f="variable-expander.js" %]
 
 The first thing we do is test that it works when there *aren't* any variables to expand
 by running it on the same example we used previously:
 
-[% excerpt file="variable-expander.out" %]
+[% fixme excerpt f="variable-expander.out" %]
 
 This is perhaps the most important reason to create tests:
 they tell us right away if something we have added or changed
@@ -305,17 +305,17 @@ That gives us a firm base to build on as we debug the new code.
 Now we need to add pattern rules.
 Our first attempt at a rules file looks like this:
 
-[% excerpt file="pattern-rules.yml" %]
+[% fixme excerpt f="pattern-rules.yml" %]
 
 and our first attempt at reading it extracts rules before expanding variables:
 {: .continue}
 
-[% excerpt file="pattern-user-attempt.js" %]
+[% fixme excerpt f="pattern-user-attempt.js" %]
 
 However,
 that doesn't work:
 
-[% excerpt file="pattern-user-attempt.out" %]
+[% fixme excerpt f="pattern-user-attempt.out" %]
 
 The problem is that our simple graph loader creates nodes for dependencies even if they aren't targets.
 As a result,
@@ -342,18 +342,18 @@ While we're here,
 we will enable timestamps as an optional field in the rules for testing purposes
 rather than having them in a separate file:
 
-[% excerpt file="pattern-user-read.js" %]
+[% fixme excerpt f="pattern-user-read.js" %]
 
 Before we try to run this,
 let's add methods to show the state of our two internal data structures:
 
-[% excerpt pat="pattern-user-show.*" fill="js sh out" %]
+[% fixme excerpt pat="pattern-user-show.*" fill="js sh out" %]
 
 The output seems to be right,
 so let's try expanding rules *after* building the graph and rules
 but *before* expanding variables:
 
-[% excerpt pat="pattern-user-run.*" fill="js out" %]
+[% fixme excerpt pat="pattern-user-run.*" fill="js out" %]
 
 ## What should we do next? {: #build-next}
 
