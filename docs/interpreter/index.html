@@ -72,6 +72,12 @@
   </li>
   
   <li>
+    <a href="../synthetic/">
+      A Modest Synthetic Analysis
+    </a>
+  </li>
+  
+  <li>
     <a href="../invperc/">
       A Modest Physical Simulation
     </a>
@@ -104,12 +110,6 @@
   <li>
     <a href="../versioning/">
       A Modest Version Control System
-    </a>
-  </li>
-  
-  <li>
-    <a href="../packaging/">
-      A Modest Package Manager
     </a>
   </li>
   
@@ -265,17 +265,15 @@
 
   
 
-  
-
 
           <p>Programming languages aren't magical:
 one piece of software translates text into instructions,
 while another does what those instructions tell it to.
 To explore how this works,
 this chapter implements a small but completely functional language.</p>
-<h2 id="interpreter-expressions">Section 9.1: Expressions</h2>
+<h2 id="interpreter-expressions">Section 10.1: Expressions</h2>
 <p>FIXME</p>
-<h2 id="interpreter-statements">Section 9.2: Statements</h2>
+<h2 id="interpreter-statements">Section 10.2: Statements</h2>
 <p><code>tll.py</code> reads a JSON file from standard input and executes the program it represents.
 Each command is stored as a list
 that starts with the name of an instruction
@@ -340,9 +338,9 @@ and returns the value of the last one;
 and <code>do_if</code> uses the result of evaluating its first argument
 to decide whether to evaluate its second or third.
 It's really that simple.</p>
-<h2 id="interpreter-reflection">Section 9.3: Reflection</h2>
+<h2 id="interpreter-reflection">Section 10.3: Reflection</h2>
 <p>FIXME: Explain how the table <code>OPERATIONS</code> is constructed.</p>
-<h2 id="interpreter-functions">Section 9.4: Functions</h2>
+<h2 id="interpreter-functions">Section 10.4: Functions</h2>
 <p>TLL can do a lot:
 in fact,
 since it has variables, loops, and conditionals,
@@ -397,7 +395,7 @@ The implementation:
 6.  Returns the function's result.</p>
 </li>
 </ol>
-<h2 id="interpreter-exercises">Section 9.5: Exercises</h2>
+<h2 id="interpreter-exercises">Section 10.5: Exercises</h2>
 <h3 class="exercise">Arrays</h3>
 <p>Implement fixed-size one-dimensional arrays:
 <code>["array", "new", 10]</code> creates an array of 10 elements,

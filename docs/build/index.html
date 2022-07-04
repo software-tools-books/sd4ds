@@ -72,6 +72,12 @@
   </li>
   
   <li>
+    <a href="../synthetic/">
+      A Modest Synthetic Analysis
+    </a>
+  </li>
+  
+  <li>
     <a href="../invperc/">
       A Modest Physical Simulation
     </a>
@@ -104,12 +110,6 @@
   <li>
     <a href="../versioning/">
       A Modest Version Control System
-    </a>
-  </li>
-  
-  <li>
-    <a href="../packaging/">
-      A Modest Package Manager
     </a>
   </li>
   
@@ -259,8 +259,6 @@
 
   
 
-  
-
 
           <p>FIXME: motivational example.</p>
 <p>Choosing what actions to take based on how files depend on one another is a common pattern.
@@ -290,7 +288,7 @@ or re-create documentation from source code (<span class="FIXME">FIXME</span>).
 In this chapter we will create a simple build manager
 based on <a href="https://www.gnu.org/software/make/">Make</a>[gnu-make], [Bajel][bajel], [Jake][jake],
 and other systems discussed in <span class="bib-ref">[<a class="bib-ref" href="../bib/#Smith2011">Smith2011</a>]</span>.</p>
-<h2 id="build-contents">Section 11.1: What's in a build manager?</h2>
+<h2 id="build-contents">Section 12.1: What's in a build manager?</h2>
 <p>The input to a build manager is a set of rules,
 each of which has:</p>
 <ul>
@@ -340,7 +338,7 @@ For example,
 if A depends on both B and C,
 then (B, C, A) and (C, B, A) are both valid topological orders of the graph.</p>
 </blockquote>
-<h2 id="build-start">Section 11.2: Where should we start?</h2>
+<h2 id="build-start">Section 12.2: Where should we start?</h2>
 <p>We will store our rules in YAML files like this:</p>
 <p><span class="FIXME">FIXME</span></p>
 <p class="continue">We could equally well have used JSON,
@@ -419,7 +417,7 @@ it shows the graph with <code>v</code> and <code>w</code> keys to represent the 
 <p>Let's write a quick test to make sure the cycle detector works as intended:</p>
 <p><span class="FIXME">FIXME</span>
 <span class="FIXME">FIXME</span></p>
-<h2 id="build-timestamp">Section 11.3: How can we specify that a file is out of date?</h2>
+<h2 id="build-timestamp">Section 12.3: How can we specify that a file is out of date?</h2>
 <p>The next step is to figure out which files are out of date.
 Make does this by comparing the timestamps of the files in question,
 but this isn't always reliable:
@@ -452,7 +450,7 @@ We will reflect on this in the last section of this chapter.</p>
 <p>Before we move on,
 let's make sure that adding timestamps works as we want:</p>
 <p><span class="FIXME">FIXME</span></p>
-<h2 id="build-update">Section 11.4: How can we update out-of-date files?</h2>
+<h2 id="build-update">Section 12.4: How can we update out-of-date files?</h2>
 <p>To figure out which recipes to execute and in which order,
 we set the pretended current time to the latest time of any file,
 then look at each file in topological order.
@@ -485,7 +483,7 @@ When we run this,
 it seems to do the right thing:</p>
 <p><span class="FIXME">FIXME</span></p>
 <div class="break-before"></div>
-<h2 id="build-generic">Section 11.5: How can we add generic build rules?</h2>
+<h2 id="build-generic">Section 12.5: How can we add generic build rules?</h2>
 <p>If our website has a hundred blog posts
 or a hundred pages of documentation about particular JavaScript files,
 we don't want to have to write a hundred nearly-identical recipes.
@@ -565,7 +563,7 @@ let's add methods to show the state of our two internal data structures:</p>
 so let's try expanding rules <em>after</em> building the graph and rules
 but <em>before</em> expanding variables:</p>
 <p><span class="FIXME">FIXME</span></p>
-<h2 id="build-next">Section 11.6: What should we do next?</h2>
+<h2 id="build-next">Section 12.6: What should we do next?</h2>
 <p>We have added a lot of steps to our original template method,
 which makes it a bit of a stretch to claim that the overall operation hasn't changed.
 Knowing what we know now,
@@ -580,7 +578,7 @@ Realizing this isn't a failure in initial design:
 we always learn about our problem as we try to capture it in code,
 and if we know enough to anticipate 100% of the issues that are going to come up,
 it's time to put what we've learned in a library for future use.</p>
-<h2 id="build-exercises">Section 11.7: Exercises</h2>
+<h2 id="build-exercises">Section 12.7: Exercises</h2>
 <h3 class="exercise">Handle failure</h3>
 <ol>
 <li>

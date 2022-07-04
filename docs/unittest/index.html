@@ -72,6 +72,12 @@
   </li>
   
   <li>
+    <a href="../synthetic/">
+      A Modest Synthetic Analysis
+    </a>
+  </li>
+  
+  <li>
     <a href="../invperc/">
       A Modest Physical Simulation
     </a>
@@ -104,12 +110,6 @@
   <li>
     <a href="../versioning/">
       A Modest Version Control System
-    </a>
-  </li>
-  
-  <li>
-    <a href="../packaging/">
-      A Modest Package Manager
     </a>
   </li>
   
@@ -263,8 +263,6 @@
 
   
 
-  
-
 
           <p>We have written many small programs in the previous chapters,
 but haven't really tested any of them.
@@ -283,7 +281,7 @@ Such a tool should:</p>
 <p>Our design is inspired by <a href="https://docs.pytest.org/">Pytest</a>,
 which was in turn inspired by many tools built for other languages
 from the 1980s onward <span class="bib-ref">[<a class="bib-ref" href="../bib/#Meszaros2007">Meszaros2007</a>]</span>.</p>
-<h2 id="unittest-structure">Section 10.1: Structuring Tests</h2>
+<h2 id="unittest-structure">Section 11.1: Structuring Tests</h2>
 <p>As in other unit testing frameworks,
 each test will be a function of zero arguments
 so that the framework can run them all in the same way.
@@ -400,7 +398,7 @@ After all tests are run,
 fail 1
 error 1
 </code></pre></div></p>
-<h2 id="unittest-discovery">Section 10.2: Discovery</h2>
+<h2 id="unittest-discovery">Section 11.2: Discovery</h2>
 <p>This simple approach does what it's supposed to, but:</p>
 <ol>
 <li>
@@ -580,7 +578,7 @@ error: test_sign_positive argument of type &#39;NoneType&#39; is not iterable
 pass (expected failure): test_sign_zero
 error: test_sign_error/Expect an error. name &#39;sgn&#39; is not defined
 </code></pre></div>
-<h2 id="unittest-exercises">Section 10.3: Exercises</h2>
+<h2 id="unittest-exercises">Section 11.3: Exercises</h2>
 <h3 class="exercise">Literal strings</h3>
 <p>If we have defined a variable with the test-skipping marker,
 why can't we use that variable as the function's docstring like this:</p>
