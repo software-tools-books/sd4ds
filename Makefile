@@ -1,5 +1,6 @@
 .DEFAULT: commands
 
+ABBREV=sd4ds
 HTML=info/head.html info/foot.html
 INFO=info/bibliography.bib info/glossary.yml info/links.yml
 IVY=$(wildcard lib/mccole/*/*.*)
@@ -28,22 +29,23 @@ docs/all.html: docs/index.html ${HTML} bin/single.py
 	python bin/single.py --head info/head.html --foot info/foot.html --root docs > docs/all.html
 
 ## latex: create LaTeX document
-latex: docs/sd4ds.tex
-docs/sd4ds.tex: docs/all.html ${TEX} bin/html2tex.py
-	python bin/html2tex.py --head info/head.tex --foot info/foot.tex < docs/all.html > docs/sd4ds.tex
+latex: docs/${ABBREV}.tex
+docs/${ABBREV}.tex: docs/all.html ${TEX} bin/html2tex.py
+	python bin/html2tex.py --head info/head.tex --foot info/foot.tex < docs/all.html > docs/${ABBREV}.tex
 
 ## pdf: create PDF document
-pdf: docs/sd4ds.tex
+pdf: docs/${ABBREV}.tex
 	cp info/bibliography.bib docs
-	cd docs && pdflatex sd4ds
-	cd docs && biber sd4ds
-	cd docs && makeindex sd4ds
-	cd docs && pdflatex sd4ds
-	cd docs && pdflatex sd4ds
+	cd docs && pdflatex ${ABBREV}
+	cd docs && biber ${ABBREV}
+	cd docs && makeindex ${ABBREV}
+	cd docs && pdflatex ${ABBREV}
+	cd docs && pdflatex ${ABBREV}
 
 ## clean: clean up stray files
 clean:
 	@find . -name '*~' -exec rm {} \;
+	@find . -type d -name __pycache__ | xargs rm -r
 
 ## lint: check code and structure
 .PHONY: lint
