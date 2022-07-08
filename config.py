@@ -25,7 +25,7 @@ chapters = [
     "dataframe",
     "scraper",
     "pipeline",
-    "configuration",
+    "ingestion",
     "cache",
     "synthetic",
     "invperc",
