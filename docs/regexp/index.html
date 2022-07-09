@@ -265,7 +265,7 @@ every data scientist needs to scrape data out of text files.
 Regular expressions are the best tool for the job,
 so this lesson will explore how they work by building a simple but extensible pattern matcher.
 Our approach is inspired by <span class="ix-entry" ix-key="Kernighan, Brian" markdown="1">[Brian Kernighan's][kernighan-brian]</span> entry
-in <span class="bib-ref">[<a class="bib-ref" href="../bib/#Oram2007">Oram2007</a>]</span>.</p>
+in <span class="bib-ref">[<a class="bib-ref" href="../bibliography/#Oram2007">Oram2007</a>]</span>.</p>
 <h2 id="regexp-simple">Section 17.1: Simple Patterns</h2>
 <p>Our matcher will initially handle just the five cases shown in
 <a class="tbl-ref" href="FIXME">Table&nbsp;pattern-matching-cases</a>.
@@ -463,7 +463,7 @@ which forces us to define how our classes will work:</p>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&#39; X &#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&#39; == </span><span class="si">{</span><span class="n">actual</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>Next,
-we define a <a class="gl-ref" href="../gloss/#base_class" markdown="1">base class</a> that all matchers will inherit from.
+we define a <a class="gl-ref" href="../glossary/#base_class" markdown="1">base class</a> that all matchers will inherit from.
 This class contains the <code>match</code> method that users will call
 so that we can start matching right away
 no matter what kind of matcher we have at the top level of our pattern.</p>
@@ -504,9 +504,9 @@ we're finished.</p>
 It can just apply a pattern over and over to consume as many matches as possible---or can it?
 Suppose we have the pattern <code>a*ab</code>.
 This ought to match the text <code>"ab"</code>, but will it?
-<code>*</code> is <span class="ix-entry" ix-key="greedy algorithm;algorithm!greedy" markdown="1"><a class="gl-ref" href="../gloss/#greedy_algorithm" markdown="1">greedy</a></span>:
+<code>*</code> is <span class="ix-entry" ix-key="greedy algorithm;algorithm!greedy" markdown="1"><a class="gl-ref" href="../glossary/#greedy_algorithm" markdown="1">greedy</a></span>:
 it matches as much as it can.
-(This is also called <span class="ix-entry" ix-key="eager matching;matching!eager" markdown="1"><a class="gl-ref" href="../gloss/#eager_matching" markdown="1">eager matching</a></span>.)
+(This is also called <span class="ix-entry" ix-key="eager matching;matching!eager" markdown="1"><a class="gl-ref" href="../glossary/#eager_matching" markdown="1">eager matching</a></span>.)
 As a result,
 <code>a*</code> will match the leading <code>"a"</code>, leaving nothing for the literal <code>a</code> to match.
 Our current implementation doesn't give us a way to try other possible matches when this happens.</p>
@@ -626,14 +626,14 @@ our tests all pass:</p>
 if we want to add other kinds of matching,
 all we have to do is add more classes.
 That extensibility comes from the lack of centralized decision-making,
-which in turn comes from our use of <span class="ix-entry" ix-key="polymorphism" markdown="1"><a class="gl-ref" href="../gloss/#polymorphism" markdown="1">polymorphism</a></span>
-and the <span class="ix-entry" ix-key="Chain of Responsibility pattern;design pattern!Chain of Responsibility" markdown="1"><a class="gl-ref" href="../gloss/#chain_of_responsibility_pattern" markdown="1">Chain of Responsibility</a></span> design pattern.
+which in turn comes from our use of <span class="ix-entry" ix-key="polymorphism" markdown="1"><a class="gl-ref" href="../glossary/#polymorphism" markdown="1">polymorphism</a></span>
+and the <span class="ix-entry" ix-key="Chain of Responsibility pattern;design pattern!Chain of Responsibility" markdown="1"><a class="gl-ref" href="../glossary/#chain_of_responsibility_pattern" markdown="1">Chain of Responsibility</a></span> design pattern.
 Each component does its part and asks something else to handle the remaining work;
 so long as each component takes the same inputs,
 we can put them together however we want.</p>
 <blockquote>
 <h3>The Open-Closed Principle</h3>
-<p>The <span class="ix-entry" ix-key="Open-Closed Principle;software design!Open-Closed Principle" markdown="1"><a class="gl-ref" href="../gloss/#open_closed_principle" markdown="1">Open-Closed Principle</a></span> states that
+<p>The <span class="ix-entry" ix-key="Open-Closed Principle;software design!Open-Closed Principle" markdown="1"><a class="gl-ref" href="../glossary/#open_closed_principle" markdown="1">Open-Closed Principle</a></span> states that
 software should be open for extension but closed for modification,
 i.e., that it should be possible to extend functionality
 without having to rewrite existing code.
@@ -642,7 +642,7 @@ this allows old code to use new code,
 but only if our design permits the kinds of extensions people are going to want to make.
 Since we can't anticipate everything,
 it is normal to have to revise a design the first two or three times we try to extend it.
-As <span class="bib-ref">[<a class="bib-ref" href="../bib/#Brand1995">Brand1995</a>]</span> said of buildings,
+As <span class="bib-ref">[<a class="bib-ref" href="../bibliography/#Brand1995">Brand1995</a>]</span> said of buildings,
 the things we make learn how to do things better as we use them.</p>
 </blockquote>
 <h2 id="regexp-exercises">Section 17.4: Exercises</h2>
@@ -663,9 +663,9 @@ so that <code>Charset('aeiou')</code> matches any lower-case vowel.</p>
 <h3 class="exercise">Make repetition more efficient</h3>
 <p>Rewrite <code>Any</code> so that it does not repeatedly re-match text.</p>
 <h3 class="exercise">Lazy matching</h3>
-<p>The regular expressions we have seen so far are <a class="gl-ref" href="../gloss/#eager_matching" markdown="1">eager</a>:
+<p>The regular expressions we have seen so far are <a class="gl-ref" href="../glossary/#eager_matching" markdown="1">eager</a>:
 they match as much as they can, as early as they can.
-An alternative is <a class="gl-ref" href="../gloss/#lazy_matching" markdown="1">lazy matching</a>,
+An alternative is <a class="gl-ref" href="../glossary/#lazy_matching" markdown="1">lazy matching</a>,
 in which expressions match as little as they need to.
 For example,
 given the string <code>"ab"</code>,

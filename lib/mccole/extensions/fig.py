@@ -39,7 +39,7 @@ def figure_ref(pargs, kwargs, node):
     figure = figures[slug]
     label = util.make_label("figure", figure.number)
     cls = 'class="fig-ref"'
-    url = "@root/{figure.fileslug}/#{slug}"
+    url = f"@root/{figure.fileslug}/#{slug}"
     return f'<a {cls} href="{url}">{label}</a>'
 
 

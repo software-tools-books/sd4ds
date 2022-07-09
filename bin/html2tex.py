@@ -100,7 +100,7 @@ def handle(node, state, accum, doEscape):
 
     # <a class="figref"> => figure cross-reference
     elif node_match(node, "a", "fig-ref"):
-        key = node["href"].split("#")[1]
+        key = href_key(node)
         accum.append(rf"\figref{{{key}}}")
 
     # <a class="gl-ref"> => glossary cross-reference
@@ -115,7 +115,7 @@ def handle(node, state, accum, doEscape):
 
     # <a class="tbl-ref"> => table cross-reference
     elif node_match(node, "a", "tbl-ref"):
-        key = node["href"].split("#")[1]
+        key = href_key(node)
         accum.append(rf"\tblref{{{key}}}")
 
     # <a class="x-ref"> => section cross-reference
@@ -342,6 +342,13 @@ def handle(node, state, accum, doEscape):
 def has_class(node, cls):
     """Check if node has specified class."""
     return node.has_attr("class") and (cls in node["class"])
+
+
+def href_key(node):
+    """Get key from href attribute if available."""
+    if "#" in node["href"]:
+        return node["href"].split("#")[1]
+    return node["href"]
 
 
 def index_entry(node, state, accum, doEscape):

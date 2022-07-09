@@ -1,6 +1,11 @@
 \documentclass{scrbook}
 
 % ----------------------------------------
+% Character encodings.
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% ----------------------------------------
 % Bibliography.
 \usepackage[backend=biber,style=alphabetic,sorting=nyt,maxbibnames=99]{biblatex}
 \addbibresource{bibliography.bib}
@@ -19,6 +24,15 @@
 \newcommand{\tblref}[1]{Table~\ref{#1}}
 
 % ----------------------------------------
+% Figures
+\newcommand{\figpdf}[4]{\begin{figure}%
+\centering%
+\includegraphics[scale={#4}]{#2}%
+\caption{#3}%
+\label{#1}%
+\end{figure}}
+
+% ----------------------------------------
 % Glossary items and references.
 \newcommand{\glossref}[1]{\textbf{#1}}
 \newcommand{\glosskey}[1]{\textbf{#1}}
@@ -31,13 +45,14 @@
 % ----------------------------------------
 % Format code listings.
 % https://tex.stackexchange.com/questions/263032/why-is-listings-frame-width-a-little-larger-then-textwidth
+% https://tex.stackexchange.com/questions/378600/unicode-characters-in-lstlisting
 \usepackage{listings}
 \lstset{
   basicstyle=\footnotesize\ttfamily,
   upquote=true,
   xleftmargin=3.4pt,
   xrightmargin=3.4pt,
-  literate={✓}{{\checkmark}}1
+  literate={✓}{{\checkmark}}1 {ô}{{\^o}}1 {ü}{{\"u}}1
 }
 
 % ----------------------------------------
@@ -50,9 +65,7 @@
 % ----------------------------------------
 % Start of document.
 \begin{document}
-\title{Software Design for Data Scientists}
-\subtitle{A minimal introduction using Python}
-\author{Greg Wilson}
+\include{config.tex}
 \date{}
 \maketitle
 \frontmatter

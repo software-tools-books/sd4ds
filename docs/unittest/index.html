@@ -267,7 +267,7 @@ but haven't really tested any of them.
 That's OK for exploratory programming,
 but if our software is going to be used instead of just read,
 we should try to make sure it works.</p>
-<p>A tool for writing and running <a class="gl-ref" href="../gloss/#unit_test" markdown="1">unit tests</a> is a good first step.
+<p>A tool for writing and running <a class="gl-ref" href="../glossary/#unit_test" markdown="1">unit tests</a> is a good first step.
 Such a tool should:</p>
 <ul>
 <li>find files containing tests;</li>
@@ -278,27 +278,27 @@ Such a tool should:</p>
 </ul>
 <p>Our design is inspired by <a href="https://docs.pytest.org/">Pytest</a>,
 which was in turn inspired by many tools built for other languages
-from the 1980s onward <span class="bib-ref">[<a class="bib-ref" href="../bib/#Meszaros2007">Meszaros2007</a>]</span>.</p>
+from the 1980s onward <span class="bib-ref">[<a class="bib-ref" href="../bibliography/#Meszaros2007">Meszaros2007</a>]</span>.</p>
 <h2 id="unittest-structure">Section 11.1: Structuring Tests</h2>
 <p>As in other unit testing frameworks,
 each test will be a function of zero arguments
 so that the framework can run them all in the same way.
-Each test will create a <a class="gl-ref" href="../gloss/#fixture" markdown="1">fixture</a> to be tested
-and use <a class="gl-ref" href="../gloss/#assertion" markdown="1">assertions</a>
-to compare the <a class="gl-ref" href="../gloss/#actual_result" markdown="1">actual result</a>
-against the <a class="gl-ref" href="../gloss/#expected_result" markdown="1">expected result</a>.
+Each test will create a <a class="gl-ref" href="../glossary/#fixture" markdown="1">fixture</a> to be tested
+and use <a class="gl-ref" href="../glossary/#assertion" markdown="1">assertions</a>
+to compare the <a class="gl-ref" href="../glossary/#actual_result" markdown="1">actual result</a>
+against the <a class="gl-ref" href="../glossary/#expected_result" markdown="1">expected result</a>.
 The outcome can be exactly one of:</p>
 <ul>
 <li>
-<p><a class="gl-ref" href="../gloss/#pass_test" markdown="1">Pass</a>:
-    the <a class="gl-ref" href="../gloss/#test_subject" markdown="1">test subject</a> works as expected.</p>
+<p><a class="gl-ref" href="../glossary/#pass_test" markdown="1">Pass</a>:
+    the <a class="gl-ref" href="../glossary/#test_subject" markdown="1">test subject</a> works as expected.</p>
 </li>
 <li>
-<p><a class="gl-ref" href="../gloss/#fail_test" markdown="1">Fail</a>:
+<p><a class="gl-ref" href="../glossary/#fail_test" markdown="1">Fail</a>:
     something is wrong with the test subject.</p>
 </li>
 <li>
-<p><a class="gl-ref" href="../gloss/#error_test" markdown="1">Error</a>:
+<p><a class="gl-ref" href="../glossary/#error_test" markdown="1">Error</a>:
     something wrong in the test itself,
     which means we don't know whether the test subject is working properly or not.</p>
 </li>
@@ -306,16 +306,16 @@ The outcome can be exactly one of:</p>
 <p>To make this work,
 we need some way to distinguish failing tests from broken ones.
 Our solution relies on the fact that exceptions are objects
-and that a program can use <a class="gl-ref" href="../gloss/#introspection" markdown="1">introspection</a>
+and that a program can use <a class="gl-ref" href="../glossary/#introspection" markdown="1">introspection</a>
 to determine the class of an object.
-If a test <a class="gl-ref" href="../gloss/#throw_exception" markdown="1">throws an exception</a> whose class is <code>assert.AssertionError</code>,
+If a test <a class="gl-ref" href="../glossary/#throw_exception" markdown="1">throws an exception</a> whose class is <code>assert.AssertionError</code>,
 then we will assume the exception came from
 one of the assertions we put in the test as a check.
 Any other kind of assertion indicates that the test itself contains an error.</p>
 <p>To start,
 let's record tests and what they mean.
 We don't run tests immediately
-because we want to wrap each one in our own <a class="gl-ref" href="../gloss/#exception_handler" markdown="1">exception handler</a>.
+because we want to wrap each one in our own <a class="gl-ref" href="../glossary/#exception_handler" markdown="1">exception handler</a>.
 Instead,
 the function <code>hope_that</code> saves a descriptive message and a function that implements a test
 in an array:</p>
@@ -417,7 +417,7 @@ error 1
 <li>
 <p>We don't have a way to test things that are supposed to raise <code>AssertionError</code>.
     Putting assertions into code to check that it is behaving correctly
-    is called <a class="gl-ref" href="../gloss/#defensive_programming" markdown="1">defensive programming</a>;
+    is called <a class="gl-ref" href="../glossary/#defensive_programming" markdown="1">defensive programming</a>;
     it's a good practice,
     but we should make sure those assertions are failing when they're supposed to,
     just as we should test our smoke detectors every once in a while.</p>
@@ -510,7 +510,7 @@ fail: test_sign_zero
 error: test_sign_error name &#39;sgn&#39; is not defined
 </code></pre></div>
 <p>This approach is less typing and less fragile than our first,
-but we can improve it by showing the test function's <a class="gl-ref" href="../gloss/#docstring" markdown="1">docstring</a>
+but we can improve it by showing the test function's <a class="gl-ref" href="../glossary/#docstring" markdown="1">docstring</a>
 if it has one.
 Again,
 functions are just objects,

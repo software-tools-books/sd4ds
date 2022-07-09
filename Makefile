@@ -1,13 +1,20 @@
 .DEFAULT: commands
 
-ABBREV=sd4ds
-HTML=info/head.html info/foot.html
-INFO=info/bibliography.bib info/glossary.yml info/links.yml
-IVY=$(wildcard lib/mccole/*/*.*)
-TEX=info/head.tex info/foot.tex
-SRC=$(wildcard *.md) $(wildcard src/*.md) $(wildcard src/*/index.md)
+# Local configuration.
+ABBREV := $(shell python config.py --abbrev)
 
-PORT=4000
+# Direct variables.
+HTML := info/head.html info/foot.html
+INFO := info/bibliography.bib info/credits.yml info/glossary.yml info/links.yml
+FIG_SVG := $(wildcard src/*/*.svg)
+IVY := $(wildcard lib/mccole/*/*.*)
+TEX := info/head.tex info/foot.tex
+SRC := $(wildcard *.md) $(wildcard src/*.md) $(wildcard src/*/index.md)
+
+# Calculated variables.
+FIG_PDF := $(patsubst src/%.svg,docs/%.pdf,${FIG_SVG})
+
+PORT := 4000
 
 ## commands: show available commands
 commands:
@@ -30,17 +37,21 @@ docs/all.html: docs/index.html ${HTML} bin/single.py
 
 ## latex: create LaTeX document
 latex: docs/${ABBREV}.tex
-docs/${ABBREV}.tex: docs/all.html ${TEX} bin/html2tex.py
+docs/${ABBREV}.tex: docs/all.html ${TEX} bin/html2tex.py ./config.py
 	python bin/html2tex.py --head info/head.tex --foot info/foot.tex < docs/all.html > docs/${ABBREV}.tex
+	python ./config.py --latex > docs/config.tex
 
 ## pdf: create PDF document
-pdf: docs/${ABBREV}.tex
+pdf: docs/${ABBREV}.tex ${FIG_PDF}
 	cp info/bibliography.bib docs
 	cd docs && pdflatex ${ABBREV}
 	cd docs && biber ${ABBREV}
 	cd docs && makeindex ${ABBREV}
 	cd docs && pdflatex ${ABBREV}
 	cd docs && pdflatex ${ABBREV}
+
+docs/%.pdf: src/%.svg
+	@convert $< $@
 
 ## clean: clean up stray files
 clean:
@@ -63,14 +74,37 @@ valid: docs/all.html
 	'Attribute "g" not allowed on element "span"' \
 	'Attribute "i" not allowed on element "span"'
 
+## release: create archive of standard files
+.PHONY: release
+release:
+	zip -r mccole.zip \
+	CODE_OF_CONDUCT.md \
+	CONTRIBUTING.md \
+	LICENSE.md \
+	Makefile \
+	setup.cfg \
+	bin \
+	info/*.html \
+	info/*.tex \
+	lib \
+	src/bibliography \
+	src/conduct \
+	src/contents \
+	src/credits \
+	src/glossary \
+	src/license \
+	src/links \
+	src/syllabus \
+	-x "*__pycache__*"
+
 ## vars: show variables
 .PHONY: vars
 vars:
+	@echo ABBREV ${ABBREV}
+	@echo FIG_SVG ${FIG_SVG}
+	@echo FIG_PDF ${FIG_PDF}
 	@echo HTML ${HTML}
 	@echo INFO ${INFO}
 	@echo IVY ${IVY}
 	@echo SRC ${SRC}
 	@echo TEX ${TEX}
-
-# Local commands if available.
--include local.mk

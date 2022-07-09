@@ -23,7 +23,7 @@ def glossary_ref(pargs, kwargs, node):
     used.add(slug)
 
     cls = 'class="gl-ref"'
-    return f'<a {cls} href="@root/gloss/#{slug}" markdown="1">{text}</a>'
+    return f'<a {cls} href="@root/glossary/#{slug}" markdown="1">{text}</a>'
 
 
 @shortcodes.register("glossary")
