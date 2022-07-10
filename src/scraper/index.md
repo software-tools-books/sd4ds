@@ -140,7 +140,7 @@ so let's add a little content:
 
 Elements can be customized by giving them attributes,
 which are written as `name="value"` pairs inside the element's opening tag.
-Forr example:
+For example:
 
 ```{: .html}
 <h1 align="center">A Centered Heading</h1>

@@ -1,7 +1,7 @@
 .DEFAULT: commands
 
 # Local configuration.
-ABBREV := $(shell python config.py --abbrev)
+ABBREV := $(shell python ./config.py --abbrev)
 
 # Direct variables.
 HTML := info/head.html info/foot.html
@@ -12,6 +12,7 @@ TEX := info/head.tex info/foot.tex
 SRC := $(wildcard *.md) $(wildcard src/*.md) $(wildcard src/*/index.md)
 
 # Calculated variables.
+DOCS := docs/index.html $(patsubst src/%.md,docs/%.html,$(wildcard src/*/index.md))
 FIG_PDF := $(patsubst src/%.svg,docs/%.pdf,${FIG_SVG})
 
 PORT := 4000
@@ -21,8 +22,8 @@ commands:
 	@grep -h -E '^##' ${MAKEFILE_LIST} | sed -e 's/## //g' | column -t -s ':'
 
 ## build: rebuild site without running server
-build: docs/index.html
-docs/index.html: ${SRC} ${INFO} ${IVY} config.py
+build: ./docs/index.html
+./docs/index.html: ${SRC} ${INFO} ${IVY} config.py
 	ivy build && touch $@
 
 ## serve: build site and run server
@@ -32,13 +33,13 @@ serve:
 
 ## single: create single-page HTML
 single: docs/all.html
-docs/all.html: docs/index.html ${HTML} bin/single.py
-	python bin/single.py --head info/head.html --foot info/foot.html --root docs > docs/all.html
+docs/all.html: ./docs/index.html ${HTML} bin/single.py
+	python ./bin/single.py --head info/head.html --foot info/foot.html --root docs > docs/all.html
 
 ## latex: create LaTeX document
 latex: docs/${ABBREV}.tex
 docs/${ABBREV}.tex: docs/all.html ${TEX} bin/html2tex.py ./config.py
-	python bin/html2tex.py --head info/head.tex --foot info/foot.tex < docs/all.html > docs/${ABBREV}.tex
+	python ./bin/html2tex.py --head info/head.tex --foot info/foot.tex < docs/all.html > docs/${ABBREV}.tex
 	python ./config.py --latex > docs/config.tex
 
 ## pdf: create PDF document
@@ -64,7 +65,22 @@ lint:
 	-flake8
 	-isort --check .
 	-black --check .
-	python bin/lint.py --src src
+	python ./bin/lint.py --src src
+
+## spelling: check spelling against known words
+.PHONY: spelling
+spelling:
+	@make wordlist \
+	| python ./bin/post_spellcheck.py info/wordlist.txt
+
+## wordlist: make a list of unknown and unused words
+.PHONY: wordlist
+wordlist:
+	@cat ${DOCS} \
+	| python ./bin/pre_spellcheck.py \
+	| aspell -H list \
+	| sort \
+	| uniq
 
 ## valid: run html5validator on generated files
 .PHONY: valid
@@ -101,6 +117,7 @@ release:
 .PHONY: vars
 vars:
 	@echo ABBREV ${ABBREV}
+	@echo DOCS ${DOCS}
 	@echo FIG_SVG ${FIG_SVG}
 	@echo FIG_PDF ${FIG_PDF}
 	@echo HTML ${HTML}

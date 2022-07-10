@@ -9,7 +9,7 @@ Sooner or later,
 every data scientist needs to scrape data out of text files.
 Regular expressions are the best tool for the job,
 so this lesson will explore how they work by building a simple but extensible pattern matcher.
-Our approach is inspired by [% i "Kernighan, Brian" %][Brian Kernighan's][kernighan-brian][% /i %] entry
+Our approach is inspired by [% i "Kernighan, Brian" %]Brian Kernighan's[% /i %] entry
 in [% b Oram2007 %].
 
 ## Simple Patterns {: #regexp-simple}

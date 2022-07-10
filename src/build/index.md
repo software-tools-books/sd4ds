@@ -32,8 +32,7 @@ they are also useful for programs written in interpreted languages
 like JavaScript
 when we want to bundle multiple modules into a single loadable file ([% fixme %])
 or re-create documentation from source code ([% fixme %]).
-In this chapter we will create a simple build manager
-based on [Make][gnu-make], [Bajel][bajel], [Jake][jake],
+In this chapter we will create a simple build manager based on [Make][gnu-make]
 and other systems discussed in [% b Smith2011 %].
 
 ## What's in a build manager? {: #build-contents}
@@ -147,7 +146,7 @@ so that JavaScript knows how to convert bytes into text.
 {: .continue}
 
 The next step is to turn the configuration into a graph in memory.
-We use the [`graphlib`][graphlib] module to manage nodes and links
+We use the `graphlib` module to manage nodes and links
 rather than writing our own classes for graphs,
 and store the recipe to rebuild a node in that node.
 Two features of `graphlib` that took us a while to figure out are that:

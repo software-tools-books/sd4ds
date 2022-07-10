@@ -5,7 +5,7 @@
     Most data scientists feel overwhelmed when they go from writing small scripts for personal use
     to building larger packages and applications.
     The best way to learn design in any field is to study and work through examples,
-    so this book teaches software design by showign readers
+    so this book teaches software design by showing readers
     how to build the tools they (should) use every day.
 
 -   **Aren't there already lots of books about software design?**
