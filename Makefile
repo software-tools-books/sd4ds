@@ -98,10 +98,8 @@ release:
 	CONTRIBUTING.md \
 	LICENSE.md \
 	Makefile \
-	setup.cfg \
 	bin \
-	info/*.html \
-	info/*.tex \
+	info \
 	lib \
 	src/bibliography \
 	src/conduct \
