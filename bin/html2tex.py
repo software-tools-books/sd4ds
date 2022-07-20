@@ -3,16 +3,11 @@
 """Turn single-page HTML into LaTeX."""
 
 import argparse
-import re
 import sys
+
 from bs4 import BeautifulSoup, NavigableString, Tag
 
-
-CROSSREFS = {
-    "Appendix": "appref",
-    "Chapter": "chapref",
-    "Section": "secref"
-}
+CROSSREFS = {"Appendix": "appref", "Chapter": "chapref", "Section": "secref"}
 
 
 def main():
@@ -21,10 +16,7 @@ def main():
     text = sys.stdin.read()
     text = text.replace(r"\(", "<math>").replace(r"\)", "</math>")
     soup = BeautifulSoup(text, "html.parser")
-    state = {
-        "appendix": False,
-        "unknown": set()
-    }
+    state = {"appendix": False, "unknown": set()}
     accum = []
     for child in soup.find_all("section", class_="new-chapter"):
         accum = handle(child, state, accum, True)
@@ -57,24 +49,25 @@ def citation(node, state, accum, doEscape):
 
 
 def escape(text, doEscape):
-    '''Escape special characters if asked to.'''
+    """Escape special characters if asked to."""
     if not doEscape:
         return text
-    return text\
-        .replace('{', 'ACTUAL-LEFT-CURLY-BRACE')\
-        .replace('}', 'ACTUAL-RIGHT-CURLY-BRACE')\
-        .replace('\\', r'{\textbackslash}')\
-        .replace('$', r'\$')\
-        .replace('%', r'\%')\
-        .replace('_', r'\_')\
-        .replace('^', r'{\textasciicircum}')\
-        .replace('#', r'\#')\
-        .replace('&', r'\&')\
-        .replace('©', r'{\textcopyright}')\
-        .replace('μ', r'{\textmu}')\
-        .replace('…', '...')\
-        .replace('ACTUAL-LEFT-CURLY-BRACE', r'\{')\
-        .replace('ACTUAL-RIGHT-CURLY-BRACE', r'\}')
+    return (
+        text.replace("{", "ACTUAL-LEFT-CURLY-BRACE")
+        .replace("}", "ACTUAL-RIGHT-CURLY-BRACE")
+        .replace("\\", r"{\textbackslash}")
+        .replace("$", r"\$")
+        .replace("%", r"\%")
+        .replace("_", r"\_")
+        .replace("^", r"{\textasciicircum}")
+        .replace("#", r"\#")
+        .replace("&", r"\&")
+        .replace("©", r"{\textcopyright}")
+        .replace("μ", r"{\textmu}")
+        .replace("…", "...")
+        .replace("ACTUAL-LEFT-CURLY-BRACE", r"\{")
+        .replace("ACTUAL-RIGHT-CURLY-BRACE", r"\}")
+    )
 
 
 def figure(node, state, accum, doEscape):
@@ -275,7 +268,7 @@ def handle(node, state, accum, doEscape):
         assert len(node.contents) == 2, f"Bad code node {node}"
         title, body = node.contents[0], node.contents[1]
         assert title.name == "span", "Expected span as title node of pre"
-        title = "" # FIXME
+        title = ""  # FIXME
         assert body.name == "code", "Expected code as body of pre"
         accum.append(f"\\begin{{lstlisting}}[{title}frame=single,frameround=tttt]\n")
         children(body, state, accum, False)
@@ -355,7 +348,7 @@ def index_entry(node, state, accum, doEscape):
     """Construct index entries."""
     assert (node.name == "span") and node.has_attr("ix-key")
     for key in [k.strip() for k in node["ix-key"].split(";")]:
-        accum.append(fr"\index{{{escape(key, doEscape)}}}")
+        accum.append(rf"\index{{{escape(key, doEscape)}}}")
 
 
 def make_math(text):

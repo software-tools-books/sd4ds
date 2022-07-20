@@ -252,7 +252,6 @@ it seems to do the right thing:
 
 [% fixme excerpt pat="update-timestamps.*" fill="sh out" %]
 
-<div class="break-before"></div>
 ## How can we add generic build rules? {: #build-generic}
 
 If our website has a hundred blog posts

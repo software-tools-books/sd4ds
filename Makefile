@@ -65,7 +65,7 @@ lint:
 	-flake8
 	-isort --check .
 	-black --check .
-	python ./bin/lint.py --src src
+	python ./bin/lint.py --dom info/dom.yml --html docs --src src
 
 ## spelling: check spelling against known words
 .PHONY: spelling
@@ -75,7 +75,7 @@ spelling:
 
 ## wordlist: make a list of unknown and unused words
 .PHONY: wordlist
-wordlist:
+wordlist: ./docs/index.html
 	@cat ${DOCS} \
 	| python ./bin/pre_spellcheck.py \
 	| aspell -H list \

@@ -6,11 +6,10 @@
 import re
 import sys
 
-
 PATTERNS = [
     re.compile(r"<pre\b.*?>.+?</pre>", re.DOTALL),
     re.compile(r"<code\b.*?>.+?</code>", re.DOTALL),
-    re.compile(r"\\\(.+?\\\)", re.DOTALL)
+    re.compile(r"\\\(.+?\\\)", re.DOTALL),
 ]
 
 

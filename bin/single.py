@@ -3,8 +3,8 @@
 """Create single-page HTML version of book."""
 
 import argparse
-import sys
 import os
+
 from bs4 import BeautifulSoup
 
 
@@ -70,7 +70,11 @@ def patch_bib_refs(main):
 
 def patch_chapter_refs(main):
     for node in main.select("a"):
-        if ("href" in node.attrs) and (node.attrs["href"].startswith("../") and (node.attrs["href"].endswith("/"))):
+        if (
+            ("href" in node.attrs)
+            and node.attrs["href"].startswith("../")
+            and (node.attrs["href"].endswith("/"))
+        ):
             node.attrs["href"] = node.attrs["href"].replace("../", "#", 1)[:-1]
 
 
@@ -81,7 +85,9 @@ def patch_glossary(content):
             node.attrs["href"] = node.attrs["href"].replace(g, "")
     for node in content.select("span.glosskey"):
         if "break-before" in node.attrs["class"]:
-            node.attrs["class"] = [c for c in node.attrs["class"] if c != "break-before"]
+            node.attrs["class"] = [
+                c for c in node.attrs["class"] if c != "break-before"
+            ]
             if "class" in node.parent.attrs:
                 node.parent.attrs["class"].append("break-before")
             else:

@@ -38,7 +38,7 @@ def links_table(pargs, kwargs, node):
         f'<li>{x["title"]}: <a class="link-ref" href="{x["url"]}">{x["url"]}</a></li>'
         for x in links
     )
-    return f'<ul>\n{links}\n</ul>'
+    return f"<ul>\n{links}\n</ul>"
 
 
 @ivy.events.register(ivy.events.Event.EXIT)

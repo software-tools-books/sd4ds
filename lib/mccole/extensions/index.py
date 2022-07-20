@@ -75,7 +75,7 @@ def _make_links(term, slugs):
     major = util.make_major()
     triples.sort(key=lambda x: str(major[x[0]]))
     result = ", ".join(
-        f'<a class="indexref" index-ref="{term}" href="{path}">{title}</a>'
+        f'<a class="ix-ref" index-ref="{term}" href="{path}">{title}</a>'
         for (slug, path, title) in triples
     )
     return result

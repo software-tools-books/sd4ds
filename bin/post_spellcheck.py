@@ -3,7 +3,6 @@
 """Compare standard input words to known words."""
 
 
-import re
 import sys
 
 

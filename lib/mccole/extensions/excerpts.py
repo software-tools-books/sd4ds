@@ -94,9 +94,7 @@ def _file(inclusions, node, f):
 def _keep(inclusions, node, f, keep):
     """Handle a sliced file inclusion."""
     filepath = _inclusion_filepath(inclusions, node, f)
-    return _include_file(
-        node, filepath, lambda lns: _keep_lines(filepath, lns, keep)
-    )
+    return _include_file(node, filepath, lambda lns: _keep_lines(filepath, lns, keep))
 
 
 def _keep_omit(inclusions, node, f, keep, omit):
@@ -124,9 +122,7 @@ def _multi(inclusions, node, pat, fill):
 def _omit(inclusions, node, f, omit):
     """Handle an erasing file inclusion."""
     filepath = _inclusion_filepath(inclusions, node, f)
-    return _include_file(
-        node, filepath, lambda lns: _omit_lines(filepath, lns, omit)
-    )
+    return _include_file(node, filepath, lambda lns: _omit_lines(filepath, lns, omit))
 
 
 def _find_markers(lines, key):

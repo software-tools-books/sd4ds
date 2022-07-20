@@ -40,12 +40,20 @@ span.filename {
     background-color: var(--lightgray);
 }
 
-ul {
-    padding-left: 1rem;
-}
-
 ol {
     padding-left: 2rem;
+}
+
+ol.toc-chapter {
+    list-style-type: decimal;
+}
+
+ol.toc-appendix {
+    list-style-type: upper-alpha;
+}
+
+ul {
+    padding-left: 1rem;
 }
 
 ul.syllabus {
@@ -88,6 +96,10 @@ th, td {
     padding-right: 1rem;
     vertical-align: top;
     border: solid var(--lightborder) var(--lightgray);
+}
+
+dt {
+    font-weight: bold;
 }
 
 dt:not(:first-child) {

@@ -1,0 +1,105 @@
+'[document]': []
+a:
+  class:
+  - bib-ref
+  - fig-ref
+  - gl-ref
+  - ix-ref
+  - link-ref
+  - tbl-ref
+  - x-ref
+  href: "any"
+  index-ref: "any"
+  markdown: "any"
+blockquote: []
+body: []
+code: []
+dd: []
+div:
+  caption: "any"
+  class:
+  - bordered
+  - callout
+  - column
+  - glossary
+  - highlight
+  - row
+  - table
+  id: "any"
+dl:
+  class:
+  - bib-list
+dt:
+  id: "any"
+em: []
+figcaption:
+  markdown: "any"
+figure:
+  id: "any"
+h1: []
+h2:
+  id: "any"
+h3:
+  class:
+  - exercise
+head: []
+html:
+  lang:
+  - en
+img:
+  alt: "any"
+  src: "any"
+li:
+  markdown: "any"
+link:
+  href: "any"
+  rel:
+  - icon
+  - stylesheet
+  type:
+  - image/x-icon
+main: []
+meta:
+  content: "any"
+  http-equiv: "any"
+  name: "any"
+ol:
+  class:
+  - ix-list
+  - syllabus
+  - toc-appendix
+  - toc-chapter
+p:
+  class:
+  - continue
+pre: []
+script:
+  async: "any"
+  id: "any"
+  src: "any"
+  type:
+  - text/javascript
+section:
+  id: "any"
+span:
+  class:
+  - FIXME
+  - bib-ref
+  - bibtex-protected
+  - gl-key
+  - ix-entry
+  id: "any"
+  ix-key: "any"
+  markdown: "any"
+strong: []
+table: []
+tbody: []
+td: []
+th: []
+thead: []
+title: []
+tr: []
+ul:
+  class:
+  - ix-list
+  - syllabus

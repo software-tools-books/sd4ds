@@ -9,8 +9,8 @@ All contributors must abide by our Code of Conduct.
 This project uses [Martha's Rules][marthas-rules] for consensus decision making:
 
 1.  Before each meeting, anyone who wishes may sponsor a proposal by filing an
-    issue in the GitHub repository tagged "proposal".  Proposals must be filed
-    at least 24 hours before a meeting in order to be considered at that
+    issue in the GitHub repository tagged "proposal".  People must file proposals
+    at least 24 hours before a meeting in order for them to be considered at that
     meeting, and must include:
     -   a one-line summary (the subject line of the issue)
     -   the full text of the proposal
@@ -27,13 +27,12 @@ This project uses [Martha's Rules][marthas-rules] for consensus decision making:
     item to the group.
 
 4.  After the sponsor presents the proposal, a "sense" vote is cast for the
-    proposal prior to any discussion:
+    proposal before any discussion:
     -   Who likes the proposal?
     -   Who can live with the proposal?
     -   Who is uncomfortable with the proposal?
 
-5.  If all of the group likes or can live with the proposal, it passes
-    immediately.
+5.  If everyone likes or can live with the proposal, it passes immediately.
 
 6.  If most of the group is uncomfortable with the proposal, it is postponed for
     further rework by the sponsor.
@@ -48,13 +47,13 @@ This project uses [Martha's Rules][marthas-rules] for consensus decision making:
 
 ## Formatting
 
-This material is formatted using [Ivy][ivy] with some custom extensions.
+This material uses [Ivy][ivy] with some custom extensions.
 Run `make` in the root directory to get a list of available commands.
 Some of these rely on scripts in the `./bin/` directory.
 
 ### Chapters and Appendices
 
-1.  Each chapter or appendix is identified by a slug such as `topic`.
+1.  Each chapter or appendix has a unique slug such as `topic`.
     Its text lives in <code>./src/<em>topic</em>/index.md</code>,
     and there is an entry for it in the `chapters` or `appendices` list in `./config.py`
     (which control ordering).
@@ -79,7 +78,7 @@ Some of these rely on scripts in the `./bin/` directory.
     ```
 
     where `topic` is the slug of the chapter being referred to.
-    This shortcode will be converted to `Chapter N` or `Appendix N` as appropriate.
+    This shortcode is converted to `Chapter N` or `Appendix N` as appropriate.
     Please only refer to chapters or appendices, not to sections.
 
 ### External Links
@@ -107,7 +106,7 @@ and makes it easier to create a table of external links.
 
     The file must be in or below the directory containing the Markdown file.
 
-1.  To include only a portion of a file write:
+1.  To include only part of a file write:
 
     ```markdown
     [% excerpt f="some_name.py" keep="some_key" %]
@@ -149,13 +148,13 @@ and makes it easier to create a table of external links.
     [% f topic-someword %]
     ```
 
-    This will be converted to `Figure N.K`.
+    This is converted to `Figure N.K`.
 
 1.  Use [diagrams.net][diagrams] to create SVG diagrams
     using the "sketch" style and a 12-point Comic Sans font.
 
 1.  Avoid screenshots if at all possible:
-    getting them to display correctly in print is a pain.
+    making them display correctly in print is difficult.
 
 ### Tables
 
@@ -179,7 +178,7 @@ so we must do something a bit clumsy.
     [% t topic-someword %]
     ```
 
-    This will be converted to `Table N.K`.
+    This is converted to `Table N.K`.
 
 ### Bibliography
 
@@ -235,7 +234,7 @@ we will fill in the index during the final editing pass.
 
 ### Minor Formatting
 
-1.  To continue a paragraph that has been interrupted by a code sample or something else write:
+1.  To continue a paragraph after a code sample write:
 
     ```
     text of paragraph
@@ -261,7 +260,10 @@ we will fill in the index during the final editing pass.
     Use "Sentence case" for the callout's title,
     and please put blank lines before and after the opening and closing `<div>` markers.
     You *must* include `markdown="1"` in the opening `<div>` tag
-    to ensure that Markdown inside the callout is processed correctly.
+    to ensure that Markdown inside the callout is processed.
+
+    Note: earlier versions of this template used `blockquote` rather than `div` callouts.
+    Please only use the former for actual quotations.
 
 ## Building the PDF
 
