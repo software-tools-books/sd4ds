@@ -141,7 +141,11 @@ def _diff_dom(actual, expected):
 
 def _skip_dom(node):
     """Ignore this node and its children?"""
-    return (node.name == "div") and node.has_attr("class") and ("highlight" in node["class"])
+    return (
+        (node.name == "div")
+        and node.has_attr("class")
+        and ("highlight" in node["class"])
+    )
 
 
 if __name__ == "__main__":

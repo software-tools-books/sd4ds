@@ -99,7 +99,9 @@ release:
 	LICENSE.md \
 	Makefile \
 	bin \
-	info \
+	info/dom.yml \
+	info/*.html \
+	info/*.tex \
 	lib \
 	src/bibliography \
 	src/conduct \

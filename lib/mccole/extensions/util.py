@@ -15,6 +15,7 @@ CONFIGURATIONS = {
     "headings": {},  # number chapter, section, and appendix headings
     "inclusions": {},  # included files
     "index": {},  # index entries
+    "tables": {},  # numbered tables
 }
 
 # Translations of multilingual terms.
@@ -42,6 +43,14 @@ HEADING = re.compile(r"^(#+)\s*(.+?)(\{:\s*#(.+\b)\})?$", re.MULTILINE)
 
 # Regex to turn multiple whitespace characters into a single space.
 MULTISPACE = re.compile(r"\s+", re.DOTALL)
+
+# Regex to match table elements. (See `tables.py` for explanation.)
+TABLE = re.compile(r'<div\s+class="table(\s+break-before)?"[^>]*?>')
+TABLE_CAPTION = re.compile(r'caption="(.+?)"')
+TABLE_ID = re.compile(r'id="(.+?)"')
+TABLE_DIV = re.compile(
+    r'<div\s+caption="(.+?)"\s+class="(table(\s+break-before)?)"\s+id="(.+?)">\s*<table>', re.DOTALL
+)
 
 
 def fail(msg):
