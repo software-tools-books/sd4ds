@@ -125,6 +125,11 @@ def handle(node, state, accum, doEscape):
             accum.append(r"\glosskey{")
             children(node, state, accum, doEscape)
             accum.append("}")
+
+        # explicitly suppress footnote URL
+        elif has_class(node, "no-footnote"):
+            children(node, state, accum, doEscape)
+            
         # external link
         else:
             accum.append(r"\hreffoot{")
