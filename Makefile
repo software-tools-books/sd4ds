@@ -85,10 +85,11 @@ wordlist: ./docs/index.html
 ## valid: run html5validator on generated files
 .PHONY: valid
 valid: docs/all.html
-	@html5validator --root docs \
+	@html5validator --root docs ${DOCS} \
 	--ignore \
-	'Attribute "g" not allowed on element "span"' \
-	'Attribute "i" not allowed on element "span"'
+	'Attribute "ix-key" not allowed on element "span"' \
+	'Attribute "ix-ref" not allowed on element "a"' \
+	'Attribute "markdown" not allowed on element'
 
 ## release: create archive of standard files
 .PHONY: release
