@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 
 
 def main():
+    """Main driver."""
     options = parse_args()
 
     with open(os.path.join(options.root, "index.html"), "r") as reader:
@@ -16,6 +17,7 @@ def main():
     body = soup.find("body")
 
     content = open(options.head, "r").read()
+    content = fill_template(options, content)
     content += part(options.root, body, "ol.toc-chapter", "Chapter")
     content += part(options.root, body, "ol.toc-appendix", "Appendix")
     content += open(options.foot, "r").read()
@@ -23,24 +25,22 @@ def main():
     print(content)
 
 
-def part(root, body, key, kind):
-    toc = body.select_one(key)
-    content = []
-    for ref in toc.find_all("a"):
-        slug = ref.attrs["href"].rstrip("/")
-        path = os.path.join(root, slug, "index.html")
-        content.append(get(path, slug, kind))
-    return "\n".join(content)
+def fill_template(options, text):
+    """Fill in template values."""
+    for key in ["title", "tagline"]:
+        text = text.replace(f"${key}$", vars(options)[key])
+    return text
 
 
 def get(path, slug, kind):
+    """Get content from page."""
     with open(path, "r") as reader:
         soup = BeautifulSoup(reader.read(), "html.parser")
 
     main = soup.find("main")
     main.name = "section"
     main["class"] = "new-chapter"
-    patch_chapter_refs(main)
+    patch_part_refs(main)
     patch_glossary(main)
     patch_images(main, slug)
     patch_bib_refs(main)
@@ -54,21 +54,37 @@ def get(path, slug, kind):
 
 
 def parse_args():
+    """Parse command-line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--head", required=True, help="HTML head")
     parser.add_argument("--foot", required=True, help="HTML foot")
     parser.add_argument("--root", required=True, help="root directory")
+    parser.add_argument("--tagline", required=True, help="site tagline")
+    parser.add_argument("--title", required=True, help="site title")
     return parser.parse_args()
 
 
+def part(root, body, key, kind):
+    """Construct part of table of contents."""
+    toc = body.select_one(key)
+    content = []
+    for ref in toc.find_all("a"):
+        slug = ref.attrs["href"].rstrip("/")
+        path = os.path.join(root, slug, "index.html")
+        content.append(get(path, slug, kind))
+    return "\n".join(content)
+
+
 def patch_bib_refs(main):
+    """Fix bibliography references."""
     b = "../bibliography/"
     for node in main.select("a.bibref"):
         if node.attrs["href"].startswith(b):
             node.attrs["href"] = node.attrs["href"].replace(b, "")
 
 
-def patch_chapter_refs(main):
+def patch_part_refs(main):
+    """Fix chapter/appendix references."""
     for node in main.select("a"):
         if (
             ("href" in node.attrs)
@@ -79,6 +95,7 @@ def patch_chapter_refs(main):
 
 
 def patch_glossary(content):
+    """Patch glossary references."""
     g = "../glossary/"
     for node in content.select("a.glossref"):
         if node.attrs["href"].startswith(g):
@@ -95,6 +112,7 @@ def patch_glossary(content):
 
 
 def patch_images(content, slug):
+    """Patch image references."""
     for node in content.find_all("img"):
         if node.attrs["src"].startswith("./"):
             relative = node.attrs["src"][2:]

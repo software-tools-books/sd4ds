@@ -6,13 +6,16 @@ a:
   - gl-ref
   - ix-ref
   - link-ref
+  - no-footnote
   - tbl-ref
   - x-ref
   href: "any"
-  index-ref: "any"
+  ix-ref: "any"
   markdown: "any"
 blockquote: []
 body: []
+br: []
+caption: []
 code: []
 dd: []
 div:
@@ -20,6 +23,7 @@ div:
   class:
   - bordered
   - callout
+  - center
   - column
   - glossary
   - highlight
@@ -36,7 +40,8 @@ figcaption:
   markdown: "any"
 figure:
   id: "any"
-h1: []
+h1:
+  id: "any"
 h2:
   id: "any"
 h3:
@@ -60,6 +65,7 @@ link:
   - image/x-icon
 main: []
 meta:
+  charset: "any"
   content: "any"
   http-equiv: "any"
   name: "any"
@@ -72,6 +78,7 @@ ol:
 p:
   class:
   - continue
+  - definitions
 pre: []
 script:
   async: "any"
@@ -80,6 +87,10 @@ script:
   type:
   - text/javascript
 section:
+  class:
+  - cover
+  - new-chapter
+  - tocElement
   id: "any"
 span:
   class:
@@ -92,7 +103,10 @@ span:
   ix-key: "any"
   markdown: "any"
 strong: []
-table: []
+table:
+  class:
+  - acknowledgments
+  id: "any"
 tbody: []
 td: []
 th: []

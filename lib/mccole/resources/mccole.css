@@ -1,3 +1,7 @@
+/*
+ * Style constants.
+ */
+
 :root {
     --faintgray: #F8F8F8;
     --lightgray: #E8E8E8;
@@ -8,54 +12,123 @@
     --extra-vertical-space: 1ex;
 }
 
+/*
+ * Generic styling.
+ */
+
+.center {
+    text-align: center;
+}
+
+/*
+ * Entire page.
+ */
+
 body {
-    font-size: large;
     line-height: 130%;
-    font-family: Garamond, serif;
+    font-family: "Lucida Grande", Arial, sans-serif;
 }
 
-pre {
-    padding-left: 0.25em;
+/*
+ * Code sections.
+ */
+
+code {
+    font-family: monospace, sans-serif;
 }
 
-span.filename {
-    display: none;
+/*
+ * Two-column display with nav bar on the left.
+ */
+
+div.bordered {
+    border-left: solid var(--heavyborder) var(--lightgray);
 }
 
-.row {
+div.row {
     display: grid;
     grid-template-columns: 25% 75%;
 }
 
-.column {
+div.column {
     padding: 1rem;
 }
 
-.bordered {
-    border-left: solid var(--heavyborder) var(--lightgray);
+/*
+ * Special text sections.
+ */
+
+/* Quotation. */
+blockquote {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    font-style: italic;
 }
 
-.highlight {
-    border: solid var(--heavyborder) var(--lightgray);
+/* Callout box. */
+div.callout {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    padding-top: 0rem;
     background-color: var(--lightgray);
 }
 
+/*
+ * Figures.
+ */
+
+figure {
+    text-align: center;
+}
+
+/*
+ * Lists.
+ */
+
+/* All numbered lists have small indent. */
 ol {
     padding-left: 2rem;
 }
 
+/* Chapter listing in ToC is numbered. */
 ol.toc-chapter {
     list-style-type: decimal;
 }
 
+/* Appendix listing in ToC is lettered. */
 ol.toc-appendix {
     list-style-type: upper-alpha;
 }
 
+/* All bullet lists have small indent. */
 ul {
     padding-left: 1rem;
 }
 
+/* Display list headings. */
+dt {
+    font-weight: bold;
+}
+
+/* Tighten up display lists. */
+dt:not(:first-child) {
+    padding-top: var(--extra-vertical-space);
+}
+
+/*
+ * Aggregated information.
+ */
+
+/* List of defined terms at chapter start. */
+p.definitions {
+    background-color: var(--lightgray);
+    padding-left: 0.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border: var(--heavyborder) var(--darkgray) solid;
+}
+
+/* Syllabus listing at chapter start. */
 ul.syllabus {
     background-color: var(--lightgray);
     padding-left: 1.5rem;
@@ -64,13 +137,12 @@ ul.syllabus {
     border: var(--heavyborder) var(--darkgray) solid;
 }
 
-div.callout {
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
-    padding-top: 0rem;
-    background-color: var(--lightgray);
-}
+/*
+ * Pre-formatted code blocks.
+ * The tags and classes are set by the code highlighter.
+ */
 
+/* Including raw HTML in HTML. */
 div.html {
     font-family: "Comic Sans MS", "Comic Sans", cursive;
     background-color: var(--faintgray);
@@ -80,15 +152,43 @@ div.html {
     font-size: var(--smalltext);
 }
 
+/* Highlighting a code block. */
+div.highlight {
+    border: solid var(--heavyborder) var(--lightgray);
+    background-color: var(--lightgray);
+}
+
+/* Indent code inclusions. */
+pre {
+    padding-left: 0.25em;
+    font-size: 90%;
+}
+
+/*
+ * Filenames for code inclusions are `<span class="filename">...</span>`.
+ * Leave these in the document, but hide them.
+ */
+
+span.filename {
+    display: none;
+}
+
+/*
+ * Tables.
+ */
+
+/* Generic tables. */
 table {
     border-collapse: collapse;
     font-size: 100%;
 }
 
+/* Table of links in appendix. */
 table.links-table {
     font-size: var(--smalltext);
 }
 
+/* Cell sizes. */
 th, td {
     padding-top: 4px;
     padding-bottom: 4px;
@@ -96,16 +196,4 @@ th, td {
     padding-right: 1rem;
     vertical-align: top;
     border: solid var(--lightborder) var(--lightgray);
-}
-
-dt {
-    font-weight: bold;
-}
-
-dt:not(:first-child) {
-    padding-top: var(--extra-vertical-space);
-}
-
-figure {
-    text-align: center;
 }

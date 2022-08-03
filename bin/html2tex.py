@@ -129,7 +129,7 @@ def handle(node, state, accum, doEscape):
         # explicitly suppress footnote URL
         elif has_class(node, "no-footnote"):
             children(node, state, accum, doEscape)
-            
+
         # external link
         else:
             accum.append(r"\hreffoot{")

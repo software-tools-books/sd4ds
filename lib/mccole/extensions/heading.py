@@ -1,5 +1,6 @@
 """Headings and cross-references."""
 
+import sys
 from dataclasses import dataclass
 
 import ivy
@@ -24,10 +25,14 @@ def heading_ref(pargs, kwargs, node):
     util.require((len(pargs) == 1) and not kwargs, "Bad 'x' shortcode")
     headings = util.get_config("headings")
     slug = pargs[0]
-    heading = headings[slug]
-    label = util.make_label("part", heading.number)
-    anchor = f"#{slug}" if (len(heading.number) > 1) else ""
-    return f'<a class="x-ref" href="@root/{heading.fileslug}/{anchor}">{label}</a>'
+    try:
+        heading = headings[slug]
+        label = util.make_label("part", heading.number)
+        anchor = f"#{slug}" if (len(heading.number) > 1) else ""
+        return f'<a class="x-ref" href="@root/{heading.fileslug}/{anchor}">{label}</a>'
+    except KeyError:
+        print(f"Unknown part cross-reference key {slug}", file=sys.stderr)
+        return "FIXME"
 
 
 @ivy.events.register(ivy.events.Event.INIT)

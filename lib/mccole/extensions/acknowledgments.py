@@ -1,12 +1,9 @@
 """Generate list of acknowledgments."""
 
-from pathlib import Path
-
 import ivy
 import shortcodes
 import util
 import yaml
-
 
 EMPTY_ENTRY = "<td></td>"
 WIDTH = 3
@@ -21,9 +18,11 @@ def bibliography(pargs, kwargs, node):
     with open(filename, "r") as reader:
         entries = yaml.safe_load(reader)
     entries = [_format_entry(e) for e in entries]
-    while ((len(entries) % WIDTH) != 0):
+    while (len(entries) % WIDTH) != 0:
         entries.append(EMPTY_ENTRY)
-    rows = "\n".join([_format_row(entries[i:(i+WIDTH)]) for i in range(0, len(entries), WIDTH)])
+    rows = "\n".join(
+        [_format_row(entries[i : (i + WIDTH)]) for i in range(0, len(entries), WIDTH)]
+    )
     return f'<table class="acknowledgments"><tbody>{rows}\n</tbody></table>\n'
 
 

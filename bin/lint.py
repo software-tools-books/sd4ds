@@ -11,8 +11,13 @@ import utils
 from bs4 import BeautifulSoup, Tag
 
 INDEX_FILE = "index.md"
-RE_FILE = re.compile(r'\[%\s+excerpt.+?f="(.+?)".+?%\]')
-RE_PAT = re.compile(r'\[%\s+excerpt.+?pat="(.+?)"\s+fill="(.+?)".+?%\]')
+RE_CODE_BLOCK = re.compile('```.+?```', re.DOTALL)
+RE_CODE_INLINE = re.compile('`.+?`')
+RE_FILE = re.compile(r'\[%\s*excerpt\b.+?f="(.+?)".+?%\]')
+RE_FIGURE = re.compile(r'\[%\s*figure\b.+?img="(.+?)".+?%\]', re.DOTALL)
+RE_LINK = re.compile(r'\[[^]]+?\]\[(\w+?)\]')
+RE_PAT = re.compile(r'\[%\s*excerpt\b.+?pat="(.+?)"\s+fill="(.+?)".+?%\]')
+RE_SHORTCODE = re.compile(r'\[%.+?%\]')
 
 
 def main():
@@ -20,7 +25,8 @@ def main():
     options = parse_args()
 
     source_files = get_src(options)
-    check_excerpts(source_files)
+    check_files(source_files)
+    check_links(options.links, source_files)
 
     html_files = get_html(options)
     check_dom(options.dom, html_files)
@@ -37,12 +43,23 @@ def check_dom(dom_spec, html_files):
     _diff_dom(seen, allowed)
 
 
-def check_excerpts(source_files):
-    """Check for excerpted files."""
+def check_files(source_files):
+    """Check for excerpts and figures."""
     for (dirname, filename) in source_files:
-        referenced = get_excerpts(Path(dirname, filename))
+        filepath = Path(dirname, filename)
+        referenced = get_excerpts(filepath)
+        referenced |= get_figures(filepath)
         existing = get_files(dirname)
-        report(dirname, "excerpts", referenced, existing)
+        report(f"{dirname}: excerpts", referenced, existing)
+
+
+def check_links(links_file, source_files):
+    """Check that all links are known."""
+    existing = {entry["key"] for entry in utils.read_yaml(links_file)}
+    referenced = set()
+    for (dirname, filename) in source_files:
+        referenced |= get_links(Path(dirname, filename))
+    report("links", referenced, existing)
 
 
 def get_excerpts(filename):
@@ -65,9 +82,26 @@ def get_files(dirname):
     )
 
 
+def get_figures(filepath):
+    """Return all figures."""
+    with open(filepath, "r") as reader:
+        text = reader.read()
+        return {m.group(1) for m in RE_FIGURE.finditer(text)}
+
+
 def get_html(options):
     """Get paths to HTML files for processing."""
     return list(Path(options.html).glob("**/*.html"))
+
+
+def get_links(filename):
+    """Get Markdown [text][key] links from file."""
+    with open(filename, "r") as reader:
+        text = reader.read()
+        text = RE_CODE_BLOCK.sub("", text)
+        text = RE_CODE_INLINE.sub("", text)
+        text = RE_SHORTCODE.sub("", text)
+        return {m.group(1) for m in RE_LINK.finditer(text)}
 
 
 def get_src(options):
@@ -82,15 +116,16 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dom", required=True, help="YAML spec of allowed DOM")
     parser.add_argument("--html", required=True, help="HTML directory")
+    parser.add_argument("--links", required=True, help="YAML file of links")
     parser.add_argument("--src", required=True, help="Source directory")
     return parser.parse_args()
 
 
-def report(dirname, title, expected, actual):
+def report(title, expected, actual):
     """Report problems."""
     if expected == actual:
         return
-    print(f"{dirname}: {title}")
+    print(title)
     for (subtitle, items) in [
         ("missing", expected - actual),
         ("extra", actual - expected),

@@ -34,7 +34,13 @@ serve:
 ## single: create single-page HTML
 single: docs/all.html
 docs/all.html: ./docs/index.html ${HTML} bin/single.py
-	python ./bin/single.py --head info/head.html --foot info/foot.html --root docs > docs/all.html
+	python ./bin/single.py \
+	--head info/head.html \
+	--foot info/foot.html \
+	--root docs \
+	--title "$$(python ./config.py --title)" \
+	--tagline "$$(python ./config.py --tagline)" \
+	> docs/all.html
 
 ## latex: create LaTeX document
 latex: docs/${ABBREV}.tex
@@ -59,13 +65,17 @@ clean:
 	@find . -name '*~' -exec rm {} \;
 	@find . -type d -name __pycache__ | xargs rm -r
 
-## lint: check code and structure
-.PHONY: lint
-lint:
+## check: check code and project structure
+.PHONY: check
+check: lint
 	-flake8
 	-isort --check .
 	-black --check .
-	python ./bin/lint.py --dom info/dom.yml --html docs --src src
+
+## lint: check project structure
+.PHONY: lint
+lint:
+	python ./bin/lint.py --dom info/dom.yml --links info/links.yml --html docs --src src
 
 ## spelling: check spelling against known words
 .PHONY: spelling

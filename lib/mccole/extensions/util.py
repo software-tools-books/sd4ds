@@ -10,11 +10,13 @@ import ivy
 # i.e., `"figures"` becomes `ivy.site.config["mccole"]["figures"]`.
 CONFIGURATIONS = {
     "bibliography": set(),  # citations
+    "definitions": [],  # glossary definitions
     "figures": {},  # numbered figures
     "glossary": set(),  # glossary keys
     "headings": {},  # number chapter, section, and appendix headings
     "inclusions": {},  # included files
     "index": {},  # index entries
+    "syllabus": [],  # syllabus entries
     "tables": {},  # numbered tables
 }
 
@@ -49,7 +51,8 @@ TABLE = re.compile(r'<div\s+class="table(\s+break-before)?"[^>]*?>')
 TABLE_CAPTION = re.compile(r'caption="(.+?)"')
 TABLE_ID = re.compile(r'id="(.+?)"')
 TABLE_DIV = re.compile(
-    r'<div\s+caption="(.+?)"\s+class="(table(\s+break-before)?)"\s+id="(.+?)">\s*<table>', re.DOTALL
+    r'<div\s+caption="(.+?)"\s+class="(table(\s+break-before)?)"\s+id="(.+?)">\s*<table>',
+    re.DOTALL,
 )
 
 

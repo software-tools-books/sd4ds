@@ -2,29 +2,29 @@
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
+<link rel="stylesheet" href="../mccole.css">
+<link rel="stylesheet" href="../tango.css">
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']]
+    }
+  };
+</script>
+<script
+  type="text/javascript"
+  id="MathJax-script"
+  async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
     <title>Software Design for Data Scientists</title>
-    <link rel="stylesheet" href="../mccole.css">
-    <link rel="stylesheet" href="../tango.css">
-    <script>
-      MathJax = {
-        tex: {
-          inlineMath: [['\\(', '\\)']]
-        }
-      };
-    </script>
-    <script
-      type="text/javascript"
-      id="MathJax-script"
-      async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-    </script>
   </head>
   <body>
     <div class="row">
       <div class="column">
-        <h2><a href="../">Software Design for Data Scientists</a></h2>
-        <p><em>A modest introduction using Python</em></p>
+        <h2><a href="../"></a></h2>
         <ol class="toc-chapter">
   
   <li>
@@ -260,6 +260,17 @@
   
 
 
+	  
+  
+
+  
+  <p class="definitions">
+    Terms defined:
+    
+  </p>
+  
+
+
           <p>Sooner or later,
 every data scientist needs to scrape data out of text files.
 Regular expressions are the best tool for the job,
@@ -268,14 +279,13 @@ Our approach is inspired by <span class="ix-entry" ix-key="Kernighan, Brian" mar
 in <span class="bib-ref">[<a class="bib-ref" href="../bibliography/#Oram2007">Oram2007</a>]</span>.</p>
 <h2 id="regexp-simple">Section 17.1: Simple Patterns</h2>
 <p>Our matcher will initially handle just the five cases shown in
-<a class="tbl-ref" href="FIXME">Table&nbsp;pattern-matching-cases</a>.
+<a class="tbl-ref" href="../regexp/#pattern-matching-cases">Table 17.1</a>.
 These cases are a small subset of what JavaScript provides,
 but as <span class="ix-entry" ix-key="Kernighan, Brian" markdown="1">Kernighan</span> wrote,
 "This is quite a useful class;
 in my own experience of using regular expressions on a day-to-day basis,
 it easily accounts for 95 percent of all instances."</p>
-<div caption="Pattern matching cases." class="table" id="pattern-matching-cases">
-<table>
+<div class="table"><table id="pattern-matching-cases"><caption>Table 17.1: Pattern matching cases.</caption>
 <thead>
 <tr>
 <th>Meaning</th>
